@@ -72,6 +72,7 @@ def anket(request, respondent_strtype, respondent_id):
         linkobj.respondent_id = respondent_id
         linkobj.status = 0
         linkobj.respondent_type_id = respondent_type
+        print("df")
         #linkobj.save()
     return HttpResponse(respondent_id)
 
