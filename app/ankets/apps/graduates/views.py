@@ -5,6 +5,7 @@ from .models import Questionblock, Spravochnik, Respondent, Question, Answer, Re
 import datetime
 from django.template.defaulttags import register
 from urllib.parse import unquote
+import uuid
 
 #Пользовательские фильтры:
 @register.filter
@@ -26,17 +27,55 @@ def unquotestrk(strk):
 
 # Create your views here.
 
+def index(request, respondent_strtype):
 #def index(request, respondent_type):
-def index(request, respondent_id):
-    try:
-        link = Links.objects.get(respondent_id=respondent_id)
-        if link.status != 0:
-            return render(request, "main/index.html", {'msg': "Опрос по данной ссылке уже пройден!"})
-    except:
+#def index(request, respondent_id):
+    if respondent_strtype == 'graduates':
+        respondent_type = 1
+        respondent_label = 'Выпускник'
+    elif respondent_strtype == 'employers':
+        respondent_type = 2
+        respondent_label = 'Работодатель'
+    elif respondent_strtype == 'organizations':
+        respondent_type = 3
+        respondent_label = 'Образовательная организация'
+    else:
+        respondent_type = 0
         return HttpResponse("Страница не найдена!")
 
-    spravochnik = Spravochnik.objects.order_by('spravochnik_kod')
+    respondent_id = uuid.uuid4()
+    #strlink = 'https://statedu.ru/'+str(respondent_strtype)+'/'+str(respondent_id)
+    strlink = '/'+str(respondent_strtype)+'/'+str(respondent_id)
+    return render(request, 'graduates/link.html', {'strlink': strlink, 'respondent_label': respondent_label})
+    #написать ссылку, отправить на е-мейл, сгенерированный линк сохранить в бд + сохранить e-mail в бд
 
+
+
+def anket(request, respondent_strtype, respondent_id):
+    #return HttpResponse(respondent_id)
+    if respondent_strtype == 'graduates':
+        respondent_type = 1
+    elif respondent_strtype == 'employers':
+        respondent_type = 2
+    elif respondent_strtype == 'organizations':
+        respondent_type = 3
+    else:
+        respondent_type = 0
+        return HttpResponse("Страница не найдена!")
+
+    link = Links.objects.filter(respondent_id=respondent_id)
+    if link:
+        if link.status != 0:
+            return render(request, "main/index.html", {'msg': "Опрос по данной ссылке уже пройден!"})
+    else:
+        linkobj = Links()
+        linkobj.respondent_id = respondent_id
+        linkobj.status = 0
+        linkobj.respondent_type_id = respondent_type
+        #linkobj.save()
+    return HttpResponse(respondent_id)
+
+    spravochnik = Spravochnik.objects.order_by('spravochnik_kod')
     raw = Raw.objects.filter(respid=respondent_id)
     nraw = dict()
     essanceraw = dict()
@@ -71,6 +110,8 @@ def index(request, respondent_id):
         return render(request, 'graduates/form.html', {'questionblock': questionblock, 'questions': questions, 'answers': answers, 'spravochnik': spravochnik, 'respondent_type': link.respondent_type_id, 'respondent_id': link.respondent_id, 'raw': nraw, 'essanceraw': essanceraw, 'buttons': buttons, 'questionraw': questionraw})
     else:
         return HttpResponse("Страница не найдена!")
+
+
 
 #def saveanket(request, respondent_type):
 def saveanket(request, respondent_id):

@@ -20,8 +20,8 @@ from django.urls import path, include
 # from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', include('main.urls')),
-    path('graduates/', include('graduates.urls')),
+    #path('', include('main.urls')),
+    path('<str:respondent_strtype>/', include('graduates.urls')),
     path('results/', include('results.urls')),
     path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     path('admin/', admin.site.urls),

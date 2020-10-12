@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %} Анкета {% endblock %}
+
+
+
+{% block content %}
+
+
+<div class="container">
+    <p>Тип респондента: {{respondent_label}}</p>
+    <p>Для заполнения анкеты перейдите по <a href="{{strlink}}">ссылке</a></p>
+</div>
+
+
+
+{% endblock %}

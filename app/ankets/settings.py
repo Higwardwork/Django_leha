@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = int(os.environ.get("DEBUG", default=0))
 
 ALLOWED_HOSTS = [
-    '10.117.4.24',
+    '127.0.0.1',
     'localhost',
 	'statedu.ru',
 ]
@@ -91,11 +91,7 @@ DATABASES = {
         "USER": os.environ.get("SQL_USER", "user"),
         "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
-        "PORT": os.environ.get("SQL_PORT", ""),
-        "OPTIONS": {
-            'dsn': os.environ.get("SQL_PORT", ""),
-            'server': os.environ.get("SQL_OPTIONS_SERVER", ""),
-        }
+        "PORT": os.environ.get("SQL_PORT", "")
     }
 }
 
