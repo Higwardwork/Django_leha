@@ -1,0 +1,45 @@
+version: '3.8'
+
+networks:
+  traefik_proxy:
+    external: true
+  internal:
+    external: false
+
+services:
+  web:
+    build:
+      context: ./app
+      dockerfile: Dockerfile.prod
+    command: python manage.py runserver 0.0.0.0:8080
+    volumes:
+      - static_volume:/home/app/web/static/
+    expose:
+      - 8080
+    env_file:
+      - ./.env.prod
+    networks:
+      - internal
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/static/
+    depends_on:
+      - web
+    expose:
+      - 80
+    networks:
+      - traefik_proxy
+      - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx.rule=Host(`statedu.ru`)"
+      - "traefik.http.routers.nginx.entrypoints=https"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.http.routers.nginx.tls.certresolver=letsEncrypt"
+      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+    command: nginx -g "daemon off;"
+
+volumes:
+  postgres_data:
+  static_volume:

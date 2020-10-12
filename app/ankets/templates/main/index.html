@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Главная страница {% endblock %}
+
+
+{% block content %}
+
+{% include "header.html" %}
+
+<div class="container">
+    {% if msg %}
+        <div class="alert" role="alert">{{msg}}</div>
+    {% endif %}
+    <ul class="list-group">
+    {% for r in respondent %}
+        <li class="list-group-item list-group-item-action"><a href="/graduates/{{r.respondent_type}}">{{r.respondent_name}}</a></li>
+    {% endfor %}
+    </ul>
+</div>
+
+
+{% endblock %}

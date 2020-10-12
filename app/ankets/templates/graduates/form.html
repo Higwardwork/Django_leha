@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %} Анкета {% endblock %}
+
+
+{% block header %}
+{% if respondent_type == 1 %}
+    <h1 class="display-5">Анкета для сбора сведений о трудоустройстве - выпускники</h1>
+    <hr class="my-3">
+    <p>Предлагаем Вам принять участие в анкетировании, целью которого является оценка трудоустройства выпускников профессиональных образовательных организаций, реализующих образовательные программы среднего профессионального образования, по профессии (специальности)</p>
+{% elif respondent_type == 2 %}
+    <h1 class="display-5">Анкета для сбора сведений о трудоустройстве - работодатели</h1>
+    <hr class="my-3">
+    <p>Предлагаем Вам принять участие в анкетировании, целью которого является оценка трудоустройства выпускников профессиональных образовательных организаций системы среднего профессионального образования по профессии (специальности)</p>
+{% elif respondent_type == 3  %}
+    <h1 class="display-5">Анкета для сбора сведений о трудоустройстве - организации, осуществляющие подготовку по программам среднего профессионального образования</h1>
+    <hr class="my-3">
+    <p>Предлагаем Вам принять участие в анкетировании, целью которого является оценка трудоустройства выпускников профессиональных образовательных организаций по профессии (специальности)</p>
+{% endif %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    <!--buttons: {{buttons}}<br/><br/>-->
+    <!--raw:<br>-->
+    <!--{% if raw|length > 1 %}-->
+        <!--{% for key, value in raw.items %}-->
+            <!--{{key}}: {{ value }}<br/>-->
+        <!--{% endfor %}-->
+    <!--{% endif %}-->
+    <!--<br>-->
+    <!--<br>-->
+    <!--<br>-->
+    <!--{% if raw|length > 1 %}-->
+        <!--{% if 'question_30' in raw %}-->
+            <!--<p>Hello: {{raw.question_30}}</p>-->
+        <!--{% endif %}-->
+    <!--{% endif %}-->
+    <!--<br>-->
+    <!--<br>-->
+<!--    essanceraw:<br>
+    {% if essanceraw|length > 1 %}
+        {% for key, value in essanceraw.items %}
+            {{key}}: {{ value }}<br/>
+        {% endfor %}
+    {% endif %}-->
+    <!--<br>-->
+    <!--<br>-->
+    <!--questionraw:<br>-->
+    <!--{{questionraw}}-->
+    <!--<br>-->
+    <form id="anketform" action="{% url 'graduates:saveanket' respondent_id %}" method="post" >
+        {% csrf_token %}
+        {% for qb in questionblock %}
+        <div style="border: solid #f8f9fa;padding:1.5rem">
+        <fieldset class="form-group">
+        <legend>{{qb.block_name|safe}}</legend>
+            {% if qb.block_type == 1 %}
+            {% for q in questions %}
+                 {% if qb.id == q.block_number_id %}
+                    {% if q.question_clarification %}
+                         <p class="text-info small"><em><i class="fas fa-info-circle"></i> {{q.question_clarification}}</em></p>
+                    {% endif %}
+                    <label for="question_{{q.id}}">{{q.question_number}}. {{q.question_name}}</label>
+                        {% if q.question_type == 1 %} <!--#ответы из основной таблицы ответов -->
+                        <select name="question_{{q.question_number}}" id="question_{{q.id}}" class="form-control mainelement"  req="{{q.field_required}}">
+                            {% for a in answers %}
+                                {% if a.question_number_id == q.id %}
+                                    <option value="{{a.answer_number}}">{{a.answer_name}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                       {% elif q.question_type == 2 %} <!--#ответы из справочника -->
+                        <select data-placeholder="{{q.field_placeholder}}" name="question_{{q.id}}" id="question_{{q.id}}" class="form-control mainelement chosen-select" req="{{q.field_required}}">
+                            <option value="0"></option>
+                            {% for a in answers %}
+                                {% if a.question_number_id == q.id %}
+                                    {% for s in spravochnik %}
+                                        {% if s.spravochnik_number == a.answer_spravochnik %}
+                                             {% if questionraw|length > 0 and q.id in questionraw %}
+                                                {% if s.spravochnik_kod == questionraw|get_item:q.id %}
+                                                    <option selected value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
+                                                {% endif %}
+                                            {% endif %}
+                                            <option value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        {% elif q.question_type == 3 %} <!--#Чек-бокс -->
+                            {% for a in answers %}
+                                {% if a.question_number_id == q.id %}
+                                    <div class="form-check">
+                                        <input class="form-check-input mainelement" type="checkbox" name="question_{{q.id}}_{{a.answer_number}}" id="question_{{q.id}}_{{a.answer_number}}" value="{{a.answer_number}}"  req="{{q.field_required}}">
+                                        <label class="form-check-label" for="question_{{q.id}}">{{a.answer_name}}</label>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% elif q.question_type == 4 %} <!--#Чек-бокс  - ответы из справочника -->
+
+                        {% elif q.question_type == 5 %}
+                            {% if questionraw|length > 0 and q.id in questionraw %}
+                                <input class="{{q.field_mask}} form-control mainelement" type="{% if q.field_type %}{{q.field_type}}{% endif %}" value="{{questionraw|get_item:q.id}}" placeholder="{{q.field_placeholder}}" id="freequestion_{{q.id}}"  name="freequestion_{{q.id}}"  req="{{q.field_required}}">
+                            {% else %}
+                                <input class="{{q.field_mask}} form-control mainelement" type="{% if q.field_type %}{{q.field_type}}{% endif %}" placeholder="{{q.field_placeholder}}" id="freequestion_{{q.id}}"  name="freequestion_{{q.id}}" req="{{q.field_required}}">
+                            {% endif %}
+                       {% endif %}
+                <hr/>
+                {% endif %}
+            {% endfor %}
+
+
+            {% elif qb.block_type == 2 %}
+            <div id="essanceolaceclass_{{qb.block_number}}" class="essanceolaceclass">
+                <div id="essanceplace_{{qb.block_number}}" class="ecsubdiv"> <!--pre-scrollable-->
+                    {% if essanceraw|length > 0 %}
+                        {% for keyb, valueb in buttons.items %}
+                            {% if keyb == qb.block_number %}
+                                <div class="countessances"><mark>Добавлено: {{buttons|get_item:qb.block_number}}</mark></div>
+                                {% for i in "x"|rjust:valueb %}
+                                    <button modalplace="{{qb.block_number}}" title="{{forloop.counter}}" id="spanessance_{{forloop.counter}}" type="button" class="btn btn-secondary btn-lg essance" style="display:none;margin:5px;" disabled><i class="fas fa-user-graduate fas-lg"></i></button>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                        {% for key, value in essanceraw.items %}
+                            {% if key|stringformat:".9s" == "essance_"|concatstr:qb.block_number %}
+                                <input type="hidden" name="{{key}}" value="{{value|unquotestrk}}" />
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                    <br/><br/>
+                    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#addEssenseModal_{{qb.block_number}}">
+                      <i class="fas fa-plus"></i> Добавить {{qb.essance_label}}
+                    </button>
+                    <br/>
+            </div>
+                {% include "graduates/includes/addessensemodal.html" %}
+            {% endif %}
+         </fieldset>
+         </div>
+        <br/>
+        {% endfor %}
+        <button id="btnsave" type="button" class="btn btn-light">Сохранить</button>
+        <!--<button id="btntest" type="button" class="btn btn-danger">ТЕСТ</button>-->
+        <!--<button id="btnsubmit" type="submit" class="btn btn-primary">Отправить</button>-->
+        <button id="btnsubmit" type="button" class="btn btn-primary">Отправить</button>
+    </form>
+</div>
+
+{% load static %}
+<script type="text/javascript" src="{% static 'chosen/chosen.jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'maskedinput/src/jquery.maskedinput.js' %}"></script>
+<script type="text/javascript" src="{% static 'graduates/js/forms.js' %}"></script>
+<link href="{% static 'chosen/chosen.css' %}" rel="stylesheet">
+<link href="{% static 'chosen/chosen-bootstrap.css' %}" rel="stylesheet">
+<style>
+.red_placeholder::placeholder {
+    color: red
+}
+</style>
+{% endblock %}
+
