@@ -14,6 +14,7 @@ class Spravochnik(models.Model):
 class Respondent(models.Model):
     respondent_type = models.IntegerField("тип респондента")
     respondent_name = models.CharField("название типа респондента", max_length=100)
+    link_name = models.CharField("ссылка на опрос", max_length=100, null=True)
     def __str__(self):
         return self.respondent_name
     class Meta:
@@ -90,6 +91,7 @@ class Links(models.Model):
     respondent_type = models.ForeignKey(Respondent, on_delete=models.DO_NOTHING)
     respondent_id = models.CharField("уникальный код респондента", max_length=100)
     status = models.IntegerField("статус анкеты")
+    mail = models.CharField("адрес электронной почты респондента", max_length=100, null=True)
     class Meta:
         verbose_name = 'Ссылка'
         verbose_name_plural = 'Ссылки'

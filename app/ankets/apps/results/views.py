@@ -11,9 +11,10 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 def index(request):
+    return HttpResponse('Нет такой страницы')
     cursor = connection.cursor()
     # cursor.execute('SELECT respondent_name, question_name, essense, result, COUNT([respondent_id]) AS qount_answer FROM v_result group by respondent_name, question_name, essense, result')
-    cursor.execute('SELECT respondent_name, COUNT([respondent_id]) AS qount_answer FROM v_result group by respondent_name')
+    cursor.execute('SELECT respondent_name, COUNT(respondent_id) AS qount_answer FROM v_result group by respondent_name')
     rawresults = cursor.fetchall()
     cursor.close()
     res = []

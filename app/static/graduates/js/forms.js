@@ -1,12 +1,15 @@
-
 $(".chosen-select").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
 
+//$(".modal-body").children(".chosen-select").chosen("destroy");
+$(".modal-body").children(".chosen-container").css("display","none");
+
+
 $('.modal').on('shown.bs.modal', function () {
-     $('.chosen-select', this).chosen('destroy').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+     $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
      $(".modal-body").children(".nodata").remove();
      $("span").css("color", "#555");
      $(".questionselement").css("color", "#555");
-     $(".questionselement").removeClass('red_placeholder')
+     $(".questionselement").removeClass('red_placeholder');
 });
 
 
@@ -39,12 +42,9 @@ function checkRequered(classfor) {
 }
 
 $(document).on("click", "#btnAddEssence", function(){
-    //console.log(checkRequered());
     var idmodalplace = $(this).attr("block_num");
     ee = $("#addEssenseModal_"+idmodalplace).find(".questionselement");
-    //console.log(ee);
     if( checkRequered(ee) == 0){
-
         var el = $('.modal-body[block_num="'+idmodalplace+'"]').children(".questionselement");
         var essnum;
         //if( $("button").is(".essance") ){
@@ -55,17 +55,19 @@ $(document).on("click", "#btnAddEssence", function(){
             essnum = 1;
         }
         esselement = '';
-        $('#essanceplace_'+idmodalplace+"").append('<button modalplace="'+idmodalplace+'" title="'+essnum+'" id="spanessance_'+essnum+'" type="button" class="btn btn-secondary btn-lg essance" style="margin:5px;" disabled><i class="fas fa-user-graduate fas-lg"></i></button>');
+        $('#essanceplace_'+idmodalplace+"").append('<button modalplace="'+idmodalplace+'" title="'+essnum+'" id="spanessance_'+essnum+'" type="button" class="btn btn-secondary btn-lg essance" style="display:none;margin:5px;" disabled><i class="fas fa-user-graduate fas-lg"></i></button>');
+        $('#essanceplace_'+idmodalplace+"").children(".countessances").remove();
+        $('#essanceplace_'+idmodalplace+"").append('<div class="countessances"><mark>Добавлено: '+essnum+'</mark></div>');
         el.each(function( index ) {
-            $("#spanessance_"+essnum+"").append('<input type="hidden" name="essance_'+idmodalplace+'_'+essnum+'_'+$(this).attr('id')+'" value="'+$(this).val()+'" />');
+            $("#spanessance_"+essnum+"").after('<input type="hidden" name="essance_'+idmodalplace+'_'+essnum+'_'+$(this).attr('id')+'" value="'+$(this).val()+'" />');
             $(this).val("");
         });
         $(".nodata").remove();
         $('.modal').modal('hide');
     }else{
-        $(".modal-body").append('<div class="alert alert-danger nodata" role="alert" style="margin-top:25px;">Заполнены не все обязательные поля!</div>');
+        $(".alert").remove();
+        $(".modal-body").append('<div class="alert alert-danger nodata" role="alert" style="margin-top:25px;"><i class="fas fa-exclamation-triangle"></i> Заполнены не все обязательные поля!</div>');
     }
-
 });
 
 
@@ -74,13 +76,14 @@ $(document).on("click", "#btnsave", function(){
     var tok = $('input[name=csrfmiddlewaretoken]').val();
     $.ajax({
       type: "POST",
-      url: "/graduates/ajaxsave/"+respondent_id[3]+"/",
+      url: "/"+respondent_id[1]+"/ajaxsave/"+respondent_id[3]+"/",
       data: {
         'form': $("#anketform").serialize(),
         csrfmiddlewaretoken: tok
       },
       success: function (res) {
-        $("#anketform").after('<div class="alert alert-light" role="alert" style="margin-top:25px;">Промежуточные данные сохранены: '+res+'</div>');
+        $(".alert").remove();
+        $("#anketform").after('<div class="alert alert-info" role="alert" style="margin-top:25px;"><i class="fas fa-info"></i> Промежуточные данные сохранены: '+res+'</div>');
       }
     });
 });
@@ -91,7 +94,8 @@ $(document).on("click", "#btnsubmit", function(){
     if( checkRequered(ii) == 0){
         $("#anketform").submit();
     }else{
-        $("#btnsubmit").after('<div class="alert alert-danger nodata" role="alert" style="margin-top:25px;">Заполнены не все обязательные поля!</div>');
+        $(".alert").remove();
+        $("#btnsubmit").after('<div class="alert alert-danger nodata" role="alert" style="margin-top:25px;"><i class="fas fa-exclamation-triangle"></i> Заполнены не все обязательные поля!</div>');
     }
 });
 
@@ -108,6 +112,14 @@ $(document).on("change", ".questionselement", function(){
         $("#"+idelement+"").css("color", "#555");
     }
 });
+
+$(document).on("change", ".mainelement", function(){
+    if( $("div").is(".nodata") ){
+        var idelement = $(this).attr("id");
+        $("#"+idelement+"").css("color", "#555");
+    }
+});
+
 
 /*$(document).on("click", "#btnsubmit", function(){
     if( $("button").is(".essance") ){

@@ -2,14 +2,25 @@
 
 {% block title %} Анкета {% endblock %}
 
-
+{% block header %}
+    {% include "header.html" %}
+{% endblock %}
 
 {% block content %}
 
 
 <div class="container">
     <p>Тип респондента: {{respondent_label}}</p>
-    <p>Для заполнения анкеты перейдите по <a href="{{strlink}}">ссылке</a></p>
+
+    <form id="sendmail" action="{% url 'graduates:sendmail' respondent_strtype respondent_id %}" method="post" >
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="respondentmail">Введите Ваш адрес электронной почты:</label>
+        <input type="email" class="form-control" id="respondentmail" name="respondentmail" aria-describedby="emailHelp" placeholder="Введите адрес электронной почты">
+        <small id="emailHelp" class="form-text text-muted">На указанный Вами адрес электронной почты будет выслана ссылка для прохождения опроса</small>
+      </div>
+      <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
 </div>
 
 

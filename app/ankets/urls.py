@@ -21,8 +21,11 @@ from django.urls import path, include
 
 urlpatterns = [
     #path('', include('main.urls')),
-    path('<str:respondent_strtype>/', include('graduates.urls')),
+    # path('graduates/', include('graduates.urls')),
+    # path('employers/', include('graduates.urls')),
+    # path('organizations/', include('graduates.urls')),
     path('results/', include('results.urls')),
     path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     path('admin/', admin.site.urls),
+    path('<str:respondent_strtype>/', include('graduates.urls')),
 ]

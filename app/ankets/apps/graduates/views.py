@@ -4,8 +4,11 @@ from django.http import HttpResponse
 from .models import Questionblock, Spravochnik, Respondent, Question, Answer, Result, Raw, Links
 import datetime
 from django.template.defaulttags import register
+import urllib
+from django.shortcuts import redirect
 from urllib.parse import unquote
 import uuid
+from django.core.mail import send_mail
 
 #Пользовательские фильтры:
 @register.filter
@@ -27,55 +30,41 @@ def unquotestrk(strk):
 
 # Create your views here.
 
-def index(request, respondent_strtype):
+def index(request,respondent_strtype):
+    #respondent_strtype = request.path.replace("/", "")
 #def index(request, respondent_type):
 #def index(request, respondent_id):
-    if respondent_strtype == 'graduates':
-        respondent_type = 1
-        respondent_label = 'Выпускник'
-    elif respondent_strtype == 'employers':
-        respondent_type = 2
-        respondent_label = 'Работодатель'
-    elif respondent_strtype == 'organizations':
-        respondent_type = 3
-        respondent_label = 'Образовательная организация'
-    else:
-        respondent_type = 0
+    try:
+        respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
+        respondent_type = int(respondent_obj.respondent_type)
+        respondent_label = str(respondent_obj.respondent_name)
+    except:
         return HttpResponse("Страница не найдена!")
-
     respondent_id = uuid.uuid4()
     #strlink = 'https://statedu.ru/'+str(respondent_strtype)+'/'+str(respondent_id)
-    strlink = '/'+str(respondent_strtype)+'/'+str(respondent_id)
-    return render(request, 'graduates/link.html', {'strlink': strlink, 'respondent_label': respondent_label})
+    #strlink = '/'+str(respondent_strtype)+'/'+str(respondent_id)
+    return render(request, 'graduates/link.html', {'respondent_id': respondent_id, 'respondent_label': respondent_label, 'respondent_strtype': respondent_strtype, 'respondent_type': respondent_type})
     #написать ссылку, отправить на е-мейл, сгенерированный линк сохранить в бд + сохранить e-mail в бд
 
 
 
 def anket(request, respondent_strtype, respondent_id):
-    #return HttpResponse(respondent_id)
-    if respondent_strtype == 'graduates':
-        respondent_type = 1
-    elif respondent_strtype == 'employers':
-        respondent_type = 2
-    elif respondent_strtype == 'organizations':
-        respondent_type = 3
-    else:
-        respondent_type = 0
+    try:
+        respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
+        respondent_type = int(respondent_obj.respondent_type)
+    except:
         return HttpResponse("Страница не найдена!")
-
-    link = Links.objects.filter(respondent_id=respondent_id)
+    try:
+        link = Links.objects.get(respondent_id=respondent_id)
+    except:
+        return HttpResponse("Страница не найдена!")
+    #print(link)
     if link:
-        if link.status != 0:
-            return render(request, "main/index.html", {'msg': "Опрос по данной ссылке уже пройден!"})
-    else:
-        linkobj = Links()
-        linkobj.respondent_id = respondent_id
-        linkobj.status = 0
-        linkobj.respondent_type_id = respondent_type
-        print("df")
-        #linkobj.save()
-    return HttpResponse(respondent_id)
-
+        linkget = Links.objects.get(respondent_id=respondent_id)
+        if linkget.status != 0:
+            return render(request, "graduates/message.html", {'msg': "Опрос по данной ссылке уже пройден!",
+                                                              "respondent_type": respondent_type})
+    #return HttpResponse(respondent_id)
     spravochnik = Spravochnik.objects.order_by('spravochnik_kod')
     raw = Raw.objects.filter(respid=respondent_id)
     nraw = dict()
@@ -102,20 +91,56 @@ def anket(request, respondent_strtype, respondent_id):
                 questionraw[int(sub[1])] = unquote(rval[1])
 
     try:
-        questionblock = Questionblock.objects.filter(respondent_type_id=link.respondent_type_id).order_by('id')
-        questions = Question.objects.filter(respondent_type_id=link.respondent_type_id).order_by('question_number')
-        answers = Answer.objects.filter(respondent_type_id=link.respondent_type_id)
+        questionblock = Questionblock.objects.filter(respondent_type_id=respondent_type).order_by('id')
+        questions = Question.objects.filter(respondent_type_id=respondent_type).order_by('question_number')
+        answers = Answer.objects.filter(respondent_type_id=respondent_type)
     except:
         raise Http404("Страница не найдена!")
     if len(questions) > 0 and len(answers) > 0:
-        return render(request, 'graduates/form.html', {'questionblock': questionblock, 'questions': questions, 'answers': answers, 'spravochnik': spravochnik, 'respondent_type': link.respondent_type_id, 'respondent_id': link.respondent_id, 'raw': nraw, 'essanceraw': essanceraw, 'buttons': buttons, 'questionraw': questionraw})
+        return render(request, 'graduates/form.html', {'questionblock': questionblock, 'questions': questions, 'answers': answers, 'spravochnik': spravochnik, 'respondent_type': respondent_type, 'respondent_id': respondent_id, 'raw': nraw, 'essanceraw': essanceraw, 'buttons': buttons, 'questionraw': questionraw, 'respondent_strtype': respondent_strtype})
     else:
         return HttpResponse("Страница не найдена!")
 
 
+def sendmail(request, respondent_strtype, respondent_id):
+    #return HttpResponse(request.path)
+    mailaddr = str(request.POST.get('respondentmail'))
+    msg = 'Ваша ссылка для доступа к анкете: ' + 'https://statedu.ru/'+str(respondent_strtype)+'/anket/'+str(respondent_id)
+    sm = send_mail('Ваша ссылка на опрос о трудоустройстве выпускников', msg, 'support@statedu.ru', [mailaddr],
+              fail_silently=False)
+    try:
+        respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
+        respondent_type = int(respondent_obj.respondent_type)
+    except:
+        return HttpResponse("Страница не найдена!")
+    if sm:
+        linkobj = Links()
+        linkobj.respondent_id = respondent_id
+        linkobj.status = 0
+        linkobj.mail = mailaddr
+        linkobj.respondent_type_id = respondent_type
+        linkobj.save()
+        #return HttpResponse('Сообщение отправлено')
+        return redirect('/'+respondent_strtype+'/mailcomplete/')
+    else:
+        return HttpResponse('Ошибка при отправке сообщения')
+    # try:
+    #     send_mail('Ваша ссылка на опрос о трудоустройстве выпускников', msg, 'news@miccedu.ru', [mailaddr], fail_silently=False)
+    # except:
+    #     return HttpResponse('Ошибка при отправке сообщения')
+
+
+def mailcomplete(request, respondent_strtype):
+    try:
+        respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
+        respondent_type = int(respondent_obj.respondent_type)
+    except:
+        return HttpResponse("Страница не найдена!")
+    return render(request, "graduates/message.html", {'msg': "На Ваш адрес электронной почты выслана ссылка для прохождения опроса.", "respondent_type": respondent_type})
+
 
 #def saveanket(request, respondent_type):
-def saveanket(request, respondent_id):
+def saveanket(request, respondent_strtype, respondent_id):
     # x = 1
     # while x <= 4500:
     #     link = Links()
@@ -130,7 +155,7 @@ def saveanket(request, respondent_id):
     try:
         link = Links.objects.get(respondent_id=respondent_id)
         if link.status != 0:
-            return render(request, "main/index.html", {'msg': "Опрос по данной ссылке уже пройден!"})
+            return render(request, "graduates/message.html", {'msg': "Опрос по данной ссылке уже пройден!", "respondent_type": int(link.respondent_type_id)})
     except:
         return HttpResponse("Страница не найдена!")
 
@@ -169,9 +194,12 @@ def saveanket(request, respondent_id):
         link.save()
         #return HttpResponseRedirect("/", {'msg': msg} )
         #return HttpResponse('Спасибо!')
-        return render(request, "main/index.html", {'msg': msg})
+        #return render(request, "main/index.html", {'msg': msg})
+        return render(request, "graduates/message.html",
+                      {'msg': msg, "respondent_type": int(link.respondent_type_id)})
 
-def ajaxsave(request, respondent_id):
+
+def ajaxsave(request, respondent_id, respondent_strtype):
         #return HttpResponse(json.dumps(request.POST))
         #return HttpResponse(request.POST['form'])
         raw = Raw()

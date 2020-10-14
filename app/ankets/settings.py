@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'main.apps.MainConfig',
     'graduates.apps.GraduatesConfig',
+    'results.apps.ResultsConfig',
     'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -141,3 +142,27 @@ STATICFILES_DIRS = [
 ]
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+
+# if DEBUG:
+#     EMAIL_BACKEND = 'django_dkim.backends.console.EmailBackend'
+# else:
+#     EMAIL_BACKEND = 'django_dkim.backends.smtp.EmailBackend'
+
+# EMAIL_BACKEND = 'django_dkim.backends.smtp.EmailBackend'
+# DKIM_SELECTOR = 'selector'
+# DKIM_DOMAIN = 'yandex.ru'
+# DKIM_PRIVATE_KEY = ''
+
+
+
+# if DEBUG:
+#     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# else:
+#     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+EMAIL_USE_TLS = True

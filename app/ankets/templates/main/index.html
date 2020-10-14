@@ -5,7 +5,9 @@
 
 {% block content %}
 
-{% include "header.html" %}
+{% block header %}
+    {% include "header.html" %}
+{% endblock %}
 
 <div class="container">
     {% if msg %}

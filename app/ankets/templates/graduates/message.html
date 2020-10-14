@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %} Отправка сообщения {% endblock %}
+
+
+{% block header %}
+    {% include "header.html" %}
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+    {% if msg %}
+        <div class="alert" role="alert">{{msg}}</div>
+    {% endif %}
+</div>
+
+
+{% endblock %}
