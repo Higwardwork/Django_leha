@@ -25,7 +25,8 @@ function checkRequered(classfor) {
     $(".nodata").remove();
     classfor.each(function(i,elem) {
     //console.log("id: "+$(this).attr("id")+" val: "+$(this).val());
-        if( $(this).attr("req") == 1 && ( $(this).val() == 0 || $(this).val() == '' || $(this).val() == null)){
+        //if( $(this).attr("req") == 1 && ( $(this).val() == 0 || $(this).val() == '' || $(this).val() == null)){
+        if( $(this).attr("req") == 1 && ( $(this).val() == '' || $(this).val() == null)){
             var idelement = $(this).attr("id");
             nosubmit = 1
             if( $("#"+idelement+"_chosen") ){
