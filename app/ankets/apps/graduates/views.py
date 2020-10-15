@@ -31,19 +31,19 @@ def unquotestrk(strk):
 # Create your views here.
 
 def index(request,respondent_strtype):
-    #respondent_strtype = request.path.replace("/", "")
+#respondent_strtype = request.path.replace("/", "")
 #def index(request, respondent_type):
 #def index(request, respondent_id):
     try:
         respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
         respondent_type = int(respondent_obj.respondent_type)
-        respondent_label = str(respondent_obj.respondent_name)
+        #respondent_label = str(respondent_obj.respondent_name)
     except:
         return HttpResponse("Страница не найдена!")
     respondent_id = uuid.uuid4()
     #strlink = 'https://statedu.ru/'+str(respondent_strtype)+'/'+str(respondent_id)
     #strlink = '/'+str(respondent_strtype)+'/'+str(respondent_id)
-    return render(request, 'graduates/link.html', {'respondent_id': respondent_id, 'respondent_label': respondent_label, 'respondent_strtype': respondent_strtype, 'respondent_type': respondent_type})
+    return render(request, 'graduates/link.html', {'respondent_id': respondent_id, 'respondent_strtype': respondent_strtype, 'respondent_type': respondent_type})
     #написать ссылку, отправить на е-мейл, сгенерированный линк сохранить в бд + сохранить e-mail в бд
 
 

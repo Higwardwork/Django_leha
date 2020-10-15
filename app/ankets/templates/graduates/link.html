@@ -8,10 +8,13 @@
 
 {% block content %}
 
+{% load static %}
+
 
 <div class="container">
-    <p>Тип респондента: {{respondent_label}}</p>
-
+        {% with 'instructions/'|add:respondent_strtype|add:'.docx' as respondent_strtype %}
+            <p>Пожалуйста, ознакомьтесь с <a href="{% static respondent_strtype %}">инструкцией</a> по заполнению анкеты.</p>
+        {% endwith %}
     <form id="sendmail" action="{% url 'graduates:sendmail' respondent_strtype respondent_id %}" method="post" >
       {% csrf_token %}
       <div class="form-group">
@@ -19,6 +22,7 @@
         <input type="email" class="form-control" id="respondentmail" name="respondentmail" aria-describedby="emailHelp" placeholder="Введите адрес электронной почты">
         <small id="emailHelp" class="form-text text-muted">На указанный Вами адрес электронной почты будет выслана ссылка для прохождения опроса</small>
       </div>
+
       <button type="submit" class="btn btn-primary">Отправить</button>
     </form>
 </div>
