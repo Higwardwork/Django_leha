@@ -25,6 +25,7 @@ urlpatterns = [
     # path('employers/', include('graduates.urls')),
     # path('organizations/', include('graduates.urls')),
     path('results/', include('results.urls')),
+    path('captcha/', include('captcha.urls')),
     path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     path('admin/', admin.site.urls),
     path('<str:respondent_strtype>/', include('graduates.urls')),
