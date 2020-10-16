@@ -121,7 +121,7 @@ def sendmail(request, respondent_strtype, respondent_id):
             respondent_id = uuid.uuid4()
             mailaddr = str(request.POST.get('respondentmail'))
             #msg = 'Ваша ссылка для доступа к анкете: ' + 'https://statedu.ru/' + str(
-            msg = 'Ваша ссылка для доступа к анкете: ' + 'http://www.statedu.ru/' + str(
+            msg = 'Ваша ссылка для доступа к анкете: ' + 'https://statedu.ru/' + str(
                 respondent_strtype) + '/anket/' + str(respondent_id)
             sm = send_mail('Ваша ссылка на опрос о трудоустройстве выпускников', msg, 'support@statedu.ru', [mailaddr],
                            fail_silently=False)
