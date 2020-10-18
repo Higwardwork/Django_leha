@@ -69,10 +69,10 @@
                                         {% if s.spravochnik_number == a.answer_spravochnik %}
                                              {% if questionraw|length > 0 and q.id in questionraw %}
                                                 {% if s.spravochnik_kod == questionraw|get_item:q.id %}
-                                                    <option selected value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
+                                                    <option selected title="{{s.spravochnik_name}}" value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
                                                 {% endif %}
                                             {% endif %}
-                                            <option value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
+                                            <option title="{{s.spravochnik_name}}" value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
                                         {% endif %}
                                     {% endfor %}
                                 {% endif %}

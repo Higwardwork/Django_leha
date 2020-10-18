@@ -21,7 +21,7 @@
                                             {% if a.question_number_id == q.id %}
                                                 {% for s in spravochnik %}
                                                     {% if s.spravochnik_number == a.answer_spravochnik %}
-                                                        <option value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
+                                                        <option title="{{s.spravochnik_name}}" value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
                                                     {% endif %}
                                                 {% endfor %}
                                             {% endif %}

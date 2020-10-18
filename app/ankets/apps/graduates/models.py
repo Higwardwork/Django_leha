@@ -45,6 +45,7 @@ class Question(models.Model):
     field_mask = models.TextField("маска ввода", null=True)
     field_placeholder = models.TextField("подпись к полю", null=True)
     field_required = models.IntegerField("обязательность заполнения (0-нет, 1-да)", null=True)
+    maxlength = models.IntegerField("максимальная длина поля", null=True)
     def __str__(self):
         return self.question_name
     class Meta:

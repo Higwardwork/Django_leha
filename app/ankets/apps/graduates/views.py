@@ -71,7 +71,8 @@ def anket(request, respondent_strtype, respondent_id):
             return render(request, "graduates/message.html", {'msg': "Опрос по данной ссылке уже пройден!",
                                                               "respondent_type": respondent_type})
     #return HttpResponse(respondent_id)
-    spravochnik = Spravochnik.objects.order_by('spravochnik_kod')
+    #spravochnik = Spravochnik.objects.order_by('spravochnik_kod')
+    spravochnik = Spravochnik.objects.order_by('id')
     raw = Raw.objects.filter(respid=respondent_id)
     nraw = dict()
     essanceraw = dict()
