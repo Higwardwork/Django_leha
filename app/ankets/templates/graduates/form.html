@@ -67,12 +67,7 @@
                                 {% if a.question_number_id == q.id %}
                                     {% for s in spravochnik %}
                                         {% if s.spravochnik_number == a.answer_spravochnik %}
-                                             {% if questionraw|length > 0 and q.id in questionraw %}
-                                                {% if s.spravochnik_kod == questionraw|get_item:q.id %}
-                                                    <option selected title="{{s.spravochnik_name}}" value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
-                                                {% endif %}
-                                            {% endif %}
-                                            <option title="{{s.spravochnik_name}}" value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
+                                            <option {% if questionraw|length > 0 and q.id in questionraw and s.spravochnik_kod == questionraw|get_item:q.id %}selected{% endif %} title="{{s.spravochnik_name}}" value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
                                         {% endif %}
                                     {% endfor %}
                                 {% endif %}

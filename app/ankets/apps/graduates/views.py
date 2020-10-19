@@ -32,11 +32,14 @@ def unquotestrk(strk):
     return unquote(strk)
 
 
-class NameForm(forms.Form):
+class EmployersOrganizationsForm(forms.Form):
     respondentmail = forms.CharField(label='', max_length=100, widget=forms.TextInput(attrs={'class': "form-control", 'type': "email", 'id': "respondentmail"}))
-    #captcha = CaptchaField(label='Введите символы, изображённые на картинке')
     captcha = CaptchaField(label='')
 
+class GraduatesForm(forms.Form):
+    region = forms.ModelChoiceField(queryset=Spravochnik.objects.filter(spravochnik_number=3).order_by('id'), to_field_name="spravochnik_kod", empty_label='Выберите субъект РФ', label='Выберите регион, где Вы обучались', widget=forms.Select(attrs={'class': "form-control chosen-select"}))
+    respondentmail = forms.CharField(label='Введите Ваш адрес электронной почты', max_length=100, widget=forms.TextInput(attrs={'class': "form-control", 'type': "email", 'id': "respondentmail"}))
+    captcha = CaptchaField(label='')
 
 def index(request, respondent_strtype):
     try:
@@ -45,12 +48,15 @@ def index(request, respondent_strtype):
     except:
         return HttpResponse("Страница не найдена!")
     respondent_id = 'badcapcha'
-    if request.method == 'POST':
-        form = NameForm(request.POST)
-        #if form.is_valid():
-             #return HttpResponse('thanks')
+    # if request.method == 'POST':
+    #     form = EmployersOrganizationsForm(request.POST)
+    #     #if form.is_valid():
+    #          #return HttpResponse('thanks')
+    # else:
+    if respondent_type == 111: #Планировалось для выпускников сделать свою форму с выбором субъекта, чтобы потом ограничить кол-во ОО в списке выбора, но непонятно, что делать, если он учился в филиале
+        form = GraduatesForm()
     else:
-        form = NameForm()
+        form = EmployersOrganizationsForm()
     return render(request, 'graduates/link.html', {'form': form, 'respondent_id': respondent_id, 'respondent_strtype': respondent_strtype, 'respondent_type': respondent_type})
     #return render(request, 'graduates/link.html', {'respondent_id': respondent_id, 'respondent_strtype': respondent_strtype, 'respondent_type': respondent_type})
 
@@ -112,12 +118,15 @@ def anket(request, respondent_strtype, respondent_id):
 def sendmail(request, respondent_strtype, respondent_id):
     #return HttpResponse(request.path)
     if request.method == 'POST':
-        form = NameForm(request.POST)
         try:
             respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
             respondent_type = int(respondent_obj.respondent_type)
         except:
             return HttpResponse("Страница не найдена!")
+        if respondent_type == 111:
+            form = GraduatesForm(request.POST)
+        else:
+            form = EmployersOrganizationsForm(request.POST)
         if form.is_valid():
             respondent_id = uuid.uuid4()
             mailaddr = str(request.POST.get('respondentmail'))

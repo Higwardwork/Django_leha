@@ -28,7 +28,7 @@
 <form action="{% url 'graduates:sendmail' respondent_strtype respondent_id %}" method="post">
     {% csrf_token %}
     <div class="form-group">
-    <label for="respondentmail">Введите Ваш адрес электронной почты:</label>
+    <!--<label for="respondentmail">Введите Ваш адрес электронной почты:</label>-->
     {{ form.as_p }}
         <button class="btn btn-light btn-sm captcha-refresh"><i class="fas fa-sync-alt" style="cursor:pointer;"></i> Обновить картинку</button>
     <small id="emailHelp" class="form-text text-muted">На указанный Вами адрес электронной почты будет выслана ссылка для прохождения опроса</small>
@@ -58,6 +58,12 @@ $(document).ready(function() {
 
 </script>
 
-
+<!--{ load static }-->
+<!--<script type="text/javascript" src="{% static 'chosen/chosen.jquery.min.js' %}"></script>-->
+<!--<link href="{% static 'chosen/chosen.css' %}" rel="stylesheet">-->
+<!--<link href="{% static 'chosen/chosen-bootstrap.css' %}" rel="stylesheet">-->
+<!--<script>-->
+    <!--$(".chosen-select").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});-->
+<!--</script>-->
 
 {% endblock %}
