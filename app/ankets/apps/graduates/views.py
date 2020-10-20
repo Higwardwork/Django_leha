@@ -33,7 +33,7 @@ def unquotestrk(strk):
 
 
 class EmployersOrganizationsForm(forms.Form):
-    respondentmail = forms.CharField(label='', max_length=100, widget=forms.TextInput(attrs={'class': "form-control", 'type': "email", 'id': "respondentmail"}))
+    respondentmail = forms.CharField(label='Введите Ваш адрес электронной почты', max_length=100, widget=forms.TextInput(attrs={'class': "form-control", 'type': "email", 'id': "respondentmail"}))
     captcha = CaptchaField(label='')
 
 class GraduatesForm(forms.Form):

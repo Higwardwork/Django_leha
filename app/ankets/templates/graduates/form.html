@@ -86,9 +86,9 @@
 
                         {% elif q.question_type == 5 %}
                             {% if questionraw|length > 0 and q.id in questionraw %}
-                                <input class="{{q.field_mask}} form-control mainelement" type="{% if q.field_type %}{{q.field_type}}{% endif %}" value="{{questionraw|get_item:q.id}}" placeholder="{{q.field_placeholder}}" id="freequestion_{{q.id}}"  name="freequestion_{{q.id}}"  req="{{q.field_required}}">
+                                <input class="{{q.field_mask}} form-control mainelement" type="{% if q.field_type %}{{q.field_type}}{% endif %}" {% if q.field_type == "number" %}min="0" max="{{q.maxlength}}"{% endif %} value="{{questionraw|get_item:q.id}}" placeholder="{{q.field_placeholder}}" id="freequestion_{{q.id}}"  name="freequestion_{{q.id}}"  req="{{q.field_required}}">
                             {% else %}
-                                <input class="{{q.field_mask}} form-control mainelement" type="{% if q.field_type %}{{q.field_type}}{% endif %}" placeholder="{{q.field_placeholder}}" id="freequestion_{{q.id}}"  name="freequestion_{{q.id}}" req="{{q.field_required}}">
+                                <input class="{{q.field_mask}} form-control mainelement" type="{% if q.field_type %}{{q.field_type}}{% endif %}" {% if q.field_type == "number" %}min="0" max="{{q.maxlength}}"{% endif %} placeholder="{{q.field_placeholder}}" id="freequestion_{{q.id}}"  name="freequestion_{{q.id}}" req="{{q.field_required}}">
                             {% endif %}
                        {% endif %}
                 <hr/>

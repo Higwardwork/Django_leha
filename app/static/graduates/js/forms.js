@@ -17,6 +17,87 @@ $('.mask-phone').mask('+7 (999) 999-99-99');
 $('.mask-date').mask('99.99.9999');
 
 
+function checkLocalInterconnection(){
+    if( $("#essencequestion_13").val() == "2" && $("#essencequestion_14").val() == "2" && $("#essencequestion_15").val() == "2" ){
+        $("#essencequestion_18").attr("req","1");
+    }else{
+        $("#essencequestion_18").attr("req","0");
+    }
+
+    if( $("#essencequestion_18").val() == "1"){
+        $("#essencequestion_19").attr("req","1");
+        $("#freequestion_109").attr("req","1");
+        $("#essencequestion_22").attr("req","1");
+        $("#essencequestion_23").attr("req","1");
+        $("#essencequestion_24").attr("req","1");
+        $("#essencequestion_25").attr("req","1");
+    }else{
+        $("#essencequestion_19").attr("req","0");
+        $("#freequestion_109").attr("req","0");
+        $("#essencequestion_22").attr("req","0");
+        $("#essencequestion_23").attr("req","0");
+        $("#essencequestion_24").attr("req","0");
+        $("#essencequestion_25").attr("req","0");
+    }
+
+    if( $("#freequestion_48").val() == ""){
+        $("#freequestion_49").attr("req","1");
+    }else{
+        $("#freequestion_49").attr("req","0");
+    }
+
+    if( $("#freequestion_49").val() == ""){
+        $("#freequestion_48").attr("req","1");
+    }else{
+        $("#freequestion_48").attr("req","0");
+    }
+
+    if( $("#freequestion_59").val() == ""){
+        $("#freequestion_107").attr("req","1");
+    }else{
+        $("#freequestion_107").attr("req","0");
+    }
+
+    if( $("#freequestion_107").val() == ""){
+        $("#freequestion_59").attr("req","1");
+    }else{
+        $("#freequestion_59").attr("req","0");
+    }
+//    if( $("#essencequestion_13").val() == "1" || $("#essencequestion_14").val() == "1" || $("#essencequestion_15").val() == "1" ){
+//        if( $("#essencequestion_18").val() == "0" && $("#essencequestion_19").val() == "0" && $("#freequestion_109").val() == "" && $("#essencequestion_22").val() == "0" && $("#essencequestion_23").val() == "0" && $("#essencequestion_24").val() == "0" && $("#essencequestion_25").val() == "0" && $("#freequestion_27").val() == "" ){
+//            $(".novalid").remove();
+//            return 0;
+//        }else{
+//            $(".novalid").remove();
+//            $(".modal-body").append('<div class="alert alert-danger novalid" role="alert" style="margin-top:25px;"><i class="fas fa-exclamation-triangle"></i> Пункты 7-13 и 15 не заполняются, если Вы ответили "Да" на один из вопросов 4-6!</div>');
+//        }
+//    }
+}
+
+function checkLocalOne(element){
+    if( element.attr("id") == "essencequestion_13" || element.attr("id") == "essencequestion_14" || element.attr("id") == "essencequestion_15" ){
+            $("#essencequestion_18").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+            $("#essencequestion_19").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+            $("#freequestion_109").removeAttr('disabled');
+            $("#essencequestion_22").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+            $("#essencequestion_23").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+            $("#essencequestion_24").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+            $("#essencequestion_25").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+            $("#freequestion_27").removeAttr('disabled');
+        if( $("#essencequestion_13").val() == "1" || $("#essencequestion_14").val() == "1" || $("#essencequestion_15").val() == "1" ){
+            $("#essencequestion_18").chosen("destroy").attr('disabled', 'disabled').val("");
+            $("#essencequestion_19").chosen("destroy").attr('disabled', 'disabled').val("");
+            $("#freequestion_109").attr('disabled', 'disabled');
+            $("#essencequestion_22").chosen("destroy").attr('disabled', 'disabled').val("");
+            $("#essencequestion_23").chosen("destroy").attr('disabled', 'disabled').val("");
+            $("#essencequestion_24").chosen("destroy").attr('disabled', 'disabled').val("");
+            $("#essencequestion_25").chosen("destroy").attr('disabled', 'disabled').val("");
+            $("#freequestion_27").attr('disabled', 'disabled');
+        }
+    }
+}
+
+
 function checkRequered(classfor) {
     var nosubmit = 0
     $("span").css("color", "#555");
@@ -41,10 +122,29 @@ function checkRequered(classfor) {
     return nosubmit;
 }
 
+function checkValue(element){
+    $("#novalidvalue_"+element.attr("id")).remove();
+    element.css("color", "#555");
+    if( element.attr("type") == "number" ){
+        if( (Number(element.attr("max")) < Number(element.val())) || (Number(element.attr("min")) > Number(element.val())) ){
+            $(element).after('<small id="novalidvalue_'+element.attr("id")+'" class="text-danger">Введите значение в диапазоне от '+element.attr("min")+' до '+element.attr("max")+'</small>');
+            $(element).css("color", "red");
+        }
+    }
+    if( element.attr("type") == "email" ){
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if(re.test(element.val().toLowerCase()) == false){
+            $(element).after('<small id="novalidvalue_'+element.attr("id")+'" class="text-danger">Введите корректный адрес электронной почты</small>');
+            $(element).css("color", "red");
+        }
+    }
+}
+
 $(document).on("click", "#btnAddEssence", function(){
+    checkLocalInterconnection();
     var idmodalplace = $(this).attr("block_num");
     ee = $("#addEssenseModal_"+idmodalplace).find(".questionselement");
-    if( checkRequered(ee) == 0){
+    if( checkRequered(ee) == 0 ){
         var el = $('.modal-body[block_num="'+idmodalplace+'"]').children(".questionselement");
         var essnum;
         //if( $("button").is(".essance") ){
@@ -61,6 +161,7 @@ $(document).on("click", "#btnAddEssence", function(){
         el.each(function( index ) {
             $("#spanessance_"+essnum+"").after('<input type="hidden" name="essance_'+idmodalplace+'_'+essnum+'_'+$(this).attr('id')+'" value="'+$(this).val()+'" />');
             $(this).val("");
+            $(this).removeAttr('disabled');
         });
         $(".nodata").remove();
         $('.modal').modal('hide');
@@ -107,6 +208,7 @@ $(document).on("change", ".chosen-select", function(){
 });
 
 $(document).on("change", ".questionselement", function(){
+    checkLocalOne($(this));
     if( $("div").is(".nodata") ){
         var idelement = $(this).attr("id");
         $("#"+idelement+"").css("color", "#555");
@@ -114,6 +216,7 @@ $(document).on("change", ".questionselement", function(){
 });
 
 $(document).on("change", ".mainelement", function(){
+    checkValue($(this));
     if( $("div").is(".nodata") ){
         var idelement = $(this).attr("id");
         $("#"+idelement+"").css("color", "#555");
