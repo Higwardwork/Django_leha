@@ -1,7 +1,7 @@
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Questionblock, Spravochnik, Respondent, Question, Answer, Result, Raw, Links, Okpdtr
+from .models import Questionblock, Spravochnik, Respondent, Question, Answer, Result, Raw, Links, Okpdtr, Okz
 import datetime
 from django.template.defaulttags import register
 import urllib
@@ -234,6 +234,12 @@ def ajaxsave(request, respondent_id, respondent_strtype):
 
 def ajaxgetprofession(request, respondent_id, respondent_strtype):
     userval = str(request.POST['userval'])
-    qs = Okpdtr.objects.filter(name_okpdtr__contains = userval).order_by('kod_okpdtr')
+    modela = str(request.POST['modela'])
+    if modela == 'okpdtr':
+        qs = Okpdtr.objects.filter(name_okpdtr__contains=userval).order_by('kod_okpdtr')
+    elif modela == 'okz':
+        qs = Okz.objects.filter(name_okpdtr__contains=userval).order_by('kod_okpdtr')
+    else:
+        return HttpResponse('Ошибка')
     qs_json = serializers.serialize('json', qs)
     return HttpResponse(qs_json, content_type='application/json')

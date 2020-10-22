@@ -41,34 +41,11 @@ function checkLocalInterconnection(){
         $("#essencequestion_24").attr("req","0");
         $("#essencequestion_25").attr("req","0");
     }
-
-    if( $("#freequestion_48").val() == ""){
-        $("#freequestion_49").attr("req","1");
-    }else{
-        $("#freequestion_49").attr("req","0");
-    }
-
-    if( $("#freequestion_49").val() == ""){
-        $("#freequestion_48").attr("req","1");
-    }else{
-        $("#freequestion_48").attr("req","0");
-    }
-
-    if( $("#freequestion_59").val() == ""){
-        $("#freequestion_107").attr("req","1");
-    }else{
-        $("#freequestion_107").attr("req","0");
-    }
-
-    if( $("#freequestion_107").val() == ""){
-        $("#freequestion_59").attr("req","1");
-    }else{
-        $("#freequestion_59").attr("req","0");
-    }
 }
 
 
 var timer;
+   //$(document).on("keyup", '#'+$(".ajax").attr("id")+'_chosen .chosen-search-input', function(){
    $(document).on("keyup", '.chosen-search-input', function(){
     var parentdiv = $(this).parents('div.chosen-container').attr('id');
     var idselect = parentdiv.split('_');
@@ -76,7 +53,9 @@ var timer;
        //var usertext = $('#essencequestion_48_chosen').find('.no-results').find("span").text();
        //var usertext = $('#essencequestion_48_chosen .no-results span').text();
        //var usertext = $('#'+$(".ajax").attr("id")+'_chosen .chosen-search-input').val();
+    if($('#'+idselect).hasClass("ajax")){
        var usertext = $(this).val();
+       var modela = $('#'+idselect).attr("modela");
        window.clearTimeout(timer);
        $('li.no-results').empty();
        if (usertext.length > 3) {
@@ -87,6 +66,7 @@ var timer;
                   url: "/"+respondent_id[1]+"/ajaxgetprofession/"+respondent_id[3]+"/",
                   data: {
                     'userval': usertext,
+                    'modela': modela,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                   },
                   beforeSend: function(){
@@ -109,6 +89,7 @@ var timer;
                 });
            }, 1000);
        }
+    }
    });
 
 
@@ -134,6 +115,37 @@ function checkLocalOne(element){
             $("#freequestion_27").attr('disabled', 'disabled');
         }
     }
+
+    if( $("#essencequestion_48").val() !== null && $("#essencequestion_48").val() != 0){
+        $("#essencequestion_49").attr("req","0");
+        $("#essencequestion_49").chosen("destroy").attr('disabled', 'disabled').val("");
+    }else{
+        $("#essencequestion_49").removeAttr('disabled').chosen({no_results_text: "Не найдено: "});
+        $("#essencequestion_49").attr("req","1");
+    }
+    if( $("#essencequestion_49").val() !== null && $("#essencequestion_49").val() != 0){
+        $("#essencequestion_48").attr("req","0");
+        $("#essencequestion_48").chosen("destroy").attr('disabled', 'disabled').val("");
+    }else{
+        $("#essencequestion_48").removeAttr('disabled').chosen({no_results_text: "Не найдено: "});
+        $("#essencequestion_48").attr("req","1");
+    }
+    if( $("#essencequestion_59").val() !== null && $("#essencequestion_59").val() != 0){
+        $("#essencequestion_107").attr("req","0");
+        $("#essencequestion_107").chosen("destroy").attr('disabled', 'disabled').val("");
+    }else{
+        $("#essencequestion_107").removeAttr('disabled').chosen({no_results_text: "Не найдено: "});
+        $("#essencequestion_107").attr("req","1");
+    }
+    if( $("#essencequestion_107").val() !== null && $("#essencequestion_107").val() != 0){
+        $("#essencequestion_59").attr("req","0");
+        $("#essencequestion_59").chosen("destroy").attr('disabled', 'disabled').val("");
+    }else{
+        $("#essencequestion_59").removeAttr('disabled').chosen({no_results_text: "Не найдено: "});
+        $("#essencequestion_59").attr("req","1");
+    }
+
+
 }
 
 
@@ -178,6 +190,17 @@ function checkValue(element){
         }
     }
 }
+
+
+$(document).on("click", ".valcleaner", function(){
+    //console.log($(this).attr("id"));
+    $("#essencequestion_"+$(this).attr("id")).val(0);
+    //$("ul.chosen-results").empty();
+    //$("option.fop").remove();
+    $("#essencequestion_"+$(this).attr("id")).trigger("chosen:updated");
+    checkLocalOne($(this));
+});
+
 
 $(document).on("click", "#btnAddEssence", function(){
     checkLocalInterconnection();

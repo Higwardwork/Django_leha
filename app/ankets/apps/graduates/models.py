@@ -21,6 +21,12 @@ class Okpdtr(models.Model):
 def __str__(self):
     return self.name_okpdtr
 
+class Okz(models.Model):
+    kod_okpdtr = models.IntegerField("код ОКЗ")
+    name_okpdtr = models.CharField("Наименование по ОКЗ", max_length=255)
+def __str__(self):
+    return self.name_okpdtr
+
 class Respondent(models.Model):
     respondent_type = models.IntegerField("тип респондента")
     respondent_name = models.CharField("название типа респондента", max_length=100)

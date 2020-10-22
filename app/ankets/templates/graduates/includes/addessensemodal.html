@@ -15,7 +15,8 @@
                               {% endif %}
                               <label for="essencequestion_{{q.id}}">{{q.question_number}}. {{q.question_name}}</label>
                                   {% if q.question_type == 2 %} <!--#ответы из справочника -->
-                                    <select data-placeholder="{{q.field_placeholder}}" name="essencequestion" id="essencequestion_{{q.id}}" class="form-control chosen-select questionselement {% if q.field_type == "ajax" %}ajax{% endif %}" req="{{q.field_required}}">
+                                    {% if q.field_type == "ajax" %}<i id="{{q.id}}" title="Очистить значение" class="fas fa-times valcleaner" style="cursor:pointer;color:red;"></i>{% endif %}
+                                    <select data-placeholder="{{q.field_placeholder}}" name="essencequestion" id="essencequestion_{{q.id}}" class="form-control chosen-select questionselement {% if q.field_type == "ajax" %}ajax{% endif %}" {% if q.field_type == "ajax" %}modela="{{q.field_mask}}"{% endif %} req="{{q.field_required}}">
                                         <option value="0"></option>
                                         {% for a in answers %}
                                             {% if a.question_number_id == q.id %}
