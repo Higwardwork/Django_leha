@@ -1,7 +1,7 @@
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Questionblock, Spravochnik, Respondent, Question, Answer, Result, Raw, Links
+from .models import Questionblock, Spravochnik, Respondent, Question, Answer, Result, Raw, Links, Okpdtr
 import datetime
 from django.template.defaulttags import register
 import urllib
@@ -11,6 +11,7 @@ import uuid
 from django.core.mail import send_mail
 from django import forms
 from captcha.fields import CaptchaField
+from django.core import serializers
 
 
 #Пользовательские фильтры:
@@ -229,3 +230,10 @@ def ajaxsave(request, respondent_id, respondent_strtype):
         except:
             msg = 'ошибка'
         return HttpResponse(msg)
+
+
+def ajaxgetprofession(request, respondent_id, respondent_strtype):
+    userval = str(request.POST['userval'])
+    qs = Okpdtr.objects.filter(name_okpdtr__contains = userval).order_by('kod_okpdtr')
+    qs_json = serializers.serialize('json', qs)
+    return HttpResponse(qs_json, content_type='application/json')

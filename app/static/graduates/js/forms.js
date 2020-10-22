@@ -6,6 +6,8 @@ $(".modal-body").children(".chosen-container").css("display","none");
 
 $('.modal').on('shown.bs.modal', function () {
      $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+     //для 48 вопроса:
+     $('.ajax').chosen("destroy").chosen({no_results_text: "Не найдено: "});
      $(".modal-body").children(".nodata").remove();
      $("span").css("color", "#555");
      $(".questionselement").css("color", "#555");
@@ -63,16 +65,53 @@ function checkLocalInterconnection(){
     }else{
         $("#freequestion_59").attr("req","0");
     }
-//    if( $("#essencequestion_13").val() == "1" || $("#essencequestion_14").val() == "1" || $("#essencequestion_15").val() == "1" ){
-//        if( $("#essencequestion_18").val() == "0" && $("#essencequestion_19").val() == "0" && $("#freequestion_109").val() == "" && $("#essencequestion_22").val() == "0" && $("#essencequestion_23").val() == "0" && $("#essencequestion_24").val() == "0" && $("#essencequestion_25").val() == "0" && $("#freequestion_27").val() == "" ){
-//            $(".novalid").remove();
-//            return 0;
-//        }else{
-//            $(".novalid").remove();
-//            $(".modal-body").append('<div class="alert alert-danger novalid" role="alert" style="margin-top:25px;"><i class="fas fa-exclamation-triangle"></i> Пункты 7-13 и 15 не заполняются, если Вы ответили "Да" на один из вопросов 4-6!</div>');
-//        }
-//    }
 }
+
+
+var timer;
+   $(document).on("keyup", '.chosen-search-input', function(){
+    var parentdiv = $(this).parents('div.chosen-container').attr('id');
+    var idselect = parentdiv.split('_');
+    idselect = idselect[0]+"_"+idselect[1];
+       //var usertext = $('#essencequestion_48_chosen').find('.no-results').find("span").text();
+       //var usertext = $('#essencequestion_48_chosen .no-results span').text();
+       //var usertext = $('#'+$(".ajax").attr("id")+'_chosen .chosen-search-input').val();
+       var usertext = $(this).val();
+       window.clearTimeout(timer);
+       $('li.no-results').empty();
+       if (usertext.length > 3) {
+           timer = setTimeout(function () {
+                var respondent_id = $("#anketform").attr("action").split("/");
+                $.ajax({
+                  type: "POST",
+                  url: "/"+respondent_id[1]+"/ajaxgetprofession/"+respondent_id[3]+"/",
+                  data: {
+                    'userval': usertext,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                  },
+                  beforeSend: function(){
+                  },
+                  success: function (res) {
+                    if(res.length > 0){
+                        $('option.findoptions_'+idselect).remove();
+                        $('li.no-results').empty();
+                        $.each(res, function(i, item) {
+                            var doai = i+1;
+                            $('#'+idselect+'').append('<option class="fop findoptions_'+idselect+'" title="'+item.fields.name_okpdtr+'" value="'+item.fields.kod_okpdtr+'">'+item.fields.name_okpdtr+'</option>');
+                            $('#'+parentdiv+' .chosen-results').append('<li class="active-result" data-option-array-index="'+doai+'" title="'+item.fields.name_okpdtr+'">'+item.fields.name_okpdtr+'</li>');
+                        });
+                        $('#'+idselect+'').trigger("chosen:updated");
+                        $('#'+parentdiv+' .chosen-search-input').val(usertext);
+                    }else{
+                        $('li.no-results').text("Не найдено");
+                    }
+                  }
+                });
+           }, 1000);
+       }
+   });
+
+
 
 function checkLocalOne(element){
     if( element.attr("id") == "essencequestion_13" || element.attr("id") == "essencequestion_14" || element.attr("id") == "essencequestion_15" ){
@@ -163,6 +202,8 @@ $(document).on("click", "#btnAddEssence", function(){
             $(this).val("");
             $(this).removeAttr('disabled');
         });
+        $("ul.chosen-results").empty();
+        $("option.fop").remove();
         $(".nodata").remove();
         $('.modal').modal('hide');
     }else{

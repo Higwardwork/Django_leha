@@ -15,7 +15,7 @@
                               {% endif %}
                               <label for="essencequestion_{{q.id}}">{{q.question_number}}. {{q.question_name}}</label>
                                   {% if q.question_type == 2 %} <!--#ответы из справочника -->
-                                    <select data-placeholder="{{q.field_placeholder}}" name="essencequestion" id="essencequestion_{{q.id}}" class="form-control chosen-select questionselement" req="{{q.field_required}}">
+                                    <select data-placeholder="{{q.field_placeholder}}" name="essencequestion" id="essencequestion_{{q.id}}" class="form-control chosen-select questionselement {% if q.field_type == "ajax" %}ajax{% endif %}" req="{{q.field_required}}">
                                         <option value="0"></option>
                                         {% for a in answers %}
                                             {% if a.question_number_id == q.id %}

@@ -11,6 +11,16 @@ class Spravochnik(models.Model):
         verbose_name = 'Справочник'
         verbose_name_plural = 'Справочники'
 
+class Okpdtr(models.Model):
+    global_id = models.IntegerField("global_id")
+    kod_okpdtr = models.IntegerField("код ОКПДТР")
+    kod_control = models.IntegerField("Контрольное число")
+    name_okpdtr = models.CharField("Наименование по ОКПДТР", max_length=255)
+    kod_etks = models.IntegerField("Код выпуска ЕТКС", null=True)
+    kod_okz = models.IntegerField("Код ОКЗ")
+def __str__(self):
+    return self.name_okpdtr
+
 class Respondent(models.Model):
     respondent_type = models.IntegerField("тип респондента")
     respondent_name = models.CharField("название типа респондента", max_length=100)
