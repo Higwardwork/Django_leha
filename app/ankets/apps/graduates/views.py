@@ -236,9 +236,9 @@ def ajaxgetprofession(request, respondent_id, respondent_strtype):
     userval = str(request.POST['userval'])
     modela = str(request.POST['modela'])
     if modela == 'okpdtr':
-        qs = Okpdtr.objects.filter(name_okpdtr__contains=userval).order_by('kod_okpdtr')
+        qs = Okpdtr.objects.filter(name_okpdtr__icontains=userval).order_by('kod_okpdtr')
     elif modela == 'okz':
-        qs = Okz.objects.filter(name_okpdtr__contains=userval).order_by('kod_okpdtr')
+        qs = Okz.objects.filter(name_okpdtr__icontains=userval).order_by('kod_okpdtr')
     else:
         return HttpResponse('Ошибка')
     qs_json = serializers.serialize('json', qs)

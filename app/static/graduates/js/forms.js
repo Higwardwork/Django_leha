@@ -6,7 +6,6 @@ $(".modal-body").children(".chosen-container").css("display","none");
 
 $('.modal').on('shown.bs.modal', function () {
      $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-     //для 48 вопроса:
      $('.ajax').chosen("destroy").chosen({no_results_text: "Не найдено: "});
      $(".modal-body").children(".nodata").remove();
      $("span").css("color", "#555");
@@ -193,7 +192,6 @@ function checkValue(element){
 
 
 $(document).on("click", ".valcleaner", function(){
-    //console.log($(this).attr("id"));
     $("#essencequestion_"+$(this).attr("id")).val(0);
     //$("ul.chosen-results").empty();
     //$("option.fop").remove();
