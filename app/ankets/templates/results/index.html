@@ -19,29 +19,35 @@
             <!--{{v}}-->
          <!--{% endfor %}-->
     <!--{% endfor %}-->
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Тип респондента</th>
-                <th>id ссылки</th>
-                <th>Номер вопроса</th>
-                <th>Вопрос</th>
-                <th>Сущность (работник/выпускник/профессия)</th>
-                <th>Ответ</th>
-                <th>Дата</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for r in rawresults %}
-            <tr>
-                {% for r1 in r %}
-                    <td>{{r1}}</td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <!--<table class="table">-->
+        <!--<thead>-->
+            <!--<tr>-->
+                <!--<th>Тип респондента</th>-->
+                <!--<th>id ссылки</th>-->
+                <!--<th>Номер вопроса</th>-->
+                <!--<th>Вопрос</th>-->
+                <!--<th>Сущность (работник/выпускник/профессия)</th>-->
+                <!--<th>Ответ</th>-->
+                <!--<th>Дата</th>-->
+            <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+        <!--{% for r in rawresults %}-->
+            <!--<tr>-->
+                <!--{% for r1 in r %}-->
+                    <!--<td>{{r1}}</td>-->
+                <!--{% endfor %}-->
+            <!--</tr>-->
+        <!--{% endfor %}-->
+        <!--</tbody>-->
+    <!--</table>-->
+    <!--<p>rawresults: {{rawresults}}</p>-->
+    <!--<p>raw: {{raw}}</p>-->
+    <!--<p>raw1: {{raw1.data}}</p>-->
+    <!--<p>raw2: {{raw2.data}}</p>-->
+    <!--<p>raw3: {{raw3.data}}</p>-->
 
+    <p>Распределение по субъектам Российской Федерации</p>
     <div class="chart-container" style="position: relative; height:20vh; width:40vw">
       <canvas id="myChart"></canvas>
     </div>
@@ -51,24 +57,31 @@
 
 
 <script>
+var coloR = [];
+ var dynamicColors = function() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgb(" + r + "," + g + "," + b + ", 0.4)";
+ };
+  for (var i in {{raw.data}}) {
+    coloR.push(dynamicColors());
+  }
+
 var ctx = document.getElementById('myChart').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: {{rawresults.labels|safe}},
-        datasets: [{
-            label: 'Распределение респондентов по типам',
-            data: {{rawresults.data}},
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-            ],
-            borderWidth: 1
-        }]
+        labels: {{raw.labels|safe}},
+        datasets: [
+                {
+                    label: 'Распределение по субъектам РФ',
+                    data: {{raw.data}},
+                    backgroundColor: coloR,
+                    borderColor: 'rgba(200, 200, 200, 0.75)',
+                    hoverBorderColor: 'rgba(200, 200, 200, 1)',
+                },
+        ]
     },
     options: {
         scales: {

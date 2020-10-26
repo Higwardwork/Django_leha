@@ -25,7 +25,14 @@ function checkLocalInterconnection(){
         $("#essencequestion_18").attr("req","0");
     }
 
-    if( $("#essencequestion_18").val() == "1"){
+    if( $("#essencequestion_18").val() == "1" ){
+        //$("#essencequestion_19").attr("req","1");
+        $("#freequestion_109").attr("req","1");
+        $("#essencequestion_22").attr("req","1");
+        $("#essencequestion_23").attr("req","1");
+        $("#essencequestion_24").attr("req","1");
+        $("#essencequestion_25").attr("req","1");
+    }else if(  $("#essencequestion_18").val() == "2" ){
         $("#essencequestion_19").attr("req","1");
         $("#freequestion_109").attr("req","1");
         $("#essencequestion_22").attr("req","1");
@@ -33,7 +40,7 @@ function checkLocalInterconnection(){
         $("#essencequestion_24").attr("req","1");
         $("#essencequestion_25").attr("req","1");
     }else{
-        $("#essencequestion_19").attr("req","0");
+        //$("#essencequestion_19").attr("req","0");
         $("#freequestion_109").attr("req","0");
         $("#essencequestion_22").attr("req","0");
         $("#essencequestion_23").attr("req","0");
