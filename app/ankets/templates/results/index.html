@@ -45,23 +45,31 @@
     <!--<p>raw2: {{raw2.data}}</p>-->
     <!--<p>raw_spec.data: {{raw_spec.data}}</p>-->
     <!--style="position: relative; height:20vh; width:40vw"-->
+    <!--style="display: block; width: 500px; height: 250px;"-->
+    <div style="padding-bottom:100px;">
+        <p>Распределение по датам</p>
+        <div class="chart-container">
+          <canvas id="myChart_dates"></canvas>
+        </div>
+     </div>
+
     <div style="padding-bottom:100px;">
         <p>Распределение респондентов по типам</p>
-        <div class="chart-container" >
+        <div class="chart-container">
           <canvas id="myChart_types"></canvas>
         </div>
      </div>
 
     <div style="padding-bottom:100px;">
         <p>Распределение респондентов по субъектам Российской Федерации</p>
-        <div class="chart-container" >
+        <div class="chart-container">
           <canvas id="myChart_sub"></canvas>
         </div>
      </div>
 
     <div>
         <p>Распределение выпускников по укрупнённым группам профессий/специальностей</p>
-        <div class="chart-container" >
+        <div class="chart-container">
           <canvas id="myChart_spec"></canvas>
         </div>
     </div>
@@ -78,6 +86,34 @@ var coloR = [];
     var b = Math.floor(Math.random() * 255);
     return "rgb(" + r + "," + g + "," + b + ", 0.5)";
  };
+
+
+var ctx = document.getElementById('myChart_dates').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{raw_date.labels|safe}},
+        datasets: [
+                {
+                    label: 'Количество респондентов',
+                    data: {{raw_date.data}},
+                    borderColor: 'orange',
+                    backgroundColor: 'transparent',
+                    fill: false,
+                },
+        ]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    stepSize: 1
+                }
+            }]
+        }
+    }
+});
 
 var ctx = document.getElementById('myChart_sub').getContext('2d');
 var myChart = new Chart(ctx, {

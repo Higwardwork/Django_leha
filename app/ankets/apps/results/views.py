@@ -13,6 +13,21 @@ def get_item(dictionary, key):
 def index(request):
 
     cursor = connection.cursor()
+    cursor.execute("SELECT datesave, COUNT(respondent_id) AS qount_answer FROM ( "
+                   "SELECT TO_CHAR(result_date, 'DD.MM.YYYY') AS datesave, respondent_id FROM graduates_result  GROUP BY result_date, respondent_id"
+                   ") AS sq "
+                   "GROUP BY datesave "
+                   "ORDER BY datesave")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(value[1])
+    raw_date = {'data': res, 'labels': labels}
+
+    cursor = connection.cursor()
     cursor.execute("SELECT respondent_name, COUNT(respondent_id) AS qount_answer FROM graduates_result "
                    "    INNER JOIN graduates_respondent ON graduates_result.respondent_type_id = graduates_respondent.respondent_type "
                    "    WHERE graduates_result.question_number_id = 71 OR graduates_result.question_number_id = 30 OR graduates_result.question_number_id = 3 "
@@ -102,5 +117,5 @@ def index(request):
 
 
     return render(request, 'results/index.html',
-                  {'rawresults': rawresults, 'raw_sub': raw_sub, 'raw_spec': raw_spec, 'raw_type': raw_type})
+                  {'rawresults': rawresults, 'raw_sub': raw_sub, 'raw_spec': raw_spec, 'raw_type': raw_type, 'raw_date': raw_date})
 
