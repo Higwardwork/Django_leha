@@ -11,6 +11,22 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 def index(request):
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT respondent_name, COUNT(respondent_id) AS qount_answer FROM graduates_result "
+                   "    INNER JOIN graduates_respondent ON graduates_result.respondent_type_id = graduates_respondent.respondent_type "
+                   "    WHERE graduates_result.question_number_id = 71 OR graduates_result.question_number_id = 30 OR graduates_result.question_number_id = 3 "
+                   " GROUP BY respondent_name"
+                   " ORDER BY respondent_name")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(value[1])
+    raw_type = {'data': res, 'labels': labels}
+
     #return HttpResponse('Нет такой страницы')
     cursor = connection.cursor()
     # cursor.execute('SELECT respondent_name, question_name, essense, result, COUNT([respondent_id]) AS qount_answer FROM v_result group by respondent_name, question_name, essense, result')
@@ -40,42 +56,51 @@ def index(request):
     #                " )  AS sq"
     #                " LEFT JOIN graduates_spravochnik ON (sq.answer_spravochnik = graduates_spravochnik.spravochnik_number) AND (sq.result_result = graduates_spravochnik.spravochnik_kod)"
     #                " GROUP BY sq.respondent_name, sq.respondent_id ;")
-    cursor.execute("SELECT respondent_type, respondent_name, result_result, graduates_spravochnik.spravochnik_name, COUNT(respondent_id) AS qount_answer FROM graduates_result "
+    cursor.execute("SELECT result_result, graduates_spravochnik.spravochnik_name, COUNT(respondent_id) AS qount_answer FROM graduates_result "
                    "    INNER JOIN graduates_respondent ON graduates_result.respondent_type_id = graduates_respondent.respondent_type "
                    "    INNER JOIN graduates_spravochnik ON graduates_result.result_result = graduates_spravochnik.spravochnik_kod"
                    "    WHERE graduates_result.question_number_id = 71 OR graduates_result.question_number_id = 30 OR graduates_result.question_number_id = 3 "
-                   " GROUP BY respondent_type, respondent_name, result_result, spravochnik_name"
-                   " ORDER BY respondent_type, spravochnik_name")
+                   " GROUP BY result_result, spravochnik_name"
+                   " ORDER BY spravochnik_name")
     rawresults = cursor.fetchall()
     #return HttpResponse(rawresults)
     cursor.close()
-
     res = []
-    res1 = []
-    res2 = []
-    res3 = []
     labels = []
-    labels1 = []
-    labels2 = []
-    labels3 = []
     for value in rawresults:
-        labels.append(value[3])
-        res.append(value[4])
-        if value[0] == 1:
-            labels1.append(value[3])
-            res1.append(value[4])
-        if value[0] == 2:
-            labels2.append(value[3])
-            res2.append(value[4])
-        if value[0] == 3:
-            labels3.append(value[3])
-            res3.append(value[4])
-    raw1 = {'data': res1, 'labels': labels1}
-    raw2 = {'data': res2, 'labels': labels2}
-    raw3 = {'data': res3, 'labels': labels3}
+        #raw1 = {value[1]: {value[3]: value[4]}}
+        #types.append(value[1])
+        labels.append(value[1])
+        res.append(value[2])
+    raw_sub = {'data': res, 'labels': labels}
 
-    raw = {'data': res, 'labels': labels}
+
+    cursor = connection.cursor()
+    cursor.execute("  SELECT name_ugs, SUM(qount_answer) FROM ("
+                   "SELECT result_result, graduates_spravochnik.spravochnik_name, t_ugs.kod_ugs || ' - ' || t_ugs.name_ugs AS name_ugs,"
+                   "CASE WHEN graduates_result.respondent_type_id = 1 "
+                   "THEN COUNT(respondent_id)"
+                   " ELSE COUNT(essence_id) "
+                   " END AS qount_answer "
+                   " FROM graduates_result "
+                   " INNER JOIN graduates_respondent ON graduates_result.respondent_type_id = graduates_respondent.respondent_type "
+                   " INNER JOIN graduates_spravochnik ON graduates_result.result_result = graduates_spravochnik.spravochnik_kod "
+                   " LEFT JOIN t_ugs ON LEFT(graduates_spravochnik.spravochnik_name,2) = t_ugs.kod_ugs "
+                   " WHERE graduates_result.question_number_id = 78 OR graduates_result.question_number_id = 39 OR graduates_result.question_number_id = 9 "
+                   " GROUP BY respondent_type_id, result_result, spravochnik_name, t_ugs.kod_ugs || ' - ' || t_ugs.name_ugs  "
+                   ") AS sq "
+                   " GROUP BY name_ugs "
+                   " ORDER BY name_ugs ")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(int(value[1]))
+    raw_spec = {'data': res, 'labels': labels}
+
 
     return render(request, 'results/index.html',
-                  {'rawresults': rawresults, 'raw1': raw1, 'raw2': raw2, 'raw3': raw3, 'raw': raw})
+                  {'rawresults': rawresults, 'raw_sub': raw_sub, 'raw_spec': raw_spec, 'raw_type': raw_type})
 

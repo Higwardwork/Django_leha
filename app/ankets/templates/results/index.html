@@ -22,13 +22,11 @@
     <!--<table class="table">-->
         <!--<thead>-->
             <!--<tr>-->
-                <!--<th>Тип респондента</th>-->
-                <!--<th>id ссылки</th>-->
-                <!--<th>Номер вопроса</th>-->
-                <!--<th>Вопрос</th>-->
-                <!--<th>Сущность (работник/выпускник/профессия)</th>-->
-                <!--<th>Ответ</th>-->
-                <!--<th>Дата</th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
+                <!--<th></th>-->
             <!--</tr>-->
         <!--</thead>-->
         <!--<tbody>-->
@@ -43,13 +41,29 @@
     <!--</table>-->
     <!--<p>rawresults: {{rawresults}}</p>-->
     <!--<p>raw: {{raw}}</p>-->
-    <!--<p>raw1: {{raw1.data}}</p>-->
+    <!--<p>raw1: {{raw1}}</p>-->
     <!--<p>raw2: {{raw2.data}}</p>-->
-    <!--<p>raw3: {{raw3.data}}</p>-->
+    <!--<p>raw_spec.data: {{raw_spec.data}}</p>-->
+    <!--style="position: relative; height:20vh; width:40vw"-->
+    <div style="padding-bottom:100px;">
+        <p>Распределение респондентов по типам</p>
+        <div class="chart-container" >
+          <canvas id="myChart_types"></canvas>
+        </div>
+     </div>
 
-    <p>Распределение по субъектам Российской Федерации</p>
-    <div class="chart-container" style="position: relative; height:20vh; width:40vw">
-      <canvas id="myChart"></canvas>
+    <div style="padding-bottom:100px;">
+        <p>Распределение респондентов по субъектам Российской Федерации</p>
+        <div class="chart-container" >
+          <canvas id="myChart_sub"></canvas>
+        </div>
+     </div>
+
+    <div>
+        <p>Распределение выпускников по укрупнённым группам профессий/специальностей</p>
+        <div class="chart-container" >
+          <canvas id="myChart_spec"></canvas>
+        </div>
     </div>
 
 </div>
@@ -62,22 +76,19 @@ var coloR = [];
     var r = Math.floor(Math.random() * 255);
     var g = Math.floor(Math.random() * 255);
     var b = Math.floor(Math.random() * 255);
-    return "rgb(" + r + "," + g + "," + b + ", 0.4)";
+    return "rgb(" + r + "," + g + "," + b + ", 0.5)";
  };
-  for (var i in {{raw.data}}) {
-    coloR.push(dynamicColors());
-  }
 
-var ctx = document.getElementById('myChart').getContext('2d');
+var ctx = document.getElementById('myChart_sub').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: {{raw.labels|safe}},
+        labels: {{raw_sub.labels|safe}},
         datasets: [
                 {
-                    label: 'Распределение по субъектам РФ',
-                    data: {{raw.data}},
-                    backgroundColor: coloR,
+                    label: 'Количество респондентов',
+                    data: {{raw_sub.data}},
+                    backgroundColor: 'rgba(255, 59, 64, 0.4)',
                     borderColor: 'rgba(200, 200, 200, 0.75)',
                     hoverBorderColor: 'rgba(200, 200, 200, 1)',
                 },
@@ -87,10 +98,49 @@ var myChart = new Chart(ctx, {
         scales: {
             yAxes: [{
                 ticks: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    stepSize: 1
                 }
             }]
         }
+    }
+});
+
+
+
+for (var i in {{raw_spec.data}}) {
+    coloR.push(dynamicColors());
+}
+var ctx = document.getElementById('myChart_spec').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: {{raw_spec.labels|safe}},
+        datasets: [
+                {
+                    label: 'Количество выпускников',
+                    data: {{raw_spec.data|safe}},
+                    backgroundColor: coloR,
+                },
+        ]
+    }
+});
+
+for (var i in {{raw_type.data}}) {
+    coloR.push(dynamicColors());
+}
+var ctx = document.getElementById('myChart_types').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: {{raw_type.labels|safe}},
+        datasets: [
+                {
+                    label: 'Количество респондентов',
+                    data: {{raw_type.data|safe}},
+                    backgroundColor: coloR,
+                },
+        ]
     }
 });
 </script>
