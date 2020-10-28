@@ -43,7 +43,7 @@
     <!--<p>raw: {{raw}}</p>-->
     <!--<p>raw1: {{raw1}}</p>-->
     <!--<p>raw2: {{raw2.data}}</p>-->
-    <!--<p>raw_spec.data: {{raw_spec.data}}</p>-->
+    <!--<p>raw_date: {{raw_date}}</p>-->
     <!--style="position: relative; height:20vh; width:40vw"-->
     <!--style="display: block; width: 500px; height: 250px;"-->
     <div style="padding-bottom:100px;">
@@ -95,12 +95,26 @@ var myChart = new Chart(ctx, {
         labels: {{raw_date.labels|safe}},
         datasets: [
                 {
-                    label: 'Количество респондентов',
-                    data: {{raw_date.data}},
-                    borderColor: 'orange',
+                    label: 'Выпускники',
+                    data: {{raw_date.data_1}},
+                    borderColor: 'rgba(100, 700, 100, 0.7)',
                     backgroundColor: 'transparent',
                     fill: false,
                 },
+                {
+                    label: 'Работодатели',
+                    data: {{raw_date.data_2}},
+                    borderColor: 'rgba(700, 100, 100, 0.7)',
+                    backgroundColor: 'transparent',
+                    fill: false,
+                },
+                {
+                    label: 'ОО СПО',
+                    data: {{raw_date.data_3}},
+                    borderColor: 'rgba(100, 100, 700, 0.7)',
+                    backgroundColor: 'transparent',
+                    fill: false,
+                }
         ]
     },
     options: {
@@ -122,12 +136,26 @@ var myChart = new Chart(ctx, {
         labels: {{raw_sub.labels|safe}},
         datasets: [
                 {
-                    label: 'Количество респондентов',
-                    data: {{raw_sub.data}},
-                    backgroundColor: 'rgba(255, 59, 64, 0.4)',
+                    label: 'Выпускники',
+                    data: {{raw_sub.data_1}},
+                    backgroundColor: 'rgba(100, 700, 100, 0.4)',
                     borderColor: 'rgba(200, 200, 200, 0.75)',
                     hoverBorderColor: 'rgba(200, 200, 200, 1)',
                 },
+                {
+                    label: 'Работодатели',
+                    data: {{raw_sub.data_2}},
+                    backgroundColor: 'rgba(700, 100, 100, 0.4)',
+                    borderColor: 'rgba(200, 200, 200, 0.75)',
+                    hoverBorderColor: 'rgba(200, 200, 200, 1)',
+                },
+                {
+                    label: 'ОО СПО',
+                    data: {{raw_sub.data_3}},
+                    backgroundColor: 'rgba(100, 100, 700, 0.4)',
+                    borderColor: 'rgba(200, 200, 200, 0.75)',
+                    hoverBorderColor: 'rgba(200, 200, 200, 1)',
+                }
         ]
     },
     options: {
@@ -174,7 +202,7 @@ var myChart = new Chart(ctx, {
                 {
                     label: 'Количество респондентов',
                     data: {{raw_type.data|safe}},
-                    backgroundColor: coloR,
+                    backgroundColor: ["rgba(100, 700, 100, 0.4)", "rgba(700, 100, 100, 0.4)", "rgba(100, 100, 700, 0.4)"],
                 },
         ]
     }
