@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %} Главная страница {% endblock %}
+
+{% block header %}
+    <h1>Результаты опроса</h1>
+{% endblock %}
+
+{% block content %}
+
+{% include "header.html" %}
+
+
+<div class="container">
+    {% for key, value in raw.respondents.items %}
+    <p>Код ссылки: <strong>{{key}}</strong></p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Вопрос</th>
+                    {% if respondent_strtype != 'graduates' %}
+                        <th>Тип</th>
+                    {% endif %}
+                    <th>Ответ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in value %}
+                    <!--{% if key == v.0 %}-->
+                        <tr>
+                            <td style="width:45%">{{v.1}}</td>
+                            {% if respondent_strtype != 'graduates' %}
+                                <td style="width:15%">{{v.2}}</td>
+                            {% endif %}
+                            {% if v.3 == null %}
+                                <td style="width:40%"></td>
+                            {% else %}
+                                <td style="width:40%">{{v.3}}</td>
+                            {% endif %}
+                        </tr>
+                    <!--{% endif %}-->
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+</div>
+
+{% endblock %}

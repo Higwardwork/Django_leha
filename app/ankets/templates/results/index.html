@@ -14,31 +14,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
 <div class="container">
 
-    <!--{% for valueb in rawresults %}-->
-         <!--{% for v in valueb %}-->
-            <!--{{v}}-->
-         <!--{% endfor %}-->
-    <!--{% endfor %}-->
-    <!--<table class="table">-->
-        <!--<thead>-->
-            <!--<tr>-->
-                <!--<th></th>-->
-                <!--<th></th>-->
-                <!--<th></th>-->
-                <!--<th></th>-->
-                <!--<th></th>-->
-            <!--</tr>-->
-        <!--</thead>-->
-        <!--<tbody>-->
-        <!--{% for r in rawresults %}-->
-            <!--<tr>-->
-                <!--{% for r1 in r %}-->
-                    <!--<td>{{r1}}</td>-->
-                <!--{% endfor %}-->
-            <!--</tr>-->
-        <!--{% endfor %}-->
-        <!--</tbody>-->
-    <!--</table>-->
     <!--<p>rawresults: {{rawresults}}</p>-->
     <!--<p>raw: {{raw}}</p>-->
     <!--<p>raw1: {{raw1}}</p>-->
@@ -46,17 +21,25 @@
     <!--<p>raw_date: {{raw_date}}</p>-->
     <!--style="position: relative; height:20vh; width:40vw"-->
     <!--style="display: block; width: 500px; height: 250px;"-->
-    <div style="padding-bottom:100px;">
-        <p>Распределение по датам</p>
+    <p>Всего заполнили анкеты <strong>{{raw_type.all_resp}}</strong> респондентов.</p>
+    <p>Заполненные анкеты доступны по ссылкам:</p>
+    <ul class="list-group">
+        <li class="list-group-item"><a href="/results/ankets/graduates">Выпускники</a></li>
+        <li class="list-group-item"><a href="/results/ankets/employers">Работодатели</a></li>
+        <li class="list-group-item"><a href="/results/ankets/organizations">Образовательные организации</a></li>
+    </ul>
+
+    <div style="padding-bottom:100px;padding-top:30px;">
+        <p>Распределение респондентов по типам</p>
         <div class="chart-container">
-          <canvas id="myChart_dates"></canvas>
+          <canvas id="myChart_types"></canvas>
         </div>
      </div>
 
     <div style="padding-bottom:100px;">
-        <p>Распределение респондентов по типам</p>
+        <p>Распределение по датам</p>
         <div class="chart-container">
-          <canvas id="myChart_types"></canvas>
+          <canvas id="myChart_dates"></canvas>
         </div>
      </div>
 
@@ -68,6 +51,7 @@
      </div>
 
     <div>
+        <p>Всего внесены сведения о <strong>{{raw_spec.all_grad}}</strong> выпускниках, завершивших обучение по образовательным программах среднего профессионального образования.</p>
         <p>Распределение выпускников по укрупнённым группам профессий/специальностей</p>
         <div class="chart-container">
           <canvas id="myChart_spec"></canvas>
@@ -131,7 +115,7 @@ var myChart = new Chart(ctx, {
 
 var ctx = document.getElementById('myChart_sub').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'bar',
+    type: 'horizontalBar',
     data: {
         labels: {{raw_sub.labels|safe}},
         datasets: [
@@ -165,6 +149,12 @@ var myChart = new Chart(ctx, {
                     beginAtZero: true,
                     stepSize: 1
                 }
+            }],
+            xAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    stepSize: 1
+                }
             }]
         }
     }
@@ -187,6 +177,16 @@ var myChart = new Chart(ctx, {
                     backgroundColor: coloR,
                 },
         ]
+    },
+    options: {
+        elements: {
+            arc: {
+                borderWidth: 0.4
+            },
+        },
+        legend: {
+            //display: false
+        }
     }
 });
 

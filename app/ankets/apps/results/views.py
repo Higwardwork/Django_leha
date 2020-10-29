@@ -9,7 +9,6 @@ def get_item(dictionary, key):
     return dictionary.get(key)
 
 def index(request):
-
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM v_graph_date")
     rawresults = cursor.fetchall()
@@ -38,7 +37,8 @@ def index(request):
     for value in rawresults:
         labels.append(value[0])
         res.append(value[1])
-    raw_type = {'data': res, 'labels': labels}
+    all_resp = sum(res)
+    raw_type = {'data': res, 'labels': labels, 'all_resp': all_resp}
 
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM v_graph_sub")
@@ -78,8 +78,31 @@ def index(request):
     for value in rawresults:
         labels.append(value[0])
         res.append(int(value[1]))
-    raw_spec = {'data': res, 'labels': labels}
+    all_grad = sum(res)
+    raw_spec = {'data': res, 'labels': labels, 'all_grad': all_grad}
 
     return render(request, 'results/index.html',
                   {'raw_sub': raw_sub, 'raw_spec': raw_spec, 'raw_type': raw_type, 'raw_date': raw_date})
 
+
+def anketsresult(request, respondent_strtype):
+    cursor = connection.cursor()
+    cursor.execute("SELECT respondent_id, status, mail, link_name FROM graduates_links INNER JOIN graduates_respondent ON graduates_links.respondent_type_id = graduates_respondent.respondent_type WHERE graduates_links.status=1 AND graduates_respondent.link_name = '"+respondent_strtype+"'")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    return render(request, 'results/anketsresult.html',
+                  {'rawresults': rawresults, 'respondent_strtype': respondent_strtype})
+
+
+def answers(request, respondent_strtype, respondent_id):
+    #return HttpResponse(respondent_id)
+    cursor = connection.cursor()
+    cursor.execute("SELECT respondent_id, question_name, essense, result, result_date FROM v_results WHERE link_name = '"+respondent_strtype+"' AND respondent_id = '"+respondent_id+"'")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    respondents = {}
+    for value in rawresults:
+        respondents[value[0]] = rawresults #не привильно, если больше одного ключа
+    raw = {'respondents': respondents}
+    return render(request, 'results/answers.html',
+                  {'raw': raw, 'respondent_strtype': respondent_strtype})
