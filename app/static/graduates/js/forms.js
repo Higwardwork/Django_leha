@@ -31,22 +31,23 @@ function checkLocalInterconnection(){
         $("#essencequestion_22").attr("req","1");
         $("#essencequestion_23").attr("req","1");
         $("#essencequestion_24").attr("req","1");
-        $("#essencequestion_25").attr("req","1");
+        //$("#essencequestion_25").attr("req","1");
     }else if(  $("#essencequestion_18").val() == "2" ){
         $("#essencequestion_19").attr("req","1");
         $("#freequestion_109").attr("req","1");
         $("#essencequestion_22").attr("req","1");
         $("#essencequestion_23").attr("req","1");
         $("#essencequestion_24").attr("req","1");
-        $("#essencequestion_25").attr("req","1");
+        //$("#essencequestion_25").attr("req","1");
     }else{
         $("#essencequestion_19").attr("req","0");
         $("#freequestion_109").attr("req","0");
         $("#essencequestion_22").attr("req","0");
         $("#essencequestion_23").attr("req","0");
         $("#essencequestion_24").attr("req","0");
-        $("#essencequestion_25").attr("req","0");
+        //$("#essencequestion_25").attr("req","0");
     }
+
 }
 
 
@@ -101,6 +102,15 @@ var timer;
 
 
 function checkLocalOne(element){
+
+//    if( $("#essencequestion_11").val() == "2" ){
+//        $("#essencequestion_25").chosen("destroy").attr('disabled', 'disabled').val("");
+//        //$("#essencequestion_25").attr("req","0");
+//    }else{
+//        $("#essencequestion_25").removeAttr('disabled').chosen({no_results_text: "Не найдено: "});
+//        //$("#essencequestion_25").attr("req","1");
+//    }
+
     if( element.attr("id") == "essencequestion_13" || element.attr("id") == "essencequestion_14" || element.attr("id") == "essencequestion_15" ){
             $("#essencequestion_18").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
             $("#essencequestion_19").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
