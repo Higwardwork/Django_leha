@@ -201,6 +201,8 @@ def saveanket(request, respondent_strtype, respondent_id):
                         res.result_result = '0'
                         res.result_free = value
                     else:
+                        if value == 'null':
+                            value = 0
                         res.result_result = value
                 else:
                     res.question_number_id = question_number[1]
