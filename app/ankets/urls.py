@@ -21,9 +21,7 @@ from django.urls import path, include
 
 urlpatterns = [
     #path('', include('main.urls')),
-    # path('graduates/', include('graduates.urls')),
-    # path('employers/', include('graduates.urls')),
-    # path('organizations/', include('graduates.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('results/', include('results.urls')),
     path('captcha/', include('captcha.urls')),
     path('grappelli/', include('grappelli.urls')),  # grappelli URLS

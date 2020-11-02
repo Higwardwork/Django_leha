@@ -11,6 +11,8 @@
 {% block content %}
 
 {% include "header.html" %}
+
+{% if user.is_authenticated %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
 <div class="container">
 
@@ -208,6 +210,15 @@ var myChart = new Chart(ctx, {
     }
 });
 </script>
+
+{% else %}
+<div class="container">
+    <div class="alert alert-danger" role="alert">
+      Вы не авторизованы, для просмотра страницы требуется <a href="{% url 'login' %}" class="alert-link">авторизация</a>.
+    </div>
+</div>
+{% endif %}
+
 
 {% endblock %}
 
