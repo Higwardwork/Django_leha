@@ -5,6 +5,15 @@
 {% block title %} Главная страница {% endblock %}
 
 {% block header %}
+    {% if user.is_authenticated %}
+        <div class="float-right">
+            <a href="{% url 'logout' %}">
+                <span style="font-size: 1.8em; color: black;">
+                    <i class="fas fa-sign-out-alt" title="Выход"></i>
+                </span>
+            </a>
+        </div>
+    {% endif %}
     <h1>Результаты опроса</h1>
 {% endblock %}
 
