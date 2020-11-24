@@ -18,8 +18,8 @@ class Okpdtr(models.Model):
     name_okpdtr = models.CharField("Наименование по ОКПДТР", max_length=255)
     kod_etks = models.IntegerField("Код выпуска ЕТКС", null=True)
     kod_okz = models.IntegerField("Код ОКЗ")
-def __str__(self):
-    return self.name_okpdtr
+    def __str__(self):
+        return self.name_okpdtr
 
 class Okz(models.Model):
     kod_okpdtr = models.IntegerField("код ОКЗ")

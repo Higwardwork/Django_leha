@@ -113,6 +113,7 @@ function checkLocalOne(element){
 
     if( element.attr("id") == "essencequestion_13" || element.attr("id") == "essencequestion_14" || element.attr("id") == "essencequestion_15" ){
             $("#essencequestion_18").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+            $("#essencequestion_111").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
             $("#essencequestion_19").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
             $("#freequestion_109").removeAttr('disabled');
             $("#essencequestion_22").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
@@ -122,6 +123,7 @@ function checkLocalOne(element){
             $("#freequestion_27").removeAttr('disabled');
         if( $("#essencequestion_13").val() == "1" || $("#essencequestion_14").val() == "1" || $("#essencequestion_15").val() == "1" ){
             $("#essencequestion_18").chosen("destroy").attr('disabled', 'disabled').val("");
+            $("#essencequestion_111").chosen("destroy").attr('disabled', 'disabled').val("");
             $("#essencequestion_19").chosen("destroy").attr('disabled', 'disabled').val("");
             $("#freequestion_109").attr('disabled', 'disabled');
             $("#essencequestion_22").chosen("destroy").attr('disabled', 'disabled').val("");
@@ -160,7 +162,6 @@ function checkLocalOne(element){
         $("#essencequestion_59").removeAttr('disabled').chosen({no_results_text: "Не найдено: "});
         $("#essencequestion_59").attr("req","1");
     }
-
 
 }
 
@@ -204,6 +205,13 @@ function checkValue(element){
             $(element).after('<small id="novalidvalue_'+element.attr("id")+'" class="text-danger">Введите корректный адрес электронной почты</small>');
             $(element).css("color", "red");
         }
+    }
+    if( $("#question_91").val() == "1" || $("#question_91").val() == "2"){
+        $("#question_110").attr("req","1");
+        $("#question_110").removeAttr('disabled').chosen({no_results_text: "Не найдено: "});
+    }else{
+        $("#question_110").attr("req","0");
+        $("#question_110").chosen("destroy").attr('disabled', 'disabled').val("");
     }
 }
 
@@ -318,4 +326,15 @@ $(document).on("change", ".mainelement", function(){
     }
     $("#anketform").submit();
 });*/
+
+//$(document).on("click", "#btntest", function(){
+//    console.log("test");
+//    for(var i=1; i < 500; i++){
+//        $('#essanceplace_2').append('<button modalplace="2" title="'+i+'" id="spanessance_'+i+'" type="button" class="btn btn-secondary btn-lg essance" style="display:none;margin:5px;" disabled=""><i class="fas fa-user-graduate fas-lg"></i></button>');
+//        $("#spanessance_"+i+"").after('<input type="text" name="essance_2_'+i+'_essencequestion_29" value="2" /><input type="text" name="essance_2_'+i+'_freequestion_27" value="2020-11-11" /><input type="text" name="essance_2_'+i+'_essencequestion_26" value="1" /><input type="text" name="essance_2_'+i+'_essencequestion_25" value="1" /><input type="text" name="essance_2_'+i+'_essencequestion_24" value="2" /><input type="text" name="essance_2_'+i+'_essencequestion_23" value="2" /><input type="text" name="essance_2_'+i+'_essencequestion_22" value="1" /><input type="text" name="essance_2_'+i+'_freequestion_109" value="сотрудник'+i+'" /><input type="text" name="essance_2_'+i+'_essencequestion_19" value="11103" /><input type="text" name="essance_2_'+i+'_essencequestion_111" value="1" /><input type="text" name="essance_2_'+i+'_essencequestion_18" value="1" /><input type="text" name="essance_2_'+i+'_essencequestion_15" value="2" /><input type="text" name="essance_2_'+i+'_essencequestion_14" value="2" /><input type="text" name="essance_2_'+i+'_essencequestion_13" value="2" /><input type="text" name="essance_2_'+i+'_essencequestion_11" value="1" /><input type="text" name="essance_2_'+i+'_essencequestion_10" value="1" /><input type="text" name="essance_2_'+i+'_essencequestion_9" value="1120103" />');
+//    }
+//});
+
+
+
 
