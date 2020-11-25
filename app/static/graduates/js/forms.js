@@ -25,28 +25,29 @@ function checkLocalInterconnection(){
         $("#essencequestion_18").attr("req","0");
     }
 
-    if( $("#essencequestion_18").val() == "1" ){
-        //$("#essencequestion_19").attr("req","1");
-        $("#freequestion_109").attr("req","1");
-        $("#essencequestion_22").attr("req","1");
-        $("#essencequestion_23").attr("req","1");
-        $("#essencequestion_24").attr("req","1");
-        //$("#essencequestion_25").attr("req","1");
-    }else if(  $("#essencequestion_18").val() == "2" ){
-        $("#essencequestion_19").attr("req","1");
-        $("#freequestion_109").attr("req","1");
-        $("#essencequestion_22").attr("req","1");
-        $("#essencequestion_23").attr("req","1");
-        $("#essencequestion_24").attr("req","1");
-        //$("#essencequestion_25").attr("req","1");
-    }else{
-        $("#essencequestion_19").attr("req","0");
-        $("#freequestion_109").attr("req","0");
-        $("#essencequestion_22").attr("req","0");
-        $("#essencequestion_23").attr("req","0");
-        $("#essencequestion_24").attr("req","0");
-        //$("#essencequestion_25").attr("req","0");
-    }
+//    if( $("#essencequestion_18").val() == "1" ){
+//        //$("#essencequestion_19").attr("req","1");
+//        $("#freequestion_109").attr("req","1");
+//        $("#essencequestion_22").attr("req","1");
+//        $("#essencequestion_23").attr("req","1");
+//        $("#essencequestion_24").attr("req","1");
+//        //$("#essencequestion_25").attr("req","1");
+//    }else if(  $("#essencequestion_18").val() == "2" ){
+//        //$("#essencequestion_19").attr("req","1");
+//        //$("#freequestion_109").attr("req","1");
+//        //$("#essencequestion_22").attr("req","1");
+//        //$("#essencequestion_23").attr("req","1");
+//        //$("#essencequestion_24").attr("req","1");
+//        //$("#essencequestion_25").attr("req","1");
+//    }else{
+//        $("#essencequestion_19").attr("req","0");
+//        $("#freequestion_109").attr("req","0");
+//        $("#essencequestion_22").attr("req","0");
+//        $("#essencequestion_23").attr("req","0");
+//        $("#essencequestion_24").attr("req","0");
+//        //$("#essencequestion_25").attr("req","0");
+//    }
+
 
 }
 
@@ -126,12 +127,45 @@ function checkLocalOne(element){
             $("#essencequestion_111").chosen("destroy").attr('disabled', 'disabled').val("");
             $("#essencequestion_19").chosen("destroy").attr('disabled', 'disabled').val("");
             $("#freequestion_109").attr('disabled', 'disabled');
+            $("#freequestion_109").attr("req","0");
             $("#essencequestion_22").chosen("destroy").attr('disabled', 'disabled').val("");
             $("#essencequestion_23").chosen("destroy").attr('disabled', 'disabled').val("");
             $("#essencequestion_24").chosen("destroy").attr('disabled', 'disabled').val("");
             $("#essencequestion_25").chosen("destroy").attr('disabled', 'disabled').val("");
             $("#freequestion_27").attr('disabled', 'disabled');
         }
+    }
+
+    if($("#essencequestion_18").val() == "2"){
+        $("#essencequestion_19").attr("req","0");
+        $("#essencequestion_19").chosen("destroy").attr('disabled', 'disabled').val("");
+        $("#freequestion_109").attr('disabled', 'disabled');
+        $("#freequestion_109").attr("req","0");
+        $("#essencequestion_22").attr("req","0");
+        $("#essencequestion_22").chosen("destroy").attr('disabled', 'disabled').val("");
+        $("#essencequestion_23").attr("req","0");
+        $("#essencequestion_23").chosen("destroy").attr('disabled', 'disabled').val("");
+        $("#essencequestion_24").attr("req","0");
+        $("#essencequestion_24").chosen("destroy").attr('disabled', 'disabled').val("");
+        $("#essencequestion_25").attr("req","0");
+        $("#essencequestion_25").chosen("destroy").attr('disabled', 'disabled').val("");
+        $("#freequestion_27").attr('disabled', 'disabled');
+        $("#essencequestion_111").chosen("destroy").attr('disabled', 'disabled').val("");
+        //$("#freequestion_111").attr('disabled', 'disabled');
+        $("#essencequestion_111").attr("req","0");
+    }
+    if($("#essencequestion_18").val() == "1"){
+        $("#essencequestion_19").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+        $("#essencequestion_22").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+        $("#essencequestion_23").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+        $("#essencequestion_24").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+        $("#essencequestion_25").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+        $("#essencequestion_27").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+        $("#essencequestion_111").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+        $("#freequestion_27").removeAttr('disabled');
+        $("#freequestion_109").removeAttr('disabled');
+        $("#freequestion_109").attr("req","1");
+        $("#essencequestion_111").attr("req","1");
     }
 
     if( $("#essencequestion_48").val() !== null && $("#essencequestion_48").val() != 0){
