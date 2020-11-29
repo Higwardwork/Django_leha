@@ -85,7 +85,7 @@ var coloR = [];
 
 var ctx = document.getElementById('myChart_dates').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
         labels: {{raw_date.labels|safe}},
         datasets: [
@@ -93,22 +93,25 @@ var myChart = new Chart(ctx, {
                     label: 'Выпускники',
                     data: {{raw_date.data_1}},
                     borderColor: 'rgba(100, 700, 100, 0.7)',
-                    backgroundColor: 'transparent',
-                    fill: false,
+                    backgroundColor: 'rgba(100, 700, 100, 0.4)',
+                    //backgroundColor: 'transparent',
+                    //fill: false,
                 },
                 {
                     label: 'Работодатели',
                     data: {{raw_date.data_2}},
                     borderColor: 'rgba(700, 100, 100, 0.7)',
-                    backgroundColor: 'transparent',
-                    fill: false,
+                    backgroundColor: 'rgba(700, 100, 100, 0.4)',
+                    //backgroundColor: 'transparent',
+                    //fill: false,
                 },
                 {
                     label: 'ОО СПО',
                     data: {{raw_date.data_3}},
                     borderColor: 'rgba(100, 100, 700, 0.7)',
-                    backgroundColor: 'transparent',
-                    fill: false,
+                    backgroundColor: 'rgba(100, 100, 700, 0.4)',
+                    //backgroundColor: 'transparent',
+                    //fill: false,
                 }
         ]
     },
@@ -117,7 +120,13 @@ var myChart = new Chart(ctx, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    stepSize: 1
+                    stepSize: 10
+                }
+            }],
+            xAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    stepSize: 10
                 }
             }]
         }

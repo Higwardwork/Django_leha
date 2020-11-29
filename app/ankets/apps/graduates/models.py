@@ -5,6 +5,7 @@ class Spravochnik(models.Model):
     spravochnik_number = models.IntegerField("код справочника с ответами")
     spravochnik_kod = models.IntegerField("код ответа")
     spravochnik_name = models.CharField("наименование", max_length=255, null=True)
+    dop_info = models.CharField("дополнительная информация", max_length=255, null=True)
     def __str__(self):
         return self.spravochnik_name
     class Meta:
