@@ -28,8 +28,8 @@ def index(request):
     cursor.execute("SELECT respondent_name, COUNT(respondent_id) AS qount_answer FROM graduates_result "
                    "    INNER JOIN graduates_respondent ON graduates_result.respondent_type_id = graduates_respondent.respondent_type "
                    "    WHERE graduates_result.question_number_id = 71 OR graduates_result.question_number_id = 30 OR graduates_result.question_number_id = 3 "
-                   " GROUP BY respondent_name"
-                   " ORDER BY respondent_name")
+                   " GROUP BY graduates_respondent.respondent_type, respondent_name"
+                   " ORDER BY graduates_respondent.respondent_type")
     rawresults = cursor.fetchall()
     cursor.close()
     res = []
@@ -81,8 +81,20 @@ def index(request):
     all_grad = sum(res)
     raw_spec = {'data': res, 'labels': labels, 'all_grad': all_grad}
 
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM v_exit_1_graduates")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    raw_exit_1_graduates = rawresults
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM v_exit_1_oospo")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    raw_exit_1_oospo = rawresults
+
     return render(request, 'results/index.html',
-                  {'raw_sub': raw_sub, 'raw_spec': raw_spec, 'raw_type': raw_type, 'raw_date': raw_date})
+                  {'raw_sub': raw_sub, 'raw_spec': raw_spec, 'raw_type': raw_type, 'raw_date': raw_date, 'raw_exit_1_graduates': raw_exit_1_graduates, 'raw_exit_1_oospo': raw_exit_1_oospo})
 
 
 def anketsresult(request, respondent_strtype):
