@@ -81,25 +81,33 @@ def index(request):
     all_grad = sum(res)
     raw_spec = {'data': res, 'labels': labels, 'all_grad': all_grad}
 
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM v_exit_1_graduates")
-    rawresults = cursor.fetchall()
-    cursor.close()
-    raw_exit_1_graduates = rawresults
-
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM v_exit_1_oospo")
-    rawresults = cursor.fetchall()
-    cursor.close()
-    raw_exit_1_oospo = rawresults
-
     return render(request, 'results/index.html',
-                  {'raw_sub': raw_sub, 'raw_spec': raw_spec, 'raw_type': raw_type, 'raw_date': raw_date, 'raw_exit_1_graduates': raw_exit_1_graduates, 'raw_exit_1_oospo': raw_exit_1_oospo})
+                  {'raw_sub': raw_sub, 'raw_spec': raw_spec, 'raw_type': raw_type, 'raw_date': raw_date})
+
+
+def respondentsresult(request, respondent_strtype):
+    return render(request, 'results/respondents.html',
+                  {'respondent_strtype': respondent_strtype})
+
+
+def exittables(request, respondent_strtype):
+    cursor = connection.cursor()
+    if respondent_strtype == 'graduates':
+        cursor.execute("SELECT * FROM v_exit_1_graduates")
+    elif respondent_strtype == 'organizations':
+        cursor.execute("SELECT * FROM v_exit_1_oospo")
+    elif respondent_strtype == 'employers':
+        return HttpResponse('Нет информации по данной группе респондентов')
+    rawresults = cursor.fetchall()
+    cursor.close()
+    results = rawresults
+    return render(request, 'results/exittables.html',
+                  {'respondent_strtype': respondent_strtype, 'results': results})
 
 
 def anketsresult(request, respondent_strtype):
     cursor = connection.cursor()
-    cursor.execute("SELECT respondent_id, status, mail, link_name FROM graduates_links INNER JOIN graduates_respondent ON graduates_links.respondent_type_id = graduates_respondent.respondent_type WHERE graduates_links.status=1 AND graduates_respondent.link_name = '"+respondent_strtype+"'")
+    cursor.execute("SELECT respondent_id, status, mail, link_name FROM graduates_links INNER JOIN graduates_respondent ON graduates_links.respondent_type_id = graduates_respondent.respondent_type WHERE graduates_links.status=1 AND graduates_respondent.link_name = '"+respondent_strtype+"' ORDER BY graduates_links.id")
     rawresults = cursor.fetchall()
     cursor.close()
     return render(request, 'results/anketsresult.html',
