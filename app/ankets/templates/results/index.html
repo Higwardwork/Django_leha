@@ -33,11 +33,11 @@
     <!--style="position: relative; height:20vh; width:40vw"-->
     <!--style="display: block; width: 500px; height: 250px;"-->
     <p>Всего заполнили анкеты <strong>{{raw_type.all_resp}}</strong> респондентов.</p>
-    <p>Заполненные анкеты доступны по ссылкам:</p>
+    <p>Информация по группам респондентов:</p>
     <ul class="list-group">
-        <li class="list-group-item"><a href="/results/ankets/graduates">Выпускники</a></li>
-        <li class="list-group-item"><a href="/results/ankets/employers">Работодатели</a></li>
-        <li class="list-group-item"><a href="/results/ankets/organizations">Образовательные организации</a></li>
+        <li class="list-group-item"><a href="/results/respondents/graduates">Выпускники</a></li>
+        <li class="list-group-item"><a href="/results/respondents/employers">Работодатели</a></li>
+        <li class="list-group-item"><a href="/results/respondents/organizations">Образовательные организации</a></li>
     </ul>
 
     <div style="padding-bottom:100px;padding-top:30px;">
@@ -69,136 +69,7 @@
         </div>
     </div>
 
-    <div style="padding-bottom:100px;">
-    <p>Распределение выпускников по каналам занятости (на основе опроса выпускников)</p>
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th colspan="1" rowspan="2" scope="col"></th>
-                        <th colspan="8" rowspan="1" scope="col">Трудоустроены, чел.</th>
-                        <th colspan="2" rowspan="1" scope="col">Трудоустроены из гр.2, чел.</th>
-                        <th colspan="1" rowspan="2" scope="col">Продолжили обучение в проф. обр. организациях</th>
-                        <th colspan="1" rowspan="2" scope="col">Призваны в ряды Вооруженных Сил Российской Федерации</th>
-                        <th colspan="1" rowspan="2" scope="col">Находятся в отпуске по уходу за ребенком</th>
-                        <th colspan="1" rowspan="2" scope="col">Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных)</th>
-                    </tr>
-                    <tr>
-                        <th scope="col">Всего</th>
-                        <th scope="col">из них по профессии/специальности</th>
-                        <th scope="col">По найму</th>
-                        <th scope="col">из них по профессии/специальности</th>
-                        <th scope="col">ИП</th>
-                        <th scope="col">из них по профессии/специальности</th>
-                        <th scope="col">Самозанятые</th>
-                        <th scope="col">из них по профессии/специальности</th>
-                        <th scope="col">в регионах с постоянной регистрацией</th>
-                        <th scope="col">в регионах, не связанных с местом постоянной регистрации</th>
-                    </tr>
-                    <tr>
-                        <th scope="col">1</th>
-                        <th scope="col">2</th>
-                        <th scope="col">3</th>
-                        <th scope="col">4</th>
-                        <th scope="col">5</th>
-                        <th scope="col">6</th>
-                        <th scope="col">7</th>
-                        <th scope="col">8</th>
-                        <th scope="col">9</th>
-                        <th scope="col">10</th>
-                        <th scope="col">11</th>
-                        <th scope="col">12</th>
-                        <th scope="col">13</th>
-                        <th scope="col">14</th>
-                        <th scope="col">15</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        {% for value in raw_exit_1_graduates %}
-                            {% for v in value %}
-                                <td>{{v}}</td>
-                            {% endfor %}
-                        {% endfor %}
-                    </tr>
-                </tbody>
-            </table>
-    </div>
-
-    <div style="padding-bottom:100px;">
-    <p>Распределение выпускников по каналам занятости (на основе опроса представителей организаций СПО)</p>
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th colspan="1" rowspan="2" scope="col"></th>
-                        <th colspan="8" rowspan="1" scope="col">Трудоустроены, чел.</th>
-                        <th colspan="2" rowspan="1" scope="col">Трудоустроены из гр.2, чел.</th>
-                        <th colspan="1" rowspan="2" scope="col">Продолжили обучение в проф. обр. организациях</th>
-                        <th colspan="1" rowspan="2" scope="col">Призваны в ряды Вооруженных Сил Российской Федерации</th>
-                        <th colspan="1" rowspan="2" scope="col">Находятся в отпуске по уходу за ребенком</th>
-                        <th colspan="1" rowspan="2" scope="col">Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных)</th>
-                    </tr>
-                    <tr>
-                        <th scope="col">Всего</th>
-                        <th scope="col">из них по профессии/специальности</th>
-                        <th scope="col">По найму</th>
-                        <th scope="col">из них по профессии/специальности</th>
-                        <th scope="col">ИП</th>
-                        <th scope="col">из них по профессии/специальности</th>
-                        <th scope="col">Самозанятые</th>
-                        <th scope="col">из них по профессии/специальности</th>
-                        <th scope="col">в регионах с постоянной регистрацией</th>
-                        <th scope="col">в регионах, не связанных с местом постоянной регистрации</th>
-                    </tr>
-                    <tr>
-                        <th scope="col">1</th>
-                        <th scope="col">2</th>
-                        <th scope="col">3</th>
-                        <th scope="col">4</th>
-                        <th scope="col">5</th>
-                        <th scope="col">6</th>
-                        <th scope="col">7</th>
-                        <th scope="col">8</th>
-                        <th scope="col">9</th>
-                        <th scope="col">10</th>
-                        <th scope="col">11</th>
-                        <th scope="col">12</th>
-                        <th scope="col">13</th>
-                        <th scope="col">14</th>
-                        <th scope="col">15</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        {% for value in raw_exit_1_oospo %}
-                            {% for v in value %}
-                                <td>{{v}}</td>
-                            {% endfor %}
-                        {% endfor %}
-                    </tr>
-                </tbody>
-            </table>
-    </div>
-
 </div>
-
-<style>
-table th {
-   text-align: center;
-   border: 1px solid black !important;
-   font-weight: normal !important;
-}
-
-table td {
-   text-align: center;
-   border: 1px solid black !important;
-}
-
-.table {
-   margin: auto;
-   width: 50% !important;
-   font-size: 0.7rem !important;
-}
-</style>
 
 <script>
 var coloR = [];

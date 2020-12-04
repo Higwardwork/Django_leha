@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %} Информация по группам респондентов {% endblock %}
+
+{% block header %}
+    {% if user.is_authenticated %}
+        <div class="float-right">
+            <a href="{% url 'logout' %}">
+                <span style="font-size: 1.8em; color: black;">
+                    <i class="fas fa-sign-out-alt" title="Выход"></i>
+                </span>
+            </a>
+        </div>
+    {% endif %}
+    <h1>Результаты опроса</h1>
+{% endblock %}
+
+{% block content %}
+
+{% include "header.html" %}
+
+{% if user.is_authenticated %}
+<div class="container">
+
+<!--    <p>Заполненные анкеты доступны по ссылкам:</p>-->
+    <ul class="list-group">
+        <li class="list-group-item"><a href="/results/exittables/{{respondent_strtype}}">Выходные таблицы</a></li>
+        <li class="list-group-item"><a href="/results/ankets/{{respondent_strtype}}">Анкеты</a></li>
+    </ul>
+</div>
+
+{% else %}
+<div class="container">
+    <div class="alert alert-danger" role="alert">
+      Вы не авторизованы, для просмотра страницы требуется <a href="{% url 'login' %}" class="alert-link">авторизация</a>.
+    </div>
+</div>
+{% endif %}
+
+
+{% endblock %}
