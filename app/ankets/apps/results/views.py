@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template.defaulttags import register
 from django.db import connection
+from graduates.models import Respondent
 
 #Пользовательские фильтры:
 @register.filter
@@ -86,11 +87,15 @@ def index(request):
 
 
 def respondentsresult(request, respondent_strtype):
+    respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
+    respondent_name = respondent_obj.respondent_name
     return render(request, 'results/respondents.html',
-                  {'respondent_strtype': respondent_strtype})
+                  {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
 
 
 def exittables(request, respondent_strtype):
+    respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
+    respondent_name = respondent_obj.respondent_name
     cursor = connection.cursor()
     if respondent_strtype == 'graduates':
         cursor.execute("SELECT * FROM v_exit_1_graduates")
@@ -102,16 +107,18 @@ def exittables(request, respondent_strtype):
     cursor.close()
     results = rawresults
     return render(request, 'results/exittables.html',
-                  {'respondent_strtype': respondent_strtype, 'results': results})
+                  {'respondent_strtype': respondent_strtype, 'results': results, 'respondent_name': respondent_name})
 
 
 def anketsresult(request, respondent_strtype):
+    respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
+    respondent_name = respondent_obj.respondent_name
     cursor = connection.cursor()
     cursor.execute("SELECT respondent_id, status, mail, link_name FROM graduates_links INNER JOIN graduates_respondent ON graduates_links.respondent_type_id = graduates_respondent.respondent_type WHERE graduates_links.status=1 AND graduates_respondent.link_name = '"+respondent_strtype+"' ORDER BY graduates_links.id")
     rawresults = cursor.fetchall()
     cursor.close()
     return render(request, 'results/anketsresult.html',
-                  {'rawresults': rawresults, 'respondent_strtype': respondent_strtype})
+                  {'rawresults': rawresults, 'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
 
 
 def answers(request, respondent_strtype, respondent_id):
