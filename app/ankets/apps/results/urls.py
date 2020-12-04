@@ -6,6 +6,8 @@ app_name = 'results'
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('respondents/<str:respondent_strtype>/', views.respondentsresult, name='respondentsresult'),
+    path('exittables/<str:respondent_strtype>/', views.exittables, name='exittables'),
     path('ankets/<str:respondent_strtype>/', views.anketsresult, name='anketsresult'),
     path('ankets/<str:respondent_strtype>/<str:respondent_id>/', views.answers, name='answers'),
 ]
