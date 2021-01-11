@@ -9,30 +9,32 @@
                       </div>
                       <div class="modal-body" block_num="{{qb.block_number}}">
                           {% for q in questions %}
+                            <div class="divessencequestion" id="divessencequestion_{{q.id}}" style="display:{{q.display|safe}};" visible_conditions="{{q.visible_conditions|safe}}" display="{{q.display|safe}}">
                               {% if qb.id == q.block_number_id %}
                               {% if q.question_clarification %}
                                 <p class="text-info small"><em><i class="fas fa-info-circle"></i> {{q.question_clarification}}</em></p>
                               {% endif %}
-                              <label for="essencequestion_{{q.id}}">{{q.question_number}}. {{q.question_name}}</label>
-                                  {% if q.question_type == 2 %} <!--#ответы из справочника -->
-                                    {% if q.field_type == "ajax" %}<i id="{{q.id}}" title="Очистить значение" class="fas fa-times valcleaner" style="cursor:pointer;color:red;"></i>{% endif %}
-                                    <select data-placeholder="{{q.field_placeholder}}" name="essencequestion" id="essencequestion_{{q.id}}" class="form-control chosen-select questionselement {% if q.field_type == "ajax" %}ajax{% endif %}" {% if q.field_type == "ajax" %}modela="{{q.field_mask}}"{% endif %} req="{{q.field_required}}">
-                                        <option value="0"></option>
-                                        {% for a in answers %}
-                                            {% if a.question_number_id == q.id %}
-                                                {% for s in spravochnik %}
-                                                    {% if s.spravochnik_number == a.answer_spravochnik %}
-                                                        <option title="{{s.spravochnik_name}}" value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    </select>
+                                  <label for="essencequestion_{{q.id}}">{{q.question_number_caption}}. {{q.question_name}}</label>
+                                      {% if q.question_type == 2 %} <!--#ответы из справочника -->
+                                        {% if q.field_type == "ajax" %}<i id="{{q.id}}" title="Очистить значение" class="fas fa-times valcleaner" style="cursor:pointer;color:red;"></i>{% endif %}
+                                        <select data-placeholder="{{q.field_placeholder}}" name="essencequestion" id="essencequestion_{{q.id}}" class="form-control chosen-select questionselement {% if q.field_type == "ajax" %}ajax{% endif %}" {% if q.field_type == "ajax" %}modela="{{q.field_mask}}"{% endif %} req="{{q.field_required}}">
+                                            <option value="0"></option>
+                                            {% for a in answers %}
+                                                {% if a.question_number_id == q.id %}
+                                                    {% for s in spravochnik %}
+                                                        {% if s.spravochnik_number == a.answer_spravochnik %}
+                                                            <option title="{{s.spravochnik_name}}" value="{{s.spravochnik_kod}}">{{s.spravochnik_name}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
                                    {% elif q.question_type == 5 %}
                                         <input class="{{q.field_mask}} form-control questionselement" {% if q.field_type == "number" %}min="0" max="{{q.maxlength}}"{% endif %}  type="{% if q.field_type %}{{q.field_type}}{% endif %}" placeholder="{{q.field_placeholder}}"  name="essancefreequestion" id="freequestion_{{q.id}}" req="{{q.field_required}}">
                                   {% endif %}
-                                <hr/>
-                              {% endif %}
+                            </div>
+                            <hr id="hr_{{q.id}}" style="display:{{q.display|safe}};"/>
+                            {% endif %}
                           {% endfor %}
                       </div>
                       <div class="modal-footer">

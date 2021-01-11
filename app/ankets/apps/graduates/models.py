@@ -44,6 +44,8 @@ class Questionblock(models.Model):
     block_name = models.TextField("название блока вопросов", null=True)
     block_type = models.IntegerField("тип блока вопросов (обычные или таблица с возможностью добавления)", null=True)
     essance_label = models.TextField("кого (что) добавляем", null=True)
+    display = models.TextField("видимость блока", null=True)
+    visible_conditions = models.TextField("условия видимости", null=True)
     def __str__(self):
         return self.block_name
     class Meta:
@@ -55,6 +57,7 @@ class Question(models.Model):
     respondent_type = models.ForeignKey(Respondent, on_delete=models.DO_NOTHING)
     block_number = models.ForeignKey(Questionblock, on_delete=models.DO_NOTHING)
     question_number = models.IntegerField("номер вопроса")
+    question_number_caption = models.TextField("отображаемый номер вопроса", null=True)
     question_name = models.TextField("вопрос", null=True)
     question_clarification = models.TextField("пояснение к вопросу", null=True)
     question_type = models.IntegerField("тип вопроса", null=True) #открытый вопрос/закрытый вопрос
@@ -63,6 +66,8 @@ class Question(models.Model):
     field_placeholder = models.TextField("подпись к полю", null=True)
     field_required = models.IntegerField("обязательность заполнения (0-нет, 1-да)", null=True)
     maxlength = models.IntegerField("максимальная длина поля", null=True)
+    display = models.TextField("видимость блока", null=True)
+    visible_conditions = models.TextField("условия видимости", null=True)
     def __str__(self):
         return self.question_name
     class Meta:

@@ -42,16 +42,17 @@
     <form id="anketform" action="{% url 'graduates:saveanket' respondent_strtype respondent_id %}" method="post" >
         {% csrf_token %}
         {% for qb in questionblock %}
-        <div style="border: solid #f8f9fa;padding:1.5rem">
+        <div class="questionblock" id="{{qb.id}}" style="border: solid #f8f9fa;padding:1.5rem;display:{{qb.display|safe}};" visible_conditions="{{qb.visible_conditions|safe}}">
         <fieldset class="form-group">
         <legend>{{qb.block_name|safe}}</legend>
             {% if qb.block_type == 1 %}
             {% for q in questions %}
                  {% if qb.id == q.block_number_id %}
+                    <div class="divquestion" id="divquestion_{{q.id}}" style="display:{{q.display|safe}};" visible_conditions="{{q.visible_conditions|safe}}" display="{{q.display|safe}}">
                     {% if q.question_clarification %}
                          <p class="text-info small"><em><i class="fas fa-info-circle"></i> {{q.question_clarification}}</em></p>
                     {% endif %}
-                    <label for="question_{{q.id}}">{{q.question_number}}. {{q.question_name}}</label>
+                    <label for="question_{{q.id}}">{{q.question_number_caption}}. {{q.question_name}}</label>
                         {% if q.question_type == 1 %} <!--#ответы из основной таблицы ответов -->
                         <select name="question_{{q.question_number}}" id="question_{{q.id}}" class="form-control mainelement"  req="{{q.field_required}}">
                             {% for a in answers %}
@@ -91,9 +92,10 @@
                                 <input class="{{q.field_mask}} form-control mainelement" type="{% if q.field_type %}{{q.field_type}}{% endif %}" {% if q.field_type == "number" %}min="0" max="{{q.maxlength}}"{% endif %} placeholder="{{q.field_placeholder}}" id="freequestion_{{q.id}}"  name="freequestion_{{q.id}}" req="{{q.field_required}}">
                             {% endif %}
                        {% endif %}
-                <hr/>
+                    <hr id="hr_{{q.id}}" style="display:{{q.display|safe}};"/>
+                    </div>
                 {% endif %}
-            {% endfor %}
+              {% endfor %}
 
 
             {% elif qb.block_type == 2 %}
@@ -125,7 +127,7 @@
             {% endif %}
          </fieldset>
          </div>
-        <br/>
+        <br id="br_{{qb.id}}" style="display:{{qb.display|safe}};"/>
         {% endfor %}
         <button id="btnsave" type="button" class="btn btn-light">Сохранить</button>
         <!--<button id="btntest" type="button" class="btn btn-danger">ТЕСТ</button>-->

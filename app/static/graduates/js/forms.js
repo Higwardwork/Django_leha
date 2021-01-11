@@ -19,11 +19,11 @@ $('.mask-date').mask('99.99.9999');
 
 
 function checkLocalInterconnection(){
-    if( $("#essencequestion_13").val() == "2" && $("#essencequestion_14").val() == "2" && $("#essencequestion_15").val() == "2" ){
-        $("#essencequestion_18").attr("req","1");
-    }else{
-        $("#essencequestion_18").attr("req","0");
-    }
+//    if( $("#essencequestion_13").val() == "2" && $("#essencequestion_14").val() == "2" && $("#essencequestion_15").val() == "2" ){
+//        $("#essencequestion_18").attr("req","1");
+//    }else{
+//        $("#essencequestion_18").attr("req","0");
+//    }
 
 //    if( $("#essencequestion_18").val() == "1" ){
 //        //$("#essencequestion_19").attr("req","1");
@@ -112,62 +112,63 @@ function checkLocalOne(element){
 //        //$("#essencequestion_25").attr("req","1");
 //    }
 
-    if( element.attr("id") == "essencequestion_13" || element.attr("id") == "essencequestion_14" || element.attr("id") == "essencequestion_15" ){
-            $("#essencequestion_18").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-            $("#essencequestion_111").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-            $("#essencequestion_19").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-            $("#freequestion_109").removeAttr('disabled');
-            $("#essencequestion_22").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-            $("#essencequestion_23").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-            $("#essencequestion_24").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-            $("#essencequestion_25").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-            $("#freequestion_27").removeAttr('disabled');
-        if( $("#essencequestion_13").val() == "1" || $("#essencequestion_14").val() == "1" || $("#essencequestion_15").val() == "1" ){
-            $("#essencequestion_18").chosen("destroy").attr('disabled', 'disabled').val("");
-            $("#essencequestion_111").chosen("destroy").attr('disabled', 'disabled').val("");
-            $("#essencequestion_19").chosen("destroy").attr('disabled', 'disabled').val("");
-            $("#freequestion_109").attr('disabled', 'disabled');
-            $("#freequestion_109").attr("req","0");
-            $("#essencequestion_22").chosen("destroy").attr('disabled', 'disabled').val("");
-            $("#essencequestion_23").chosen("destroy").attr('disabled', 'disabled').val("");
-            $("#essencequestion_24").chosen("destroy").attr('disabled', 'disabled').val("");
-            $("#essencequestion_25").chosen("destroy").attr('disabled', 'disabled').val("");
-            $("#freequestion_27").attr('disabled', 'disabled');
-        }
-    }
+//    if( element.attr("id") == "essencequestion_13" || element.attr("id") == "essencequestion_14" || element.attr("id") == "essencequestion_15" ){
+//            $("#essencequestion_18").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//            $("#essencequestion_111").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//            $("#essencequestion_19").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//            $("#freequestion_109").removeAttr('disabled');
+//            $("#essencequestion_22").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//            $("#essencequestion_23").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//            $("#essencequestion_24").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//            $("#essencequestion_25").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//            $("#freequestion_27").removeAttr('disabled');
+//        if( $("#essencequestion_13").val() == "1" || $("#essencequestion_14").val() == "1" || $("#essencequestion_15").val() == "1" ){
+//            $("#essencequestion_18").chosen("destroy").attr('disabled', 'disabled').val("");
+//            $("#essencequestion_111").chosen("destroy").attr('disabled', 'disabled').val("");
+//            $("#essencequestion_19").chosen("destroy").attr('disabled', 'disabled').val("");
+//            $("#freequestion_109").attr('disabled', 'disabled');
+//            $("#freequestion_109").attr("req","0");
+//            $("#essencequestion_22").chosen("destroy").attr('disabled', 'disabled').val("");
+//            $("#essencequestion_23").chosen("destroy").attr('disabled', 'disabled').val("");
+//            $("#essencequestion_24").chosen("destroy").attr('disabled', 'disabled').val("");
+//            $("#essencequestion_25").chosen("destroy").attr('disabled', 'disabled').val("");
+//            $("#freequestion_27").attr('disabled', 'disabled');
+//        }
+//    }
 
-    if($("#essencequestion_18").val() == "2"){
-        $("#essencequestion_19").attr("req","0");
-        $("#essencequestion_19").chosen("destroy").attr('disabled', 'disabled').val("");
-        $("#freequestion_109").attr('disabled', 'disabled');
-        $("#freequestion_109").attr("req","0");
-        $("#essencequestion_22").attr("req","0");
-        $("#essencequestion_22").chosen("destroy").attr('disabled', 'disabled').val("");
-        $("#essencequestion_23").attr("req","0");
-        $("#essencequestion_23").chosen("destroy").attr('disabled', 'disabled').val("");
-        $("#essencequestion_24").attr("req","0");
-        $("#essencequestion_24").chosen("destroy").attr('disabled', 'disabled').val("");
-        $("#essencequestion_25").attr("req","0");
-        $("#essencequestion_25").chosen("destroy").attr('disabled', 'disabled').val("");
-        $("#freequestion_27").attr('disabled', 'disabled');
-        $("#essencequestion_111").chosen("destroy").attr('disabled', 'disabled').val("");
-        //$("#freequestion_111").attr('disabled', 'disabled');
-        $("#essencequestion_111").attr("req","0");
-    }
-    if($("#essencequestion_18").val() == "1"){
-        $("#essencequestion_19").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-        $("#essencequestion_22").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-        $("#essencequestion_23").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-        $("#essencequestion_24").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-        $("#essencequestion_25").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-        $("#essencequestion_27").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-        $("#essencequestion_111").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-        $("#freequestion_27").removeAttr('disabled');
-        $("#freequestion_109").removeAttr('disabled');
-        $("#freequestion_109").attr("req","1");
-        $("#essencequestion_111").attr("req","1");
-    }
+//    if($("#essencequestion_18").val() == "2"){
+//        $("#essencequestion_19").attr("req","0");
+//        $("#essencequestion_19").chosen("destroy").attr('disabled', 'disabled').val("");
+//        $("#freequestion_109").attr('disabled', 'disabled');
+//        $("#freequestion_109").attr("req","0");
+//        $("#essencequestion_22").attr("req","0");
+//        $("#essencequestion_22").chosen("destroy").attr('disabled', 'disabled').val("");
+//        $("#essencequestion_23").attr("req","0");
+//        $("#essencequestion_23").chosen("destroy").attr('disabled', 'disabled').val("");
+//        $("#essencequestion_24").attr("req","0");
+//        $("#essencequestion_24").chosen("destroy").attr('disabled', 'disabled').val("");
+//        $("#essencequestion_25").attr("req","0");
+//        $("#essencequestion_25").chosen("destroy").attr('disabled', 'disabled').val("");
+//        $("#freequestion_27").attr('disabled', 'disabled');
+//        $("#essencequestion_111").chosen("destroy").attr('disabled', 'disabled').val("");
+//        //$("#freequestion_111").attr('disabled', 'disabled');
+//        $("#essencequestion_111").attr("req","0");
+//    }
+//    if($("#essencequestion_18").val() == "1"){
+//        $("#essencequestion_19").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//        $("#essencequestion_22").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//        $("#essencequestion_23").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//        $("#essencequestion_24").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//        $("#essencequestion_25").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//        $("#essencequestion_27").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//        $("#essencequestion_111").removeAttr('disabled').chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//        $("#freequestion_27").removeAttr('disabled');
+//        $("#freequestion_109").removeAttr('disabled');
+//        $("#freequestion_109").attr("req","1");
+//        $("#essencequestion_111").attr("req","1");
+//    }
 
+    //Это ОКПДТР и ОКЗ:
     if( $("#essencequestion_48").val() !== null && $("#essencequestion_48").val() != 0){
         $("#essencequestion_49").attr("req","0");
         $("#essencequestion_49").chosen("destroy").attr('disabled', 'disabled').val("");
@@ -240,13 +241,29 @@ function checkValue(element){
             $(element).css("color", "red");
         }
     }
-    if( $("#question_91").val() == "1" || $("#question_91").val() == "2"){
-        $("#question_110").attr("req","1");
-        $("#question_110").removeAttr('disabled').chosen({no_results_text: "Не найдено: "});
-    }else{
-        $("#question_110").attr("req","0");
-        $("#question_110").chosen("destroy").attr('disabled', 'disabled').val("");
-    }
+
+//    if( $("#question_91").val() !== "0" && ($("#question_91").val() == "1" || $("#question_91").val() == "2")){
+//        //console.log("91-1-2");
+//        $("#question_110").attr("req","1");
+//        $("#question_110").removeAttr('disabled').chosen({no_results_text: "Не найдено: "});
+//    }
+//    if( $("#question_91").val() !== "0" && $("#question_91").val() != "1" && $("#question_91").val() != "2"){
+//        //console.log("91-3-4-5");
+//        $("#question_110").attr("req","0");
+//        $("#question_110").chosen("destroy").attr('disabled', 'disabled').val("");
+//    }
+
+//    if( $("#question_82").val() !== "0" && $("#question_82").val() == "1"){
+//        //console.log("82-1");
+//        $("#freequestion_112").attr("req","1");
+//        $("#freequestion_112").removeAttr('disabled');
+//    }
+//    if( $("#question_82").val() !== "0" && $("#question_82").val() == "2"){
+//        //console.log("82-2");
+//        $("#freequestion_112").attr("req","0");
+//        $("#freequestion_112").attr('disabled', 'disabled').val("");
+//    }
+
 }
 
 
@@ -264,7 +281,8 @@ $(document).on("click", "#btnAddEssence", function(){
     var idmodalplace = $(this).attr("block_num");
     ee = $("#addEssenseModal_"+idmodalplace).find(".questionselement");
     if( checkRequered(ee) == 0 ){
-        var el = $('.modal-body[block_num="'+idmodalplace+'"]').children(".questionselement");
+        //var el = $('.modal-body[block_num="'+idmodalplace+'"]').children(".questionselement");
+        var el = $('.modal-body[block_num="'+idmodalplace+'"]').find(".questionselement");
         var essnum;
         //if( $("button").is(".essance") ){
         if( $('button[modalplace="'+idmodalplace+'"]') ){
@@ -285,6 +303,15 @@ $(document).on("click", "#btnAddEssence", function(){
         $("ul.chosen-results").empty();
         $("option.fop").remove();
         $(".nodata").remove();
+        //Скрыть то, что должно быть скрыто:
+        $( ".divessencequestion" ).each(function( index ) {
+          if( $(this).attr("display") == "none"){
+             var hrvar = $(this).attr("id").split('_');
+             $("#"+$(this).attr("id")).hide();
+             $("#hr_"+hrvar[1]).hide();
+             $(".questionselement", this).attr("req","0");
+          }
+        });
         $('.modal').modal('hide');
     }else{
         $(".alert").remove();
@@ -330,6 +357,27 @@ $(document).on("change", ".chosen-select", function(){
 
 $(document).on("change", ".questionselement", function(){
     checkLocalOne($(this));
+    if($(this).prop('nodeName') == 'SELECT' ){
+        $( ".divessencequestion" ).each(function( index ) {
+          if( $(this).attr("visible_conditions") != "-"){
+            var uslovie = String($(this).attr("visible_conditions"));
+            var hrvar = $(this).attr("id").split('_');
+            if( eval(uslovie) ){
+                $("#"+$(this).attr("id")).show();
+                $("#hr_"+hrvar[1]).show();
+                //if( $(this).prev().is("input") == false ){
+                $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+                //}
+                $(".questionselement", this).attr("req","1");
+            }else{
+                $("#"+$(this).attr("id")).hide();
+                $(".mainelement", this).val("");
+                $("#hr_"+hrvar[1]).hide();
+                $(".questionselement", this).attr("req","0");
+            }
+          }
+        });
+    }
     if( $("div").is(".nodata") ){
         var idelement = $(this).attr("id");
         $("#"+idelement+"").css("color", "#555");
@@ -338,6 +386,47 @@ $(document).on("change", ".questionselement", function(){
 
 $(document).on("change", ".mainelement", function(){
     checkValue($(this));
+    //var id_question = $(this).attr("id");
+    //скрытие блока вопросов:
+    if($(this).prop('nodeName') == 'SELECT' ){
+        $( ".questionblock" ).each(function( index ) {
+          if( $(this).attr("visible_conditions") != "-"){
+            var uslovie = String($(this).attr("visible_conditions"));
+            //console.log(uslovie);
+            if( eval(uslovie) ){
+                $("#"+$(this).attr("id")).show();
+                $("#br_"+$(this).attr("id")).show();
+                $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+                $(".mainelement", this).attr("req","1");
+            }else{
+                $("#"+$(this).attr("id")).hide();
+                $(".mainelement", this).val("");
+                $("#br_"+$(this).attr("id")).hide();
+                $(".mainelement", this).attr("req","0");
+            }
+          }
+        });
+        //скрытие отдельного вопроса:
+        $( ".divquestion" ).each(function( index ) {
+          if( $(this).attr("visible_conditions") != "-"){
+            var uslovie = String($(this).attr("visible_conditions"));
+            var hrvar = $(this).attr("id").split('_');
+            if( eval(uslovie) ){
+                $("#"+$(this).attr("id")).show();
+                $("#hr_"+hrvar[1]).show();
+                //if( $(this).prev().is("input") == false ){
+                $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+                //}
+                $(".mainelement", this).attr("req","1");
+            }else{
+                $("#"+$(this).attr("id")).hide();
+                $(".mainelement", this).val("");
+                $("#hr_"+hrvar[1]).hide();
+                $(".mainelement", this).attr("req","0");
+            }
+          }
+        });
+    }
     if( $("div").is(".nodata") ){
         var idelement = $(this).attr("id");
         $("#"+idelement+"").css("color", "#555");
