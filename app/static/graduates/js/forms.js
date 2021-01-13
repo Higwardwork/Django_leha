@@ -340,7 +340,7 @@ $(document).on("click", "#btnsave", function(){
 
 $(document).on("click", "#btnsubmit", function(){
     ii = $(".mainelement")
-    if( checkRequered(ii) == 0 && ($("div").hasClass("essanceolaceclass") == true && $("button").hasClass("essance") == true)){
+    if( (checkRequered(ii) == 0 && ($("div").hasClass("essanceolaceclass") == true && $("button").hasClass("essance") == true)) || (checkRequered(ii) == 0 && $("div").hasClass("essanceolaceclass") == false) ){
         $("#anketform").submit();
     }else{
         $(".alert").remove();
