@@ -340,11 +340,16 @@ $(document).on("click", "#btnsave", function(){
 
 $(document).on("click", "#btnsubmit", function(){
     ii = $(".mainelement")
-    if( checkRequered(ii) == 0){
+    if( checkRequered(ii) == 0 && ($("div").hasClass("essanceolaceclass") == true && $("button").hasClass("essance") == true)){
         $("#anketform").submit();
     }else{
         $(".alert").remove();
-        $("#btnsubmit").after('<div class="alert alert-danger nodata" role="alert" style="margin-top:25px;"><i class="fas fa-exclamation-triangle"></i> Заполнены не все обязательные поля!</div>');
+        if( checkRequered(ii) == 1 ){
+            $("#btnsubmit").after('<div class="alert alert-danger nodata" role="alert" style="margin-top:25px;"><i class="fas fa-exclamation-triangle"></i> Заполнены не все обязательные поля!</div>');
+        }
+        if($("div").hasClass("essanceolaceclass") == true && $("button").hasClass("essance") == false){
+            $("#btnsubmit").after('<div class="alert alert-danger nodata" role="alert" style="margin-top:25px;"><i class="fas fa-exclamation-triangle"></i> Не добавлена классификация!</div>');
+        }
     }
 });
 
