@@ -372,7 +372,7 @@ $(document).on("change", ".questionselement", function(){
                 $("#hr_"+hrvar[1]).show();
                 $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
                 $(".questionselement", this).attr("req","1");
-                if( $(".questionselement", this).attr("id") == "freequestion_27" || $(".questionselement", this).attr("id") == "freequestion_119"){ //временно
+                if( $(".questionselement", this).attr("id") == "freequestion_27" || $(".questionselement", this).attr("id") == "freequestion_119"){ //временно (поля дате труд-ва и ЗП)
                     $(".questionselement", this).attr("req","0");
                 }
             }else{
