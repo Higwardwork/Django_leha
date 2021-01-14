@@ -370,10 +370,11 @@ $(document).on("change", ".questionselement", function(){
             if( eval(uslovie) ){
                 $("#"+$(this).attr("id")).show();
                 $("#hr_"+hrvar[1]).show();
-                //if( $(this).prev().is("input") == false ){
                 $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-                //}
                 $(".questionselement", this).attr("req","1");
+                if( $(".questionselement", this).attr("id") == "freequestion_27" || $(".questionselement", this).attr("id") == "freequestion_119"){ //временно
+                    $(".questionselement", this).attr("req","0");
+                }
             }else{
                 $("#"+$(this).attr("id")).hide();
                 $(".mainelement", this).val("");
