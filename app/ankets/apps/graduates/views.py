@@ -245,3 +245,10 @@ def ajaxgetprofession(request, respondent_id, respondent_strtype):
         return HttpResponse('Ошибка')
     qs_json = serializers.serialize('json', qs)
     return HttpResponse(qs_json, content_type='application/json')
+
+
+# def ajaxgetorganizations(request, respondent_id, respondent_strtype):
+#     ter = int(request.POST['ter'])
+#     qs = Spravochnik.objects.filter(ter=ter).order_by('spravochnik_name')
+#     qs_json = serializers.serialize('json', qs)
+#     return HttpResponse(qs_json, content_type='application/json')

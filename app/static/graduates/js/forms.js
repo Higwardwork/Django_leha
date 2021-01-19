@@ -396,41 +396,11 @@ $(document).on("change", ".mainelement", function(){
     //скрытие блока вопросов:
     if($(this).prop('nodeName') == 'SELECT' ){
         $( ".questionblock" ).each(function( index ) {
-          if( $(this).attr("visible_conditions") != "-"){
-            var uslovie = String($(this).attr("visible_conditions"));
-            //console.log(uslovie);
-            if( eval(uslovie) ){
-                $("#"+$(this).attr("id")).show();
-                $("#br_"+$(this).attr("id")).show();
-                $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-                $(".mainelement", this).attr("req","1");
-            }else{
-                $("#"+$(this).attr("id")).hide();
-                $(".mainelement", this).val("");
-                $("#br_"+$(this).attr("id")).hide();
-                $(".mainelement", this).attr("req","0");
-            }
-          }
+            VisibleControlBlock($(this));
         });
         //скрытие отдельного вопроса:
         $( ".divquestion" ).each(function( index ) {
-          if( $(this).attr("visible_conditions") != "-"){
-            var uslovie = String($(this).attr("visible_conditions"));
-            var hrvar = $(this).attr("id").split('_');
-            if( eval(uslovie) ){
-                $("#"+$(this).attr("id")).show();
-                $("#hr_"+hrvar[1]).show();
-                //if( $(this).prev().is("input") == false ){
-                $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
-                //}
-                $(".mainelement", this).attr("req","1");
-            }else{
-                $("#"+$(this).attr("id")).hide();
-                $(".mainelement", this).val("");
-                $("#hr_"+hrvar[1]).hide();
-                $(".mainelement", this).attr("req","0");
-            }
-          }
+            VisibleControlQuestion($(this));
         });
     }
     if( $("div").is(".nodata") ){
@@ -439,6 +409,91 @@ $(document).on("change", ".mainelement", function(){
     }
 });
 
+$(document).ready(function() { //отображение заполненных блоков после загрузки сохранённого
+     $( ".questionblock" ).each(function( index ) {
+        VisibleControlBlock($(this));
+//        if ($(this).is(':hidden')) {
+//            $(".mainelement", this).each(function( index ) {
+//                if($(this).val() != 0 && $(this).val() != ''){
+//                    $(this).parents(".questionblock").show();
+//                    $("#br_"+$(this).parents(".questionblock").attr("id")).show();
+//                    $(this).parents(".questionblock").each(function( index ) {
+//                        $(".chosen-select", this).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+//                    });
+//                }
+//            });
+//        }
+    });
+    $( ".divquestion" ).each(function( index ) {
+        VisibleControlQuestion($(this));
+    });
+});
+
+
+function VisibleControlBlock(element){
+      if( element.attr("visible_conditions") != "-"){
+        var uslovie = String(element.attr("visible_conditions"));
+        if( eval(uslovie) ){
+            $("#"+element.attr("id")).show();
+            $("#br_"+element.attr("id")).show();
+            $(".chosen-select", element).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+            $(".mainelement", element).attr("req","1");
+        }else{
+            $("#"+element.attr("id")).hide();
+            $(".mainelement", element).val("");
+            $("#br_"+element.attr("id")).hide();
+            $(".mainelement", element).attr("req","0");
+        }
+      }
+}
+
+function VisibleControlQuestion(element){
+      if( element.attr("visible_conditions") != "-"){
+        var uslovie = String(element.attr("visible_conditions"));
+        var hrvar = element.attr("id").split('_');
+        if( eval(uslovie) ){
+            $("#"+element.attr("id")).show();
+            $("#hr_"+hrvar[1]).show();
+            $(".chosen-select", element).chosen("destroy").chosen({no_results_text: "Не найдено: ", disable_search_threshold: 10});
+            $(".mainelement", element).attr("req","1");
+        }else{
+            $("#"+element.attr("id")).hide();
+            $(".mainelement", element).val("");
+            $("#hr_"+hrvar[1]).hide();
+            $(".mainelement", element).attr("req","0");
+        }
+      }
+}
+//$(document).on("change", ".region", function(){ //взаимосвязь региона и ОО
+//    var ter = $(this).val();
+//    var respondent_id = $("#anketform").attr("action").split("/");
+//    $.ajax({
+//      type: "POST",
+//      url: "/"+respondent_id[1]+"/ajaxgetorganizations/"+respondent_id[3]+"/",
+//      data: {
+//        'ter': ter,
+//        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+//      },
+//      success: function (res) {
+//        //console.log(res);
+//        if(res.length > 0){
+//            //$('option.findoptions_'+idselect).remove();
+//            //$('li.no-results').empty();
+//            var newelement_org = '';
+//            $.each(res, function(i, item) {
+//                //var doai = i+1;
+//                //$('#'+idselect+'').append('<option class="fop findoptions_'+idselect+'" title="'+item.fields.name_okpdtr+'" value="'+item.fields.kod_okpdtr+'">'+item.fields.name_okpdtr+'</option>');
+//                //$('#'+parentdiv+' .chosen-results').append('<li class="active-result" data-option-array-index="'+doai+'" title="'+item.fields.name_okpdtr+'">'+item.fields.name_okpdtr+'</li>');
+//            });
+//            $(".organization").replaceWith(newelement_org);
+//            //$('#'+idselect+'').trigger("chosen:updated");
+//            //$('#'+parentdiv+' .chosen-search-input').val(usertext);
+//        }else{
+//            $('li.no-results').text("Не найдено");
+//        }
+//      }
+//    });
+//});
 
 /*$(document).on("click", "#btnsubmit", function(){
     if( $("button").is(".essance") ){

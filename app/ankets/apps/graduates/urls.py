@@ -14,5 +14,6 @@ urlpatterns = [
     path('saveanket/<str:respondent_id>/', views.saveanket, name='saveanket'),
     path('ajaxsave/<str:respondent_id>/', views.ajaxsave, name='ajaxsave'),
     path('ajaxgetprofession/<str:respondent_id>/', views.ajaxgetprofession, name='ajaxgetprofession'),
+    #path('ajaxgetorganizations/<str:respondent_id>/', views.ajaxgetorganizations, name='ajaxgetorganizations'),
 
 ]
