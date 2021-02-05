@@ -1,0 +1,333 @@
+
+
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<div class="container">
+    <p>Общая выгрузка по группе респондентов: {{respondent_name}}</p>
+    <div style="padding:30px;">
+        {% if respondent_strtype == 'graduates' %}
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th colspan="1" rowspan="2" scope="col">id</th>
+                        <th colspan="7" rowspan="1" scope="col">Общие сведения</th>
+                        <th colspan="7" rowspan="1" scope="col">Образование</th>
+                        <th colspan="2" rowspan="1" scope="col">Факт занятости</th>
+                        <th colspan="6" rowspan="1" scope="col">Для продолживших работать или трудоустроившихся (на первое место работы) после завершения обученияи</th>
+                        <th colspan="3" rowspan="1" scope="col">Для трудоустроившихся выпускников ПОО, обучавшихся по договору о целевом обучении</th>
+                        <th colspan="3" rowspan="1" scope="col">Для трудоустроившихся выпускников ПОО, завершивших ГИА с использованием ДЭ</th>
+                        <th colspan="1" rowspan="2" scope="col">Вообще не искал работу по профессии (специальности) полученной в профессиональной образовательной организации</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">Наименование профессиональной образовательной организации, реализующей образовательные программ среднего профессионального образования, в которой Вы обучались</th>
+                        <th scope="col">Субъект РФ, на территории которого Вы обучались</th>
+                        <th scope="col">Тип образовательной организации</th>
+                        <th scope="col">Место Вашей постоянной регистрации</th>
+                        <th scope="col">Пол</th>
+                        <th scope="col">Возраст, лет</th>
+                        <th scope="col">Отношение к одной из льготных категорий</th>
+                        <th scope="col">Код/Наименование профессии (специальности) по диплому</th>
+                        <th scope="col">Форма обучения</th>
+                        <th scope="col">Обучение было за счет</th>
+                        <th scope="col">Завершения государственной итоговой аттестации с использованием демонстрационного экзамена</th>
+                        <th scope="col">Укажите балл государственной итоговой аттестации с использованием демонстрационного экзамена</th>
+                        <th scope="col">Обучался (обучалась) на основании договора о целевом обучении</th>
+                        <th scope="col">Год выпуска</th>
+                        <th scope="col">Факт занятости после завершения обучения</th>
+                        <th scope="col">Планируете ли Вы продолжать обучение без прерывания трудовой деятельности</th>
+                        <th scope="col">Субъект Российской Федерации, в котором Вы смогли впервые трудоустроится в течение года, после завершения обучения в профессиональной образовательной организации</th>
+                        <th scope="col">Трудоустроен как</th>
+                        <th scope="col">Факт трудоустройства по профессии (специальности</th>
+                        <th scope="col">«Число месяцев» – в течение которых велся поиск работы; «0» – для продолживших работать</th>
+                        <th scope="col">Наименование профессии/должности</th>
+                        <th scope="col">Среднемесячная заработная плата, руб.</th>
+                        <th scope="col">Факт трудоустройства в организацию, записанную в договоре о целевом обучении, после завершения обучения</th>
+                        <th scope="col">Укажите причины трудоустройства в другой организации</th>
+                        <th scope="col">Наименование профессии/должности</th>
+                        <th scope="col">Повлияло ли на трудоустройство сдача государственной итоговой аттестации с использованием демонстрационного экзамена</th>
+                        <th scope="col">Заинтересованность работодателя в выпускниках, сдавших  государственную итоговую аттестацию с использованием демонстрационного экзамена (Ваше мнение)</th>
+                        <th scope="col">Завершение государственной итоговой аттестации с использованием демонстрационного экзамена дает более качественную оценку подготовки обучающегося в профессиональной образовательной организации (Ваше мнение)</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">А</th>
+                        <th scope="col">1</th>
+                        <th scope="col">2</th>
+                        <th scope="col">3</th>
+                        <th scope="col">4</th>
+                        <th scope="col">5</th>
+                        <th scope="col">6</th>
+                        <th scope="col">7</th>
+                        <th scope="col">8</th>
+                        <th scope="col">9</th>
+                        <th scope="col">10</th>
+                        <th scope="col">11</th>
+                        <th scope="col">12</th>
+                        <th scope="col">13</th>
+                        <th scope="col">14</th>
+                        <th scope="col">15</th>
+                        <th scope="col">16</th>
+                        <th scope="col">17</th>
+                        <th scope="col">18</th>
+                        <th scope="col">19</th>
+                        <th scope="col">20</th>
+                        <th scope="col">21</th>
+                        <th scope="col">22</th>
+                        <th scope="col">23</th>
+                        <th scope="col">24</th>
+                        <th scope="col">25</th>
+                        <th scope="col">26</th>
+                        <th scope="col">27</th>
+                        <th scope="col">28</th>
+                        <th scope="col">29</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        {% for value in rawresults %}
+                            <tr>
+                                {% for v in value %}
+                                    <td>{{v|default_if_none:""}}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        {% elif respondent_strtype == 'organizations' %}
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th colspan="1" rowspan="2" scope="col">id</th>
+                        <th colspan="1" rowspan="2" scope="col">№ п/п</th>
+                        <th colspan="5" rowspan="1" scope="col">Общие сведения</th>
+                        <th colspan="3" rowspan="1" scope="col">Численность выпускников на конец 2018/2019 учебного года</th>
+                        <th colspan="16" rowspan="1" scope="col">Классификация выпускников ПОО на конец 2018/2019 учебного года</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">Субъект Российской Федерации, на территории которого расположена организация, либо филиал</th>
+                        <th scope="col">Наименование головной организации</th>
+                        <th scope="col">Ответственный за заполнение анкеты</th>
+                        <th scope="col">E-mail</th>
+                        <th scope="col">Контактный телефон</th>
+                        <th scope="col">Очной формы обучения</th>
+                        <th scope="col">Заочной формы обучения</th>
+                        <th scope="col">Очно-заочной формы обучения</th>
+                        <th scope="col">Пол</th>
+                        <th scope="col">Относится к лицам с ОВЗ или детям-инвалидам</th>
+                        <th scope="col">Субъект Российской Федерации, в котором выпускник имеет постоянную регистрацию</th>
+                        <th scope="col">Код/наименование профессии (специальности)</th>
+                        <th scope="col">Форма обучения</th>
+                        <th scope="col">Завершил(а) государственную итоговую аттестацию с использованием демонстрационного экзамена</th>
+                        <th scope="col">Укажите балл демонстрационного экзамена</th>
+                        <th scope="col">Обучался(обучалась) на основании договора о целевом обучении</th>
+                        <th scope="col">Факт занятости в течение года после завершения обучения</th>
+                        <th scope="col">Субъект Российской Федерации, в котором трудоустроился выпускник</th>
+                        <th scope="col">Название должности (по предоставленной информации от выпускника)</th>
+                        <th scope="col">Работает как</th>
+                        <th scope="col">Факт трудоустройства по профессии/специальности, полученной в образовательной организации</th>
+                        <th scope="col">Дата трудоустройства (заполняется при наличии данных)</th>
+                        <th scope="col">Среднемесячная заработная плата, руб. (заполняется при наличии данных)</th>
+                        <th scope="col">Соответствие места трудоустройства выпускника (обучавшегося на основании договора о целевом обучении) организации, указанной в договоре на целевое обучение</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">А</th>
+                        <th scope="col">Б</th>
+                        <th scope="col">1</th>
+                        <th scope="col">2</th>
+                        <th scope="col">3</th>
+                        <th scope="col">4</th>
+                        <th scope="col">5</th>
+                        <th scope="col">6</th>
+                        <th scope="col">7</th>
+                        <th scope="col">8</th>
+                        <th scope="col">9</th>
+                        <th scope="col">10</th>
+                        <th scope="col">11</th>
+                        <th scope="col">12</th>
+                        <th scope="col">13</th>
+                        <th scope="col">14</th>
+                        <th scope="col">15</th>
+                        <th scope="col">16</th>
+                        <th scope="col">17</th>
+                        <th scope="col">18</th>
+                        <th scope="col">19</th>
+                        <th scope="col">20</th>
+                        <th scope="col">21</th>
+                        <th scope="col">22</th>
+                        <th scope="col">23</th>
+                        <th scope="col">24</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        {% for value in rawresults %}
+                            <tr>
+                                {% for v in value %}
+                                    <td>{{v|default_if_none:""}}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        {% elif respondent_strtype == 'employers' %}
+            <p>Работники, являющиеся выпускниками образовательных организаций среднего профессионального образования 2019-2020 года</p>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th colspan="1" rowspan="2" scope="col">id</th>
+                        <th colspan="1" rowspan="2" scope="col">№ п/п</th>
+                        <th colspan="7" rowspan="1" scope="col">Общие сведения</th>
+                        <th colspan="15" rowspan="1" scope="col">Работники, являющиеся выпускниками образовательных организаций среднего профессионального образования 2019-2020 года</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">Субъект Российской Федерации</th>
+                        <th scope="col">Наименование предприятия/организации</th>
+                        <th scope="col">Ответственный за заполнение анкеты</th>
+                        <th scope="col">E-mail</th>
+                        <th scope="col">Контактный телефон</th>
+                        <th scope="col">Основной ОКВЭД предприятия/организации</th>
+                        <th scope="col">Дополнительные ОКВЭДы предприятия/организации (не обязательно)</th>
+                        <th scope="col">Код/наименование профессии (специальности) по диплому</th>
+                        <th scope="col">Год выпуска</th>
+                        <th scope="col">Завершил(а) государственную итоговую аттестацию с использованием демонстрационного экзамена (если нет данных поле остается не заполненным)</th>
+                        <th scope="col">Принят(принята) на основании договора о целевом обучении</th>
+                        <th scope="col">Место постоянной регистрации совпадает с местом трудоустройства</th>
+                        <th scope="col">В случае трудоустройства в другом регионе укажите регион постоянной регистрации</th>
+                        <th scope="col">Трудоустроен впервые</th>
+                        <th scope="col">Название должности, согласно штатного расписания</th>
+                        <th scope="col">Код профессии по ОКПДТР</th>
+                        <th scope="col">Код профессии по ОКЗ</th>
+                        <th scope="col">Дата зачисления в штат</th>
+                        <th scope="col">Дата увольнения (если уволен)</th>
+                        <th scope="col">Средняя сумма выплат в месяц (начисленная), руб.</th>
+                        <th scope="col">Относится к лицам с ОВЗ или инвалидам</th>
+                        <th scope="col">Пол</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">А</th>
+                        <th scope="col">Б</th>
+                        <th scope="col">1</th>
+                        <th scope="col">2</th>
+                        <th scope="col">3</th>
+                        <th scope="col">4</th>
+                        <th scope="col">5</th>
+                        <th scope="col">6</th>
+                        <th scope="col">7</th>
+                        <th scope="col">8</th>
+                        <th scope="col">9</th>
+                        <th scope="col">10</th>
+                        <th scope="col">11</th>
+                        <th scope="col">12</th>
+                        <th scope="col">13</th>
+                        <th scope="col">14</th>
+                        <th scope="col">15</th>
+                        <th scope="col">16</th>
+                        <th scope="col">17</th>
+                        <th scope="col">18</th>
+                        <th scope="col">19</th>
+                        <th scope="col">20</th>
+                        <th scope="col">21</th>
+                        <th scope="col">22</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        {% for value in rawresults %}
+                            <tr>
+                                {% for v in value %}
+                                    <td>{{v|default_if_none:""}}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+            <br/>
+            <p>Прогнозная потребность предприятия/организации в выпускниках образовательных организаций, реализующих образовательные программы среднего профессионального образования, в возрасте до 30 лет на ближайшие 2–3 года</p>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th colspan="1" rowspan="2" scope="col">id</th>
+                        <th colspan="1" rowspan="2" scope="col">№ п/п</th>
+                        <th colspan="7" rowspan="1" scope="col">Общие сведения</th>
+                        <th colspan="8" rowspan="1" scope="col">Прогнозная потребность предприятия/организации в выпускниках образовательных организаций, реализующих образовательные программы среднего профессионального образования, в возрасте до 30 лет на ближайшие 2–3 года</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">Субъект Российской Федерации</th>
+                        <th scope="col">Наименование предприятия/организации</th>
+                        <th scope="col">Ответственный за заполнение анкеты</th>
+                        <th scope="col">E-mail</th>
+                        <th scope="col">Контактный телефон</th>
+                        <th scope="col">Основной ОКВЭД предприятия/организации</th>
+                        <th scope="col">Дополнительные ОКВЭДы предприятия/организации (не обязательно)</th>
+                        <th scope="col">Код профессии по ОКПДТР</th>
+                        <th scope="col">Код профессии по ОКЗ</th>
+                        <th scope="col">Наличие приоритета для кандидатов, завершивших государственную итоговую аттестацию использованием демонстрационного экзамена</th>
+                        <th scope="col">Заключение с профессиональной образовательной организацией договора о целевом обучении</th>
+                        <th scope="col">Предполагаемая средняя заработная плата в месяц, руб.</th>
+                        <th scope="col">Требуемый уровень профессионального образования (ППКРС или ППССЗ)</th>
+                        <th scope="col">Планируете ли Вы нанимать работников с ОВЗ или инвалидов?</th>
+                        <th scope="col">Пол (в каких специалистах существует большая потребность предприятия/организации?)</th>
+                    </tr>
+                    <tr>
+                        <th scope="col">А</th>
+                        <th scope="col">Б</th>
+                        <th scope="col">1</th>
+                        <th scope="col">2</th>
+                        <th scope="col">3</th>
+                        <th scope="col">4</th>
+                        <th scope="col">5</th>
+                        <th scope="col">6</th>
+                        <th scope="col">7</th>
+                        <th scope="col">8</th>
+                        <th scope="col">9</th>
+                        <th scope="col">10</th>
+                        <th scope="col">11</th>
+                        <th scope="col">12</th>
+                        <th scope="col">13</th>
+                        <th scope="col">14</th>
+                        <th scope="col">15</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        {% for value in rawresults_potreb %}
+                            <tr>
+                                {% for v in value %}
+                                    <td>{{v|default_if_none:""}}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+</div>
+
+<style>
+table th {
+   text-align: center;
+   border: 1px solid black !important;
+   font-weight: normal !important;
+}
+
+table td {
+   text-align: center;
+   border: 1px solid black !important;
+}
+
+.table {
+   border-collapse: collapse;
+   margin: auto;
+   width: 50% !important;
+   font-size: 0.7rem !important;
+}
+</style>
+
+{% else %}
+<div class="container">
+    <div class="alert alert-danger" role="alert">
+      Вы не авторизованы, для просмотра страницы требуется <a href="{% url 'login' %}" class="alert-link">авторизация</a>.
+    </div>
+</div>
+{% endif %}
+
+
+{% endblock %}

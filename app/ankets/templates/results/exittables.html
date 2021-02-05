@@ -31,6 +31,7 @@
                 <thead>
                     <tr>
                         <th colspan="1" rowspan="2" scope="col"></th>
+                        <th colspan="1" rowspan="2" scope="col">Всего, чел.</th>
                         <th colspan="8" rowspan="1" scope="col">Трудоустроены, чел.</th>
                         <th colspan="2" rowspan="1" scope="col">Трудоустроены из гр.2, чел.</th>
                         <th colspan="1" rowspan="2" scope="col">Продолжили обучение в проф. обр. организациях</th>
@@ -51,6 +52,7 @@
                         <th scope="col">в регионах, не связанных с местом постоянной регистрации</th>
                     </tr>
                     <tr>
+                        <th scope="col">А</th>
                         <th scope="col">1</th>
                         <th scope="col">2</th>
                         <th scope="col">3</th>
@@ -69,13 +71,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
                         {% for value in results %}
-                            {% for v in value %}
-                                <td>{{v}}</td>
-                            {% endfor %}
+                            <tr>
+                                {% for v in value %}
+                                    <td>{{v}}</td>
+                                {% endfor %}
+                            </tr>
                         {% endfor %}
-                    </tr>
                 </tbody>
             </table>
     </div>

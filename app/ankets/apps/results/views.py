@@ -86,11 +86,79 @@ def index(request):
                   {'raw_sub': raw_sub, 'raw_spec': raw_spec, 'raw_type': raw_type, 'raw_date': raw_date})
 
 
+
 def respondentsresult(request, respondent_strtype):
     respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
     respondent_name = respondent_obj.respondent_name
+
+    if respondent_strtype == 'graduates':
+        table = 'v_exit_1_graduates_rf'
+    elif respondent_strtype == 'organizations':
+        table = 'v_exit_1_oospo'
+    elif respondent_strtype == 'employers':
+        table = 'v_exit_1_employers'
+        #return HttpResponse("<a href='/results/ankets/employers/'>Анкеты</a>")
+        return render(request, 'results/respondents.html',
+                      {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT"
+                   " unnest(ARRAY['Трудоустроены', 'Продолжили обучение', 'Призваны в ряды Вооруженных Сил', 'Находятся в отпуске по уходу за ребенком', 'Не трудоустроены']) ,"
+                   " unnest(ARRAY[gr2, gr12, gr13, gr14, gr15])"
+                   " FROM "+table)
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(int(value[1]))
+    raw_employment = {'data': res, 'labels': labels}
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT"
+                   " unnest(ARRAY['По профессии/специальности', 'Не по профессии/специальности']) ,"
+                   " unnest(ARRAY[gr3, gr2-gr3])"
+                   " FROM "+table)
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(int(value[1]))
+    raw_employment_prof = {'data': res, 'labels': labels}
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT"
+                   " unnest(ARRAY['По найму', 'ИП', 'Самозанятые']) ,"
+                   " unnest(ARRAY[gr4, gr6, gr8])"
+                   " FROM "+table)
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(int(value[1]))
+    raw_employment_types = {'data': res, 'labels': labels}
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT"
+                   " unnest(ARRAY['В регионах с постоянной регистрацией', 'В регионах, не связанных с местом постоянной регистрации']) ,"
+                   " unnest(ARRAY[gr10, gr11])"
+                   " FROM "+table)
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(int(value[1]))
+    raw_employment_regions = {'data': res, 'labels': labels}
+
     return render(request, 'results/respondents.html',
-                  {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
+                  {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': raw_employment, 'raw_employment_types': raw_employment_types, 'raw_employment_prof': raw_employment_prof, 'raw_employment_regions': raw_employment_regions})
 
 
 def exittables(request, respondent_strtype):
@@ -98,16 +166,63 @@ def exittables(request, respondent_strtype):
     respondent_name = respondent_obj.respondent_name
     cursor = connection.cursor()
     if respondent_strtype == 'graduates':
-        cursor.execute("SELECT * FROM v_exit_1_graduates")
+        #cursor.execute("SELECT * FROM v_exit_1_graduates")
+        cursor.execute("SELECT region_name,"
+                       " SUM(gr1) AS gr1,"
+                       " SUM(gr2) AS gr2,"
+                       " SUM(gr3) AS gr3,"
+                       " SUM(gr4) AS gr4,"
+                       " SUM(gr5) AS gr5,"
+                       " SUM(gr6) AS gr6,"
+                       " SUM(gr7) AS gr7,"
+                       " SUM(gr8) AS gr8,"
+                       " SUM(gr9) AS gr9,"
+                       " SUM(gr10) AS gr10,"
+                       " SUM(gr11) AS gr11,"
+                       " SUM(gr12) AS gr12,"
+                       " SUM(gr13) AS gr13,"
+                       " SUM(gr14) AS gr14,"
+                       " SUM(gr15) AS gr15"
+                       " FROM v_exit_1_graduates INNER JOIN v_characteristic_graduates ON v_exit_1_graduates.respondent_id = v_characteristic_graduates.respondent_id"
+                       " GROUP BY region_name"
+                       " ORDER BY region_name")
     elif respondent_strtype == 'organizations':
         cursor.execute("SELECT * FROM v_exit_1_oospo")
     elif respondent_strtype == 'employers':
-        return HttpResponse('Нет информации по данной группе респондентов')
+        return HttpResponse('Нет выходных таблиц по данной группе респондентов')
     rawresults = cursor.fetchall()
     cursor.close()
     results = rawresults
     return render(request, 'results/exittables.html',
                   {'respondent_strtype': respondent_strtype, 'results': results, 'respondent_name': respondent_name})
+
+
+def unloading(request, respondent_strtype):
+    respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
+    respondent_name = respondent_obj.respondent_name
+    if respondent_strtype == 'graduates':
+        table = 'v_results_graduates_columns'
+    elif respondent_strtype == 'organizations':
+        table = 'v_results_oospo_columns'
+    elif respondent_strtype == 'employers':
+        table = 'v_results_employers_columns'
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM "+table)
+    rawresults = cursor.fetchall()
+    cursor.close()
+
+    if respondent_strtype == 'employers':
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM v_results_employers_potreb_columns")
+        rawresults_potreb = cursor.fetchall()
+        cursor.close()
+        return render(request, 'results/unloading.html',
+                      {'rawresults': rawresults, 'rawresults_potreb': rawresults_potreb, 'respondent_strtype': respondent_strtype,
+                       'respondent_name': respondent_name})
+
+    return render(request, 'results/unloading.html',
+                  {'rawresults': rawresults, 'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
 
 
 def anketsresult(request, respondent_strtype):
