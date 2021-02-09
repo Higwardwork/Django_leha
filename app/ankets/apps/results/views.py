@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.template.defaulttags import register
 from django.db import connection
 from graduates.models import Respondent
-from excel_response import ExcelResponse
+#from excel_response import ExcelResponse
 import xlwt
 import datetime
 
