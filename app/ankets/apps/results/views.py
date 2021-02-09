@@ -3,6 +3,9 @@ from django.http import HttpResponse
 from django.template.defaulttags import register
 from django.db import connection
 from graduates.models import Respondent
+from excel_response import ExcelResponse
+import xlwt
+import datetime
 
 #Пользовательские фильтры:
 @register.filter
@@ -197,32 +200,192 @@ def exittables(request, respondent_strtype):
                   {'respondent_strtype': respondent_strtype, 'results': results, 'respondent_name': respondent_name})
 
 
+
 def unloading(request, respondent_strtype):
     respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
-    respondent_name = respondent_obj.respondent_name
+    #respondent_name = respondent_obj.respondent_name
+
+    now = datetime.datetime.now().strftime("%Y-%m-%d")
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="'+respondent_strtype+now+'.xls"'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet(respondent_strtype)
+
+    style = xlwt.easyxf('font: bold off, color black;\
+                         borders: top_color black, bottom_color black, right_color black, left_color black,\
+                                  left thin, right thin, top thin, bottom thin;\
+                         pattern: pattern solid, fore_color white;\
+                         align: vert centre, horiz centre')
+    style.alignment.wrap = 1 #переносить по словам
+
     if respondent_strtype == 'graduates':
         table = 'v_results_graduates_columns'
+        ws.write_merge(0, 1, 0, 0, 'id', style)
+        ws.write_merge(0, 0, 1, 7, 'Общие сведения', style) #с 1 по 7 вправо
+        ws.write_merge(0, 0, 8, 14, 'Образование', style)  #c 8 по 14 вправо
+        ws.write_merge(0, 0, 15, 16, 'Факт занятости', style)
+        ws.write_merge(0, 0, 17, 22, 'Для продолживших работать или трудоустроившихся (на первое место работы) после завершения обученияи', style)
+        ws.write_merge(0, 0, 23, 25, 'Для трудоустроившихся выпускников ПОО, обучавшихся по договору о целевом обучении', style)
+        ws.write_merge(0, 0, 26, 28, 'Для трудоустроившихся выпускников ПОО, завершивших ГИА с использованием ДЭ', style)
+        ws.write_merge(0, 1, 29, 29, 'Вообще не искал работу по профессии (специальности) полученной в профессиональной образовательной организации', style)
+        ws.write(1, 1, 'Наименование профессиональной образовательной организации, реализующей образовательные программ среднего профессионального образования, в которой Вы обучались', style)
+        ws.write(1, 2, 'Субъект РФ, на территории которого Вы обучались', style)
+        ws.write(1, 3, 'Тип образовательной организации', style)
+        ws.write(1, 4, 'Место Вашей постоянной регистрации', style)
+        ws.write(1, 5, 'Пол', style)
+        ws.write(1, 6, 'Возраст, лет', style)
+        ws.write(1, 7, 'Отношение к одной из льготных категорий', style)
+        ws.write(1, 8, 'Код/Наименование профессии (специальности) по диплому', style)
+        ws.write(1, 9, 'Форма обучения', style)
+        ws.write(1, 10, 'Обучение было за счет', style)
+        ws.write(1, 11, 'Завершения государственной итоговой аттестации с использованием демонстрационного экзамена', style)
+        ws.write(1, 12, 'Укажите балл государственной итоговой аттестации с использованием демонстрационного экзамена', style)
+        ws.write(1, 13, 'Обучался (обучалась) на основании договора о целевом обучении', style)
+        ws.write(1, 14, 'Год выпуска', style)
+        ws.write(1, 15, 'Факт занятости после завершения обучения', style)
+        ws.write(1, 16, 'Планируете ли Вы продолжать обучение без прерывания трудовой деятельности', style)
+        ws.write(1, 17, 'Субъект Российской Федерации, в котором Вы смогли впервые трудоустроится в течение года, после завершения обучения в профессиональной образовательной организации', style)
+        ws.write(1, 18, 'Трудоустроен как', style)
+        ws.write(1, 19, 'Факт трудоустройства по профессии (специальности)', style)
+        ws.write(1, 20, '«Число месяцев» – в течение которых велся поиск работы; «0» – для продолживших работать', style)
+        ws.write(1, 21, 'Наименование профессии/должности', style)
+        ws.write(1, 22, 'Среднемесячная заработная плата, руб.', style)
+        ws.write(1, 23, 'Факт трудоустройства в организацию, записанную в договоре о целевом обучении, после завершения обучения', style)
+        ws.write(1, 24, 'Укажите причины трудоустройства в другой организации', style)
+        ws.write(1, 25, 'Наименование профессии/должности', style)
+        ws.write(1, 26, 'Повлияло ли на трудоустройство сдача государственной итоговой аттестации с использованием демонстрационного экзамена', style)
+        ws.write(1, 27, 'Заинтересованность работодателя в выпускниках, сдавших  государственную итоговую аттестацию с использованием демонстрационного экзамена (Ваше мнение)', style)
+        ws.write(1, 28, 'Завершение государственной итоговой аттестации с использованием демонстрационного экзамена дает более качественную оценку подготовки обучающегося в профессиональной образовательной организации (Ваше мнение)', style)
+        for nc in range(30):
+            ws.write(2, nc, nc, style)
+            ws.col(nc).width = int(23 * 260)
     elif respondent_strtype == 'organizations':
         table = 'v_results_oospo_columns'
+        ws.write_merge(0, 1, 0, 0, 'id', style)
+        ws.write_merge(0, 1, 1, 1, '№ п/п', style)
+        ws.write_merge(0, 0, 2, 6, 'Общие сведения', style)
+        ws.write_merge(0, 0, 7, 9, 'Численность выпускников на конец 2018/2019 учебного года', style)
+        ws.write_merge(0, 0, 10, 25, 'Классификация выпускников ПОО на конец 2018/2019 учебного года', style)
+        ws.write(1, 2, 'Субъект Российской Федерации, на территории которого расположена организация, либо филиал', style)
+        ws.write(1, 3, 'Наименование головной организации', style)
+        ws.write(1, 4, 'Ответственный за заполнение анкеты', style)
+        ws.write(1, 5, 'E-mail', style)
+        ws.write(1, 6, 'Контактный телефон', style)
+        ws.write(1, 7, 'Очной формы обучения', style)
+        ws.write(1, 8, 'Заочной формы обучения', style)
+        ws.write(1, 9, 'Очно-заочной формы обучения', style)
+        ws.write(1, 10, 'Пол', style)
+        ws.write(1, 11, 'Относится к лицам с ОВЗ или детям-инвалидам', style)
+        ws.write(1, 12, 'Субъект Российской Федерации, в котором выпускник имеет постоянную регистрацию', style)
+        ws.write(1, 13, 'Код/наименование профессии (специальности)', style)
+        ws.write(1, 14, 'Форма обучения', style)
+        ws.write(1, 15, 'Завершил(а) государственную итоговую аттестацию с использованием демонстрационного экзамена', style)
+        ws.write(1, 16, 'Укажите балл демонстрационного экзамена', style)
+        ws.write(1, 17, 'Обучался(обучалась) на основании договора о целевом обучении', style)
+        ws.write(1, 18, 'Факт занятости в течение года после завершения обучения', style)
+        ws.write(1, 19, 'Субъект Российской Федерации, в котором трудоустроился выпускник', style)
+        ws.write(1, 20, 'Название должности (по предоставленной информации от выпускника)', style)
+        ws.write(1, 21, 'Работает как', style)
+        ws.write(1, 22, 'Факт трудоустройства по профессии/специальности, полученной в образовательной организации', style)
+        ws.write(1, 23, 'Дата трудоустройства (заполняется при наличии данных)', style)
+        ws.write(1, 24, 'Среднемесячная заработная плата, руб. (заполняется при наличии данных)', style)
+        ws.write(1, 25, 'Соответствие места трудоустройства выпускника (обучавшегося на основании договора о целевом обучении) организации, указанной в договоре на целевое обучение', style)
+        for nc in range(26):
+            ws.write(2, nc, nc, style)
+            ws.col(nc).width = int(23 * 260)
     elif respondent_strtype == 'employers':
         table = 'v_results_employers_columns'
+        ws.write_merge(0, 1, 0, 0, 'id', style)
+        ws.write_merge(0, 1, 1, 1, '№ п/п', style)
+        ws.write_merge(0, 0, 2, 8, 'Общие сведения', style)
+        ws.write_merge(0, 0, 9, 23, 'Численность выпускников на конец 2018/2019 учебного года', style)
+        ws.write(1, 2, 'Субъект Российской Федерации', style)
+        ws.write(1, 3, 'Наименование предприятия/организации', style)
+        ws.write(1, 4, 'Ответственный за заполнение анкеты', style)
+        ws.write(1, 5, 'E-mail', style)
+        ws.write(1, 6, 'Контактный телефон', style)
+        ws.write(1, 7, 'Основной ОКВЭД предприятия/организации', style)
+        ws.write(1, 8, 'Дополнительные ОКВЭДы предприятия/организации (не обязательно)', style)
+        ws.write(1, 9, 'Код/наименование профессии (специальности) по диплому', style)
+        ws.write(1, 10, 'Год выпуска', style)
+        ws.write(1, 11, 'Завершил(а) государственную итоговую аттестацию с использованием демонстрационного экзамена (если нет данных поле остается не заполненным)', style)
+        ws.write(1, 12, 'Принят(принята) на основании договора о целевом обучении', style)
+        ws.write(1, 13, 'Место постоянной регистрации совпадает с местом трудоустройства', style)
+        ws.write(1, 14, 'В случае трудоустройства в другом регионе укажите регион постоянной регистрации', style)
+        ws.write(1, 15, 'Трудоустроен впервые', style)
+        ws.write(1, 16, 'Название должности, согласно штатного расписания', style)
+        ws.write(1, 17, 'Код профессии по ОКПДТР', style)
+        ws.write(1, 18, 'Код профессии по ОКЗ', style)
+        ws.write(1, 19, 'Дата зачисления в штат', style)
+        ws.write(1, 20, 'Дата увольнения (если уволен', style)
+        ws.write(1, 21, 'Средняя сумма выплат в месяц (начисленная), руб.', style)
+        ws.write(1, 22, 'Относится к лицам с ОВЗ или инвалидам', style)
+        ws.write(1, 23, 'Пол', style)
+        for nc in range(24):
+            ws.write(2, nc, nc, style)
+            ws.col(nc).width = int(23 * 260)
 
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM "+table)
     rawresults = cursor.fetchall()
     cursor.close()
 
+    ws.row(0).height_mismatch = True
+    ws.row(0).height = 50 * 10
+    ws.row(1).height_mismatch = True
+    ws.row(1).height = 200 * 10
+
+    row_num = 2
+    font_style = xlwt.XFStyle()
+    for row in rawresults:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
     if respondent_strtype == 'employers':
         cursor = connection.cursor()
         cursor.execute("SELECT * FROM v_results_employers_potreb_columns")
         rawresults_potreb = cursor.fetchall()
         cursor.close()
-        return render(request, 'results/unloading.html',
-                      {'rawresults': rawresults, 'rawresults_potreb': rawresults_potreb, 'respondent_strtype': respondent_strtype,
-                       'respondent_name': respondent_name})
+        ws_potreb = wb.add_sheet(respondent_strtype+'_потребность')
+        ws_potreb.write_merge(0, 1, 0, 0, 'id', style)
+        ws_potreb.write_merge(0, 1, 1, 1, '№ п/п', style)
+        ws_potreb.write_merge(0, 0, 2, 8, 'Общие сведения', style)
+        ws_potreb.write_merge(0, 0, 9, 16, 'Прогнозная потребность предприятия/организации в выпускниках образовательных организаций, реализующих образовательные программы среднего профессионального образования, в возрасте до 30 лет на ближайшие 2–3 года', style)
+        ws_potreb.write(1, 2, 'Субъект Российской Федерации', style)
+        ws_potreb.write(1, 3, 'Наименование предприятия/организации', style)
+        ws_potreb.write(1, 4, 'Ответственный за заполнение анкеты', style)
+        ws_potreb.write(1, 5, 'E-mail', style)
+        ws_potreb.write(1, 6, 'Контактный телефон', style)
+        ws_potreb.write(1, 7, 'Основной ОКВЭД предприятия/организации', style)
+        ws_potreb.write(1, 8, 'Дополнительные ОКВЭДы предприятия/организации (не обязательно)', style)
+        ws_potreb.write(1, 9, 'Код профессии по ОКПДТР', style)
+        ws_potreb.write(1, 10, 'Код профессии по ОКЗ', style)
+        ws_potreb.write(1, 11, 'Наличие приоритета для кандидатов, завершивших государственную итоговую аттестацию использованием демонстрационного экзамена', style)
+        ws_potreb.write(1, 12, 'Заключение с профессиональной образовательной организацией договора о целевом обучении', style)
+        ws_potreb.write(1, 13, 'Предполагаемая средняя заработная плата в месяц, руб.', style)
+        ws_potreb.write(1, 14, 'Требуемый уровень профессионального образования (ППКРС или ППССЗ)', style)
+        ws_potreb.write(1, 15, 'Планируете ли Вы нанимать работников с ОВЗ или инвалидов?', style)
+        ws_potreb.write(1, 16, 'Пол (в каких специалистах существует большая потребность предприятия/организации?)', style)
+        for nc in range(17):
+            ws_potreb.write(2, nc, nc, style)
+            ws_potreb.col(nc).width = int(23 * 260)
+        ws_potreb.row(0).height_mismatch = True
+        ws_potreb.row(0).height = 50 * 10
+        ws_potreb.row(1).height_mismatch = True
+        ws_potreb.row(1).height = 200 * 10
+        row_num_potreb = 2
+        for row_potreb in rawresults_potreb:
+            row_num_potreb += 1
+            for col_num_potreb in range(len(row_potreb)):
+                ws_potreb.write(row_num_potreb, col_num_potreb, row_potreb[col_num_potreb], font_style)
 
-    return render(request, 'results/unloading.html',
-                  {'rawresults': rawresults, 'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
+    wb.save(response)
+    return response
+    #return ExcelResponse(rawresults, respondent_strtype+'_'+now)
+    #return render(request, 'results/unloading.html',
+    #              {'rawresults': rawresults, 'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
+
 
 
 def anketsresult(request, respondent_strtype):
