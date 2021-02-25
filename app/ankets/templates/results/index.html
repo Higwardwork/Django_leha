@@ -1,75 +1,124 @@
-{% extends 'base.html' %}
+{% extends 'results/base_results.html' %}
 
 
 
-{% block title %} Главная страница {% endblock %}
+<!--{% block title %} Главная страница {% endblock %}-->
 
-{% block header %}
-    {% if user.is_authenticated %}
-        <div class="float-right">
-            <a href="{% url 'logout' %}">
-                <span style="font-size: 1.8em; color: black;">
-                    <i class="fas fa-sign-out-alt" title="Выход"></i>
-                </span>
-            </a>
-        </div>
-    {% endif %}
-    <h1>Результаты опроса</h1>
-{% endblock %}
+<!--{% block header %}-->
+    <!--{% if user.is_authenticated %}-->
+        <!--<div class="float-right">-->
+            <!--<a href="{% url 'logout' %}">-->
+                <!--<span style="font-size: 1.8em; color: black;">-->
+                    <!--<i class="fas fa-sign-out-alt" title="Выход"></i>-->
+                <!--</span>-->
+            <!--</a>-->
+        <!--</div>-->
+    <!--{% endif %}-->
+    <!--<h1>Результаты опроса</h1>-->
+<!--{% endblock %}-->
 
 {% block content %}
 
-{% include "header.html" %}
+<!--{% include "header.html" %}-->
 
 {% if user.is_authenticated %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
-<div class="container">
-
-    <!--<p>rawresults: {{rawresults}}</p>-->
-    <!--<p>raw: {{raw}}</p>-->
-    <!--<p>raw1: {{raw1}}</p>-->
-    <!--<p>raw2: {{raw2.data}}</p>-->
-    <!--<p>raw_date: {{raw_date}}</p>-->
-    <!--style="position: relative; height:20vh; width:40vw"-->
-    <!--style="display: block; width: 500px; height: 250px;"-->
-    <p>Всего заполнили анкеты <strong>{{raw_type.all_resp}}</strong> респондентов.</p>
-    <p>Информация по группам респондентов:</p>
-    <ul class="list-group">
-        <li class="list-group-item"><a href="/results/respondents/graduates"><i class="fas fa-user-graduate"></i> Выпускники</a></li>
-        <li class="list-group-item"><a href="/results/respondents/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>
-        <li class="list-group-item"><a href="/results/respondents/organizations"><i class="fas fa-university"></i> Образовательные организации</a></li>
-    </ul>
-
-    <div style="padding-bottom:100px;padding-top:30px;">
-        <p>Распределение респондентов по типам</p>
-        <div class="chart-container">
-          <canvas id="myChart_types"></canvas>
-        </div>
-     </div>
-
-    <div style="padding-bottom:100px;">
-        <p>Распределение по датам</p>
-        <div class="chart-container">
-          <canvas id="myChart_dates"></canvas>
-        </div>
-     </div>
-
-    <div style="padding-bottom:100px;">
-        <p>Распределение респондентов по субъектам Российской Федерации</p>
-        <div class="chart-container">
-          <canvas id="myChart_sub"></canvas>
-        </div>
-     </div>
-
-    <div style="padding-bottom:100px;">
-        <p>Всего внесены сведения о <strong>{{raw_spec.all_grad}}</strong> выпускниках, завершивших обучение по образовательным программах среднего профессионального образования.</p>
-        <p>Распределение выпускников по укрупнённым группам профессий/специальностей</p>
-        <div class="chart-container">
-          <canvas id="myChart_spec"></canvas>
-        </div>
+<div class="container sections-wrapper">
+    <div class="row">
+        <div class="primary col-md-8 col-sm-12 col-xs-12">
+            <section class="about section">
+                <div class="section-inner">
+                    <h2 class="heading">Информация об опросе</h2>
+                    <div class="content">
+                        <p>
+                            Опрос проведён в 2021 году по заказу Министерства просвещения Российской Федерации
+                            и посвящён анализу трудоустройства выпускников образовательных организаций, осуществляющий
+                            подготовку по программам среднего профессионального образования.
+                            Участвовали следующие группы респондентов: выпускники, образовательные организации, работодатели.
+                            Каждой группе респондетов было предложено заполнить соответствующую анкету.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <!--<p>rawresults: {{rawresults}}</p>-->
+            <!--<p>raw: {{raw}}</p>-->
+            <!--<p>raw1: {{raw1}}</p>-->
+            <!--<p>raw2: {{raw2.data}}</p>-->
+            <!--<p>raw_date: {{raw_date}}</p>-->
+            <!--style="position: relative; height:20vh; width:40vw"-->
+            <!--style="display: block; width: 500px; height: 250px;"-->
+            <section class="latest section">
+                <div class="section-inner">
+                    <h2 class="heading">Сводные результаты</h2>
+                    <div class="content">
+                        <p>Всего заполнили анкеты <strong>{{raw_type.all_resp}}</strong> респондентов.</p>
+                        <p>
+                            Всего внесены сведения о <strong>{{raw_spec.all_grad}}</strong> выпускниках,
+                            завершивших обучение по образовательным программах среднего профессионального образования.
+                        </p>
+                        <div style="padding-bottom:100px;padding-top:30px;">
+                            <p>Распределение респондентов по типам</p>
+                            <div class="chart-container">
+                              <canvas id="myChart_types"></canvas>
+                            </div>
+                         </div>
+                        <div style="padding-bottom:100px;">
+                            <p>Распределение по датам</p>
+                            <div class="chart-container">
+                              <canvas id="myChart_dates"></canvas>
+                            </div>
+                         </div>
+                        <div style="padding-bottom:100px;">
+                            <p>Распределение респондентов по субъектам Российской Федерации</p>
+                            <div class="chart-container">
+                              <canvas id="myChart_sub"></canvas>
+                            </div>
+                         </div>
+                        <div style="padding-bottom:100px;">
+                            <p>Распределение выпускников по укрупнённым группам профессий/специальностей</p>
+                            <div class="chart-container">
+                              <canvas id="myChart_spec"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
     </div>
-
+    <div class="secondary col-md-4 col-sm-12 col-xs-12">
+         <aside class="info aside section">
+            <div class="section-inner">
+                <h2 class="heading sr-only">Количество респондентов</h2>
+                <div class="content">
+                    <div class="row text-center">
+                        <div class="col">
+                            <div class="counter">
+                                <i class="fas fa-users fa-2x"></i>
+                                <h2 class="timer count-title count-number" data-to="{{raw_type.all_resp}}" data-speed="1500"></h2>
+                                <p class="count-text ">Количество респондентов</p>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--//content-->
+            </div><!--//section-inner-->
+        </aside><!--//aside-->
+         <aside class="info aside section">
+            <div class="section-inner">
+                <h2 class="heading">Информация по группам респондентов</h2>
+                <div class="content">
+                    <ul class="list-unstyled">
+                        <li><a href="/results/respondents/graduates"><i class="fas fa-user-graduate"></i> Выпускники</a></li>
+                        <li><a href="/results/respondents/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>
+                        <li><a href="/results/respondents/organizations"><i class="fas fa-university"></i> Образовательные организации</a></li>
+                    </ul>
+                </div><!--//content-->
+            </div><!--//section-inner-->
+        </aside><!--//aside-->
+    </div>
+  </div>
 </div>
+
+{% load static %}
+<script type="text/javascript" src="{% static 'results/js/counter.js' %}"></script>
 
 <script>
 var coloR = [];
@@ -203,7 +252,7 @@ var myChart = new Chart(ctx, {
             },
         },
         legend: {
-            //display: false
+            display: false
         }
     }
 });

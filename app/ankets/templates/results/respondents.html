@@ -1,78 +1,268 @@
-{% extends 'base.html' %}
+{% extends 'results/base_results.html' %}
 
 
+{% block respondent %}{{respondent_name}}{% endblock %}
 
-{% block title %} Информация по группам респондентов {% endblock %}
-
-{% block header %}
-    {% if user.is_authenticated %}
-        <div class="float-right">
-            <a href="{% url 'logout' %}">
-                <span style="font-size: 1.8em; color: black;">
-                    <i class="fas fa-sign-out-alt" title="Выход"></i>
-                </span>
-            </a>
-        </div>
-    {% endif %}
-    <h1>Результаты опроса</h1>
-{% endblock %}
+<!--{% block header %}-->
+    <!--{% if user.is_authenticated %}-->
+        <!--<div class="float-right">-->
+            <!--<a href="{% url 'logout' %}">-->
+                <!--<span style="font-size: 1.8em; color: black;">-->
+                    <!--<i class="fas fa-sign-out-alt" title="Выход"></i>-->
+                <!--</span>-->
+            <!--</a>-->
+        <!--</div>-->
+    <!--{% endif %}-->
+<!--{% endblock %}-->
 
 {% block content %}
 
-{% include "header.html" %}
+<!--{% include "header.html" %}-->
 
 {% if user.is_authenticated %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
-<div class="container">
 
-    <p>Информация по группе респондентов: {{respondent_name}}</p>
-    <ul class="list-group">
-        <li class="list-group-item"><a href="/results/exittables/{{respondent_strtype}}"><i class="fas fa-table"></i> Выходные таблицы</a></li>
-        <li class="list-group-item"><a href="/results/ankets/{{respondent_strtype}}"><i class="fas fa-poll"></i> Анкеты</a></li>
-        <li class="list-group-item"><a href="/results/unloading/{{respondent_strtype}}"><i class="far fa-file-excel"></i> Общая выгрузка</a></li>
-    </ul>
-    {% if respondent_strtype != 'employers' %}
-    <!--<table>-->
-        <!--<tr>-->
-            <!--<td style="vertical-align:top;">-->
-                <div style="padding-bottom:100px;padding-top:30px;">
-                    <p>Распределение выпускников по каналам занятости</p>
-                    <div class="chart-container">
-                      <canvas id="myChart_employment"></canvas>
+<div class="container sections-wrapper">
+    <div class="row">
+        <div class="primary col-md-8 col-sm-12 col-xs-12">
+            <section class="about section">
+                <div class="section-inner">
+                    <h2 class="heading">Информация об опросе по группе респондентов: "{{respondent_name}}"</h2>
+                    <div class="content">
+                        {% if respondent_strtype != 'employers' %}
+                            В результате проведения опроса по группе респондентов "{{respondent_name}}" были получены сведения о
+                            <strong>{{count_all}}</strong> выпускниках
+                        {% endif %}
                     </div>
-                 </div>
-            <!--</td>-->
-            <!--<td style="vertical-align:top;">-->
-                <div style="padding-bottom:100px;padding-top:30px;">
-                    <p>Распределение трудоустроенных выпускников по профессии/специальности</p>
-                    <div class="chart-container">
-                      <canvas id="myChart_employment_prof"></canvas>
+                </div>
+            </section>
+            <section class="latest section">
+                <div class="section-inner">
+                    <h2 class="heading">Информация по регионам</h2>
+                    <div class="content">
+                        {% if respondent_strtype != 'employers' %}
+                            <table class="table">
+                                <tr>
+                                    <th>Регион</th>
+                                    <th>Количество выпускников, чел.</th>
+                                    <th>Доля работающих</th>
+                                    <th>Доля работающих по спец./проф. (от числа трудоустроенных)</th>
+                                </tr>
+                                {% for key, value in regions.items %}
+                                    <tr>
+                                        <td><a href="/results/exittables/{{respondent_strtype}}/{{key}}">{{value|get_item:'name'}}</a></td>
+                                        <td>{{value|get_item:'count'}}</td>
+                                        <td>{{value|get_item:'d_trud'}}%</td>
+                                        <td>{{value|get_item:'d_trud_prof'}}%</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% endif %}
                     </div>
-                 </div>
-            <!--</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-        <!--<td style="vertical-align:top;">-->
-            <div style="padding-bottom:100px;padding-top:30px;">
-                <p>Распределение трудоустроенных выпускников по каналам занятости</p>
-                <div class="chart-container">
-                  <canvas id="myChart_employment_types"></canvas>
                 </div>
-             </div>
-        <!--</td>-->
-        <!--<td style="vertical-align:top;">-->
-            <div style="padding-bottom:100px;padding-top:30px;">
-                <p>Распределение трудоустроенных выпускников по регионам регистрации</p>
-                <div class="chart-container">
-                  <canvas id="myChart_employment_regions"></canvas>
+            </section>
+            <section class="about section">
+                <div class="section-inner">
+                    <h2 class="heading">Классификация выпускников</h2>
+                    <div class="content">
+                        {% if respondent_strtype != 'employers' %}
+                            <div style="padding-bottom:100px;padding-top:30px;">
+                                <p>Распределение выпускников по каналам занятости</p>
+                                <div class="chart-container">
+                                  <canvas id="myChart_employment"></canvas>
+                                </div>
+                             </div>
+                            <div style="padding-bottom:100px;padding-top:30px;">
+                                <p>Распределение трудоустроенных выпускников по профессии/специальности</p>
+                                <div class="chart-container">
+                                  <canvas id="myChart_employment_prof"></canvas>
+                                </div>
+                             </div>
+                            <div style="padding-bottom:100px;padding-top:30px;">
+                                <p>Распределение трудоустроенных выпускников по каналам занятости</p>
+                                <div class="chart-container">
+                                  <canvas id="myChart_employment_types"></canvas>
+                                </div>
+                             </div>
+                            <div style="padding-bottom:100px;padding-top:30px;">
+                                <p>Распределение трудоустроенных выпускников по регионам регистрации</p>
+                                <div class="chart-container">
+                                  <canvas id="myChart_employment_regions"></canvas>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
-             </div>
-        <!--</td>-->
-        <!--</tr>-->
-    <!--</table>-->
-    {% endif %}
+            </section>
+    </div>
+    <div class="secondary col-md-4 col-sm-12 col-xs-12">
+         <aside class="info aside section">
+            <div class="section-inner">
+                <h2 class="heading">Информация по группам респондентов</h2>
+                <div class="content">
+                    <ul class="list-unstyled">
+                        <li><a href="/results/respondents/graduates"><i class="fas fa-user-graduate"></i> Выпускники</a></li>
+                        <li><a href="/results/respondents/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>
+                        <li><a href="/results/respondents/organizations"><i class="fas fa-university"></i> Образовательные организации</a></li>
+                    </ul>
+                </div><!--//content-->
+            </div><!--//section-inner-->
+        </aside><!--//aside-->
+         <aside class="info aside section">
+            <div class="section-inner">
+                <h2 class="heading">Общая выгрузка данных</h2>
+                <div class="content">
+                    <ul class="list-unstyled">
+                        <!--<li class="list-group-item"><a href="/results/exittables/{{respondent_strtype}}/0"><i class="fas fa-table"></i> Выходные таблицы</a></li>-->
+                        <li><a href="/results/ankets/{{respondent_strtype}}"><i class="fas fa-poll"></i> Анкеты</a></li>
+                        <li><a href="/results/unloading/{{respondent_strtype}}"><i class="far fa-file-excel"></i> Общая выгрузка</a></li>
+                    </ul>
+                </div><!--//content-->
+            </div><!--//section-inner-->
+        </aside><!--//aside-->
+         <aside class="info aside section">
+            <div class="section-inner">
+                <h2 class="heading">Выходные таблицы</h2>
+                <div class="content">
+                    <a id="btn_report" class="btn btn-cta-primary btn-download" data-toggle="modal" data-target="#ModalExitReport"><i class="fas fa-file-invoice"></i> Сформировать выгрузку</a>
+                </div><!--//content-->
+            </div><!--//section-inner-->
+        </aside><!--//aside-->
+    </div>
+  </div>
 </div>
 
+
+<!-- Modal -->
+<div class="modal fade" id="ModalExitReport" tabindex="-1" role="dialog" aria-labelledby="ModalExitReportLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ModalExitReportLabel">Формирование выгрузки</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="content">
+                      <!--<p><strong>Разрез выгрузки:</strong></p>-->
+                      <div class="form-group">
+                        <label for="razrez"><strong>Разрез выгрузки:</strong></label>
+                        <select class="form-control" id="razrez" name="razrez">
+                          <option value="region_name">Субъекты РФ</option>
+                          <option value="name_ugs">УГПС</option>
+                        </select>
+                      </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="content">
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-9"><label for="regions"><strong>Выберите регионы: </strong><font class="font-italic">(для выбора нескольких элементов нажмите клавишу CTRL)</font></label></div>
+                            <div class="col-md-3 text-right"><button type="button" class="small" id="select_all_regions">Выбрать все</button></div>
+                        </div>
+                        <select multiple class="form-control regions" size="10" id="regions" name="regions">
+                            {% for key, value in regions.items %}
+                                <option value="'{{value|get_item:'ter'}}'">{{value|get_item:'name'}}</option>
+                            {% endfor %}
+                        </select>
+                      </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="content">
+                      <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-9"><label for="ugs"><strong>Выберите УГПС: </strong><font class="font-italic">(для выбора нескольких элементов нажмите клавишу CTRL)</font></label></div>
+                            <div class="col-md-3 text-right"><button type="button" class="small" id="select_all_ugs">Выбрать все</button></div>
+                        </div>
+                        <select multiple class="form-control ugs" size="10" id="ugs" name="ugs">
+                            {% for key, value in ugs_dic.items %}
+                                <option value="'{{value|get_item:'kod_ugs'}}'">{{value|get_item:'kod_ugs'}} - {{value|get_item:'name_ugs'}}</option>
+                            {% endfor %}
+                        </select>
+                      </div>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="row">-->
+            <!--<div class="col-md-4">-->
+                <!--<div class="content">-->
+                    <!--<p><strong>Выберите субъект РФ:</strong></p>-->
+                    <!--{% for key, value in regions.items %}-->
+                        <!--<div class="form-check">-->
+                            <!--<input class="form-check-input regions" type="checkbox" name="region_{{value|get_item:'ter'}}" id="region_{{value|get_item:'ter'}}" value="{{value|get_item:'ter'}}">-->
+                            <!--<label class="form-check-label" for="region_{{value|get_item:'ter'}}">{{value|get_item:'name'}}</label>-->
+                        <!--</div>-->
+                    <!--{% endfor %}-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="col-md-4">-->
+                <!--<p><strong>Выберите УГПС:</strong></p>-->
+                <!--<div class="content flex">-->
+                    <!--{% for key, value in ugs_dic.items %}-->
+                        <!--<div class="form-check block">-->
+                            <!--<input class="form-check-input ugs" type="checkbox" name="ugs_{{value|get_item:'kod_ugs'}}" id="ugs_{{value|get_item:'kod_ugs'}}" value="{{value|get_item:'kod_ugs'}}">-->
+                            <!--<label class="form-check-label" for="ugs_{{value|get_item:'kod_ugs'}}">{{value|get_item:'kod_ugs'}} - {{value|get_item:'name_ugs'}}</label>-->
+                        <!--</div>-->
+                    <!--{% endfor %}-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="content">
+                    <p><strong>Дополнительные параметры:</strong></p>
+                        <div class="form-check">
+                            <input class="form-check-input de" type="checkbox" name="de" id="de" value="1">
+                            <label class="form-check-label" for="de">Результаты демонстрационного экзамена</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input cel" type="checkbox" name="cel" id="cel" value="1">
+                            <label class="form-check-label" for="cel">Целевое обучение</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input inv" type="checkbox" name="inv" id="inv" value="1">
+                            <label class="form-check-label" for="inv">ОВЗ/Инвалиды</label>
+                        </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" id="getreport" respondent="{{respondent_strtype}}"><i class="far fa-file-excel"></i> Сформировать</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% load static %}
+<!--<style>-->
+     <!--.flex{-->
+     <!--//width: 290px;-->
+     <!--height: 560px;-->
+     <!--display: flex;-->
+     <!--flex-direction: column;-->
+     <!--flex-wrap: wrap;-->
+   <!--}-->
+  <!--.block{-->
+      <!--//width: 50px;-->
+      <!--//height: 200px;-->
+      <!--//margin: 10px;-->
+    <!--}-->
+<!--</style>-->
+<script type="text/javascript" src="{% static 'results/js/script.js' %}"></script>
 <script>
 var ctx = document.getElementById('myChart_employment').getContext('2d');
 var myChart = new Chart(ctx, {

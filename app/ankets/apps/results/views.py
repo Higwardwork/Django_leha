@@ -96,10 +96,22 @@ def respondentsresult(request, respondent_strtype):
 
     if respondent_strtype == 'graduates':
         table = 'v_exit_1_graduates_rf'
+        #sql = 'SELECT ter, q71, COUNT(respondent_id) AS count_resp FROM v_results_graduates_columns GROUP BY ter, q71'
+        sql = 'SELECT ter, q71, SUM(count_resp) AS count_resp, ROUND((SUM(count_trud)/SUM(count_resp))*100,2) AS d_trud, CASE WHEN SUM(count_trud)!=0 THEN ROUND((CAST(SUM(count_trud_prof) AS DEC(12,4))/SUM(count_trud))*100,2) ELSE 0.00 END AS d_trud_prof FROM' \
+              ' (SELECT respondent_id, ter, q71, COUNT(respondent_id) AS count_resp, CASE WHEN(q91_zn = 1 OR q91_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN(q92_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof  FROM v_results_graduates_columns GROUP BY respondent_id, ter, q71, q91_zn, q92_zn) sq' \
+              ' GROUP BY ter, q71'
+        sql_ugs = "SELECT kod_ugs, name_ugs FROM t_ugs INNER JOIN v_results_graduates_columns ON t_ugs.kod_ugs = v_results_graduates_columns.ugs ORDER BY kod_ugs"
     elif respondent_strtype == 'organizations':
-        table = 'v_exit_1_oospo'
+        table = 'v_exit_1_oospo_rf'
+        #sql = 'SELECT ter, q3, COUNT(respondent_id) AS count_resp FROM v_results_oospo_columns GROUP BY ter, q3'
+        sql = 'SELECT ter, q3, SUM(count_resp) AS count_resp, ROUND((SUM(count_trud)/SUM(count_resp))*100,2) AS d_trud, CASE WHEN SUM(count_trud)!=0 THEN ROUND((CAST(SUM(count_trud_prof) AS DEC(12,4))/SUM(count_trud))*100,2) ELSE 0.00 END AS d_trud_prof FROM' \
+             ' (SELECT ter, q3, COUNT(respondent_id) AS count_resp, CASE WHEN(q18_zn = 1 OR q18_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN(q111_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof  FROM v_results_oospo_columns GROUP BY respondent_id, essence_id, ter, q3, q18_zn, q111_zn) sq' \
+             ' GROUP BY ter, q3'
+        sql_ugs = "SELECT t_ugs.kod_ugs, t_ugs.name_ugs FROM t_ugs INNER JOIN v_results_oospo_columns ON t_ugs.kod_ugs = v_results_oospo_columns.kod_ugs ORDER BY kod_ugs"
     elif respondent_strtype == 'employers':
         table = 'v_exit_1_employers'
+        sql = ''
+        sql_ugs = "SELECT kod_ugs, name_ugs FROM t_ugs ORDER BY kod_ugs"
         #return HttpResponse("<a href='/results/ankets/employers/'>Анкеты</a>")
         return render(request, 'results/respondents.html',
                       {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
@@ -160,17 +172,39 @@ def respondentsresult(request, respondent_strtype):
         res.append(int(value[1]))
     raw_employment_regions = {'data': res, 'labels': labels}
 
+    cursor = connection.cursor()
+    cursor.execute(sql_ugs)
+    rawresults = cursor.fetchall()
+    cursor.close()
+    ugs_dic = {}
+    for value in rawresults:
+        ugs_dic[value[0]] = {'kod_ugs': value[0], 'name_ugs': value[1]}
+
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    rawresults = cursor.fetchall()
+    cursor.close()
+    regions = {}
+    count_all = 0
+    for value in rawresults:
+        count_all = count_all + value[2]
+        regions[value[0]] = {'ter': value[0], 'name': value[1], 'count': value[2], 'd_trud': value[3], 'd_trud_prof': value[4]}
+
     return render(request, 'results/respondents.html',
-                  {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': raw_employment, 'raw_employment_types': raw_employment_types, 'raw_employment_prof': raw_employment_prof, 'raw_employment_regions': raw_employment_regions})
+                  {'count_all': count_all, 'regions': regions, 'ugs_dic': ugs_dic, 'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': raw_employment, 'raw_employment_types': raw_employment_types, 'raw_employment_prof': raw_employment_prof, 'raw_employment_regions': raw_employment_regions})
 
 
-def exittables(request, respondent_strtype):
+def exittables(request, respondent_strtype, ter):
+    if ter == 0:
+        return HttpResponse('Нет страницы')
+    # else:
+    #     return HttpResponse(ter)
     respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
     respondent_name = respondent_obj.respondent_name
     cursor = connection.cursor()
     if respondent_strtype == 'graduates':
         #cursor.execute("SELECT * FROM v_exit_1_graduates")
-        cursor.execute("SELECT region_name,"
+        cursor.execute("SELECT name_ugs,"
                        " SUM(gr1) AS gr1,"
                        " SUM(gr2) AS gr2,"
                        " SUM(gr3) AS gr3,"
@@ -187,10 +221,28 @@ def exittables(request, respondent_strtype):
                        " SUM(gr14) AS gr14,"
                        " SUM(gr15) AS gr15"
                        " FROM v_exit_1_graduates INNER JOIN v_characteristic_graduates ON v_exit_1_graduates.respondent_id = v_characteristic_graduates.respondent_id"
-                       " GROUP BY region_name"
-                       " ORDER BY region_name")
+                       " WHERE ter = "+str(ter)+" GROUP BY name_ugs"
+                       " ORDER BY name_ugs")
     elif respondent_strtype == 'organizations':
-        cursor.execute("SELECT * FROM v_exit_1_oospo")
+        cursor.execute("SELECT v_characteristic_oospo.name_ugs AS name_ugs,"
+                       " SUM(v_exit_1_oospo.gr1) AS gr1,"
+                       " SUM(v_exit_1_oospo.gr2) AS gr2,"
+                       " SUM(v_exit_1_oospo.gr3) AS gr3,"
+                       " SUM(v_exit_1_oospo.gr4) AS gr4,"
+                       " SUM(v_exit_1_oospo.gr5) AS gr5,"
+                       " SUM(v_exit_1_oospo.gr6) AS gr6,"
+                       " SUM(v_exit_1_oospo.gr7) AS gr7,"
+                       " SUM(v_exit_1_oospo.gr8) AS gr8,"
+                       " SUM(v_exit_1_oospo.gr9) AS gr9,"
+                       " SUM(v_exit_1_oospo.gr10) AS gr10,"
+                       " SUM(v_exit_1_oospo.gr11) AS gr11,"
+                       " SUM(v_exit_1_oospo.gr12) AS gr12,"
+                       " SUM(v_exit_1_oospo.gr13) AS gr13,"
+                       " SUM(v_exit_1_oospo.gr14) AS gr14,"
+                       " SUM(v_exit_1_oospo.gr15) AS gr15"
+                       " FROM v_exit_1_oospo INNER JOIN v_characteristic_oospo ON v_exit_1_oospo.name_agregate = v_characteristic_oospo.respondent_id AND v_exit_1_oospo.essence_id = v_characteristic_oospo.essence_id"
+                       " WHERE ter = "+str(ter)+""
+                       " GROUP BY name_ugs")
     elif respondent_strtype == 'employers':
         return HttpResponse('Нет выходных таблиц по данной группе респондентов')
     rawresults = cursor.fetchall()
@@ -219,7 +271,7 @@ def unloading(request, respondent_strtype):
     style.alignment.wrap = 1 #переносить по словам
 
     if respondent_strtype == 'graduates':
-        table = 'v_results_graduates_columns'
+        sql = 'SELECT respondent_id, q70, q120, q77, q71, q73, q75, q76, q78, q79, q80, q82, q112, q83, q85, q91, q121, q72, q110, q92, q95, q96, q97, q98, q99, q100, q101, q102, q103, q104 FROM v_results_graduates_columns'
         ws.write_merge(0, 1, 0, 0, 'id', style)
         ws.write_merge(0, 0, 1, 7, 'Общие сведения', style) #с 1 по 7 вправо
         ws.write_merge(0, 0, 8, 14, 'Образование', style)  #c 8 по 14 вправо
@@ -260,7 +312,7 @@ def unloading(request, respondent_strtype):
             ws.write(2, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
     elif respondent_strtype == 'organizations':
-        table = 'v_results_oospo_columns'
+        sql = 'SELECT respondent_id, essence_id, q3, q4, q5, q6, q7, q8, q113, q114, q29, q26, q19, q9, q115, q10, q116, q11, q18, q117, q109, q118, q111, q27, q119, q25 FROM v_results_oospo_columns'
         ws.write_merge(0, 1, 0, 0, 'id', style)
         ws.write_merge(0, 1, 1, 1, '№ п/п', style)
         ws.write_merge(0, 0, 2, 6, 'Общие сведения', style)
@@ -294,7 +346,7 @@ def unloading(request, respondent_strtype):
             ws.write(2, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
     elif respondent_strtype == 'employers':
-        table = 'v_results_employers_columns'
+        sql = 'SELECT * FROM v_results_employers_columns'
         ws.write_merge(0, 1, 0, 0, 'id', style)
         ws.write_merge(0, 1, 1, 1, '№ п/п', style)
         ws.write_merge(0, 0, 2, 8, 'Общие сведения', style)
@@ -326,7 +378,8 @@ def unloading(request, respondent_strtype):
             ws.col(nc).width = int(23 * 260)
 
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM "+table)
+    #cursor.execute("SELECT * FROM "+table)
+    cursor.execute(sql)
     rawresults = cursor.fetchall()
     cursor.close()
 
@@ -411,3 +464,105 @@ def answers(request, respondent_strtype, respondent_id):
     raw = {'respondents': respondents}
     return render(request, 'results/answers.html',
                   {'raw': raw, 'respondent_strtype': respondent_strtype})
+
+
+def ajaxgetreport(request, respondent_strtype):
+    regions = request.POST.get('regions')
+    ugs = request.POST.get('ugs')
+    razrez = request.POST.get('razrez')
+    de = ' AND dem_exam = 1 ' if request.POST.get('de') == '1' else ''
+    cel = ' AND celevoe = 1 ' if request.POST.get('cel') == '1' else ''
+    inv = ' AND ovz_inv = 1 ' if request.POST.get('inv') == '1' else ''
+    if regions == '' or ugs == '':
+        return HttpResponse("don't set parameters")
+    if respondent_strtype == 'graduates':
+        #sql = "SELECT * FROM v_results_graduates_columns WHERE ter IN("+regions+")"
+        sql = "SELECT "+razrez+"," \
+                       " SUM(gr1) AS gr1," \
+                       " SUM(gr2) AS gr2," \
+                       " SUM(gr3) AS gr3," \
+                       " SUM(gr4) AS gr4," \
+                       " SUM(gr5) AS gr5," \
+                       " SUM(gr6) AS gr6," \
+                       " SUM(gr7) AS gr7," \
+                       " SUM(gr8) AS gr8," \
+                       " SUM(gr9) AS gr9," \
+                       " SUM(gr10) AS gr10," \
+                       " SUM(gr11) AS gr11," \
+                       " SUM(gr12) AS gr12," \
+                       " SUM(gr13) AS gr13," \
+                       " SUM(gr14) AS gr14," \
+                       " SUM(gr15) AS gr15" \
+                       " FROM v_exit_1_graduates INNER JOIN v_characteristic_graduates ON v_exit_1_graduates.respondent_id = v_characteristic_graduates.respondent_id" \
+                       " WHERE ter IN("+regions+") AND kod_ugs IN("+ugs+") "+de+" "+cel+"  "+inv+"  GROUP BY "+razrez+"" \
+                       " ORDER BY "+razrez+""
+        #return HttpResponse(sql)
+    elif respondent_strtype == 'organizations':
+        sql = "SELECT "+razrez+"," \
+                       " SUM(v_exit_1_oospo.gr1) AS gr1," \
+                       " SUM(v_exit_1_oospo.gr2) AS gr2," \
+                       " SUM(v_exit_1_oospo.gr3) AS gr3," \
+                       " SUM(v_exit_1_oospo.gr4) AS gr4," \
+                       " SUM(v_exit_1_oospo.gr5) AS gr5," \
+                       " SUM(v_exit_1_oospo.gr6) AS gr6," \
+                       " SUM(v_exit_1_oospo.gr7) AS gr7," \
+                       " SUM(v_exit_1_oospo.gr8) AS gr8," \
+                       " SUM(v_exit_1_oospo.gr9) AS gr9," \
+                       " SUM(v_exit_1_oospo.gr10) AS gr10," \
+                       " SUM(v_exit_1_oospo.gr11) AS gr11," \
+                       " SUM(v_exit_1_oospo.gr12) AS gr12," \
+                       " SUM(v_exit_1_oospo.gr13) AS gr13," \
+                       " SUM(v_exit_1_oospo.gr14) AS gr14," \
+                       " SUM(v_exit_1_oospo.gr15) AS gr15" \
+                       " FROM v_exit_1_oospo INNER JOIN v_characteristic_oospo ON v_exit_1_oospo.name_agregate = v_characteristic_oospo.respondent_id AND v_exit_1_oospo.essence_id = v_characteristic_oospo.essence_id" \
+                       " WHERE ter IN("+regions+") AND kod_ugs IN("+ugs+") "+de+" "+cel+"  "+inv+"  GROUP BY "+razrez+"" \
+                       " ORDER BY "+razrez+""
+        #return HttpResponse(sql)
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    results = cursor.fetchall()
+    cursor.close()
+
+    now = datetime.datetime.now().strftime("%Y-%m-%d")
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="' + respondent_strtype + now + '.xls"'
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet(respondent_strtype)
+    style = xlwt.easyxf('font: bold off, color black;\
+                         borders: top_color black, bottom_color black, right_color black, left_color black,\
+                                  left thin, right thin, top thin, bottom thin;\
+                         pattern: pattern solid, fore_color white;\
+                         align: vert centre, horiz centre')
+    style.alignment.wrap = 1 #переносить по словам
+    ws.write_merge(0, 1, 0, 0, '', style)
+    ws.write_merge(0, 1, 1, 1, 'Всего, чел.', style)
+    ws.write_merge(0, 0, 2, 9, 'Трудоустроены, чел.', style)
+    ws.write_merge(0, 0, 10, 11, 'Трудоустроены из гр.2, чел.', style)
+    ws.write_merge(0, 1, 12, 12, 'Продолжили обучение в проф. обр. организациях', style)
+    ws.write_merge(0, 1, 13, 13, 'Призваны в ряды Вооруженных Сил Российской Федерации', style)
+    ws.write_merge(0, 1, 14, 14, 'Находятся в отпуске по уходу за ребенком', style)
+    ws.write_merge(0, 1, 15, 15, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных)', style)
+    ws.write(1, 2, 'Всего', style)
+    ws.write(1, 3, 'из них по профессии/специальности', style)
+    ws.write(1, 4, 'По найму', style)
+    ws.write(1, 5, 'из них по профессии/специальности', style)
+    ws.write(1, 6, 'ИП', style)
+    ws.write(1, 7, 'из них по профессии/специальности', style)
+    ws.write(1, 8, 'Самозанятые', style)
+    ws.write(1, 9, 'из них по профессии/специальности', style)
+    ws.write(1, 10, 'в регионах с постоянной регистрацией', style)
+    ws.write(1, 11, 'в регионах, не связанных с местом постоянной регистрации', style)
+    for nc in range(16):
+        ws.write(2, nc, nc, style)
+        ws.col(nc).width = int(23 * 260)
+    font_style = xlwt.XFStyle()
+    row_num = 2
+    for row in results:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+    wb.save(response)
+    return response
+    #return HttpResponse(results)
+    #return render(request, 'results/exittables.html',
+    #              {'respondent_strtype': respondent_strtype, 'results': results, 'respondent_name': "В-----"})

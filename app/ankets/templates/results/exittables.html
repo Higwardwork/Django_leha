@@ -74,7 +74,11 @@
                         {% for value in results %}
                             <tr>
                                 {% for v in value %}
-                                    <td>{{v}}</td>
+                                    {% if forloop.counter == 1 %}
+                                        <td class="text-left">{{v}}</td>
+                                    {% else %}
+                                        <td>{{v}}</td>
+                                    {% endif %}
                                 {% endfor %}
                             </tr>
                         {% endfor %}
