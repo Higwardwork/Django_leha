@@ -47,7 +47,7 @@ $(document).on("click", "#getreport", function(){
       },
       success: function (res, status, xhr) {
                 var link = document.createElement('a'),
-                filename = 'file.xls';
+                filename = 'report_'+resp+'.xls';
                 link.href = URL.createObjectURL(res);
                 link.download = filename;
                 link.click();
