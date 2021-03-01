@@ -12,6 +12,9 @@ from django.core.mail import send_mail
 from django import forms
 from captcha.fields import CaptchaField
 from django.core import serializers
+import requests
+from django.conf import settings
+
 
 
 #Пользовательские фильтры:
@@ -132,10 +135,17 @@ def sendmail(request, respondent_strtype, respondent_id):
             respondent_id = uuid.uuid4()
             mailaddr = str(request.POST.get('respondentmail'))
             #msg = 'Ваша ссылка для доступа к анкете: ' + 'https://statedu.ru/' + str(
-            msg = 'Ваша ссылка для доступа к анкете: ' + 'https://statedu.ru/' + str(
-                respondent_strtype) + '/anket/' + str(respondent_id)
-            sm = send_mail('Ваша ссылка на опрос о трудоустройстве выпускников', msg, 'support@statedu.ru', [mailaddr],
-                           fail_silently=False)
+            link = 'https://statedu.ru/' + str(respondent_strtype) + '/anket/' + str(respondent_id)
+            msg = 'Ваша ссылка для доступа к анкете: <a href="' + link + '">' + link + '</a>'
+            # sm = send_mail('Ваша ссылка на опрос о трудоустройстве выпускников', msg, 'support@statedu.ru', [mailaddr],
+            #                fail_silently=False)
+            auth = {"username": getattr(settings, 'EMAIL_HOST_USER'), "password": getattr(settings, 'EMAIL_HOST_PASSWORD')}
+            token = requests.post(getattr(settings, 'EMAIL_HOST')+'/token', data=auth)
+            token = token.json()["access_token"]
+            jsn = {"subject": "Ваша ссылка на опрос о трудоустройстве выпускников", "recipients": [mailaddr],
+                   "body": msg}
+            sm = requests.post('https://apimail.miccedu.ru/email', headers={"Authorization": f"Bearer {token}"},
+                          data=jsn)
             if sm:
                 linkobj = Links()
                 linkobj.respondent_id = respondent_id

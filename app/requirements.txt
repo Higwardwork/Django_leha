@@ -5,3 +5,4 @@ django-dkim
 django-simple-captcha
 pillow
 xlwt
+requests
