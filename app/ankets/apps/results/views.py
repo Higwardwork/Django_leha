@@ -488,6 +488,9 @@ def ajaxgetreport(request, respondent_strtype):
     regions = request.POST.get('regions')
     ugs = request.POST.get('ugs')
     razrez = request.POST.get('razrez')
+    regions_checked = request.POST.get('regions_checked')
+    ugs_checked = request.POST.get('ugs_checked')
+    dop_parameters = request.POST.get('dop_parameters')
     de = ' AND dem_exam = 1 ' if request.POST.get('de') == '1' else ''
     cel = ' AND celevoe = 1 ' if request.POST.get('cel') == '1' else ''
     inv = ' AND ovz_inv = 1 ' if request.POST.get('inv') == '1' else ''
@@ -552,29 +555,33 @@ def ajaxgetreport(request, respondent_strtype):
                          pattern: pattern solid, fore_color white;\
                          align: vert centre, horiz centre')
     style.alignment.wrap = 1 #переносить по словам
-    ws.write_merge(0, 1, 0, 0, '', style)
-    ws.write_merge(0, 1, 1, 1, 'Всего, чел.', style)
-    ws.write_merge(0, 0, 2, 9, 'Трудоустроены, чел.', style)
-    ws.write_merge(0, 0, 10, 11, 'Трудоустроены из гр.2, чел.', style)
-    ws.write_merge(0, 1, 12, 12, 'Продолжили обучение в проф. обр. организациях', style)
-    ws.write_merge(0, 1, 13, 13, 'Призваны в ряды Вооруженных Сил Российской Федерации', style)
-    ws.write_merge(0, 1, 14, 14, 'Находятся в отпуске по уходу за ребенком', style)
-    ws.write_merge(0, 1, 15, 15, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных)', style)
-    ws.write(1, 2, 'Всего', style)
-    ws.write(1, 3, 'из них по профессии/специальности', style)
-    ws.write(1, 4, 'По найму', style)
-    ws.write(1, 5, 'из них по профессии/специальности', style)
-    ws.write(1, 6, 'ИП', style)
-    ws.write(1, 7, 'из них по профессии/специальности', style)
-    ws.write(1, 8, 'Самозанятые', style)
-    ws.write(1, 9, 'из них по профессии/специальности', style)
-    ws.write(1, 10, 'в регионах с постоянной регистрацией', style)
-    ws.write(1, 11, 'в регионах, не связанных с местом постоянной регистрации', style)
+    ws.write(0, 0, regions_checked)
+    ws.write(1, 0, ugs_checked)
+    ws.write(2, 0, dop_parameters)
+
+    ws.write_merge(3, 4, 0, 0, '', style)
+    ws.write_merge(3, 4, 1, 1, 'Всего, чел.', style)
+    ws.write_merge(3, 3, 2, 9, 'Трудоустроены, чел.', style)
+    ws.write_merge(3, 3, 10, 11, 'Трудоустроены из гр.2, чел.', style)
+    ws.write_merge(3, 4, 12, 12, 'Продолжили обучение в проф. обр. организациях', style)
+    ws.write_merge(3, 4, 13, 13, 'Призваны в ряды Вооруженных Сил Российской Федерации', style)
+    ws.write_merge(3, 4, 14, 14, 'Находятся в отпуске по уходу за ребенком', style)
+    ws.write_merge(3, 4, 15, 15, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных)', style)
+    ws.write(4, 2, 'Всего', style)
+    ws.write(4, 3, 'из них по профессии/специальности', style)
+    ws.write(4, 4, 'По найму', style)
+    ws.write(4, 5, 'из них по профессии/специальности', style)
+    ws.write(4, 6, 'ИП', style)
+    ws.write(4, 7, 'из них по профессии/специальности', style)
+    ws.write(4, 8, 'Самозанятые', style)
+    ws.write(4, 9, 'из них по профессии/специальности', style)
+    ws.write(4, 10, 'в регионах с постоянной регистрацией', style)
+    ws.write(4, 11, 'в регионах, не связанных с местом постоянной регистрации', style)
     for nc in range(16):
-        ws.write(2, nc, nc, style)
+        ws.write(5, nc, nc, style)
         ws.col(nc).width = int(23 * 260)
     font_style = xlwt.XFStyle()
-    row_num = 2
+    row_num = 5
     for row in results:
         row_num += 1
         for col_num in range(len(row)):

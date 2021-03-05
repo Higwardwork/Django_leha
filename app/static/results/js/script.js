@@ -8,6 +8,18 @@ $(document).on("click", "#getreport", function(){
     var regions = $('#regions').val();
     regions = regions.join();
 
+    var regions_checked = '';
+    $('#regions :selected').each(function(i, sel){
+        regions_checked += $(sel).text() + ', ';
+    });
+    regions_checked = 'Выбранные субъекты: ' + regions_checked.substr(0, regions_checked.length - 2);
+
+    var ugs_checked = '';
+    $('#ugs :selected').each(function(i, sel){
+        ugs_checked += $(sel).text() + ', ';
+    });
+    ugs_checked = 'Выбранные УГПС: ' + ugs_checked.substr(0, ugs_checked.length - 2);
+
 //    var ugs = '';
 //    $( ".ugs" ).each(function( index ) {
 //        if(this.checked){
@@ -29,6 +41,20 @@ $(document).on("click", "#getreport", function(){
         inv = 1;
     }
 
+    var de_checked = '';
+    if( $('#de:checked').val() == 1 ){
+        de_checked = $('[for="de"]').text();
+    }
+    var cel_checked = '';
+    if( $('#cel:checked').val() == 1 ){
+        cel_checked = $('[for="cel"]').text();
+    }
+    var inv_checked = '';
+    if( $('#inv:checked').val() == 1 ){
+        inv_checked = $('[for="inv"]').text();
+    }
+    var dop_parameters = de_checked + ' | ' + cel_checked + ' | ' + inv_checked;
+
     $.ajax({
       type: "POST",
       url: "/results/ajaxgetreport/"+resp+"/",
@@ -42,6 +68,9 @@ $(document).on("click", "#getreport", function(){
         'de': de,
         'cel': cel,
         'inv': inv,
+        'regions_checked': regions_checked,
+        'ugs_checked': ugs_checked,
+        'dop_parameters': dop_parameters,
         'razrez': $("#razrez").val(),
         csrfmiddlewaretoken: tok
       },

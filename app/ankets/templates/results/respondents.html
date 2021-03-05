@@ -21,7 +21,7 @@
 
 {% if user.is_authenticated %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.4.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.4.0/dist/chartjs-plugin-datalabels.min.js"></script> <!--отображение процентов в круговой диаграмме-->
 
 <div class="container sections-wrapper">
     <div class="row">
@@ -289,7 +289,7 @@ var myChart = new Chart(ctx, {
            tooltips: {
              enabled: true
            },
-           plugins: {
+           plugins: { //отображение процентов в круговой диаграмме
              datalabels: {
                formatter: (value, ctx) => {
                  let datasets = ctx.chart.data.datasets;
