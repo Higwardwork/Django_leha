@@ -23,6 +23,7 @@
 
 {% if user.is_authenticated %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+
 <div class="container sections-wrapper">
     <div class="row">
         <div class="primary col-md-8 col-sm-12 col-xs-12">
@@ -44,7 +45,7 @@
             <!--<p>raw: {{raw}}</p>-->
             <!--<p>raw1: {{raw1}}</p>-->
             <!--<p>raw2: {{raw2.data}}</p>-->
-            <!--<p>raw_date: {{raw_date}}</p>-->
+            <!--<p>raw_type: {{raw_type|get_max_label:'max_label'}}</p>-->
             <!--style="position: relative; height:20vh; width:40vw"-->
             <!--style="display: block; width: 500px; height: 250px;"-->
             <section class="latest section">
@@ -58,6 +59,7 @@
                         </p>
                         <div style="padding-bottom:100px;padding-top:30px;">
                             <p>Распределение респондентов по типам</p>
+                            <p>Большинство респондентов, заполнивших анкеты, относятся к типу "{{raw_type|get_max_label:'max_label'}}" ({{raw_type|get_max_label:'max_val'}} респондентов)</p>
                             <div class="chart-container">
                               <canvas id="myChart_types"></canvas>
                             </div>
@@ -76,6 +78,7 @@
                          </div>
                         <div style="padding-bottom:100px;">
                             <p>Распределение выпускников по укрупнённым группам профессий/специальностей</p>
+                            <p>Больше всего выпускников ({{raw_spec|get_max_label:'max_val'}} человека) относится к группе {{raw_spec|get_max_label:'max_label'}}</p>
                             <div class="chart-container">
                               <canvas id="myChart_spec"></canvas>
                             </div>
@@ -107,7 +110,8 @@
                 <div class="content">
                     <ul class="list-unstyled">
                         <li><a href="/results/respondents/graduates"><i class="fas fa-user-graduate"></i> Выпускники</a></li>
-                        <li><a href="/results/respondents/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>
+                        <!--<li><a href="/results/respondents/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>-->
+                        <li><a href="/results/unloading/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>
                         <li><a href="/results/respondents/organizations"><i class="fas fa-university"></i> Образовательные организации</a></li>
                     </ul>
                 </div><!--//content-->
@@ -234,7 +238,7 @@ for (var i in {{raw_spec.data}}) {
 }
 var ctx = document.getElementById('myChart_spec').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'pie',
+    type: 'bar',
     data: {
         labels: {{raw_spec.labels|safe}},
         datasets: [
@@ -246,10 +250,12 @@ var myChart = new Chart(ctx, {
         ]
     },
     options: {
-        elements: {
-            arc: {
-                borderWidth: 0.4
-            },
+        scales: {
+            xAxes: [{
+                ticks: {
+                    display: false
+                }
+            }]
         },
         legend: {
             display: false

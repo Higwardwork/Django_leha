@@ -152,6 +152,7 @@ def sendmail(request, respondent_strtype, respondent_id):
                 linkobj.status = 0
                 linkobj.mail = mailaddr
                 linkobj.respondent_type_id = respondent_type
+                linkobj.reg_date = datetime.datetime.now().replace(microsecond=0)
                 linkobj.save()
                 return redirect('/' + respondent_strtype + '/mailcomplete/')
             else:

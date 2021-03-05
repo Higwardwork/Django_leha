@@ -116,6 +116,7 @@ class Links(models.Model):
     respondent_id = models.CharField("уникальный код респондента", max_length=100)
     status = models.IntegerField("статус анкеты")
     mail = models.CharField("адрес электронной почты респондента", max_length=100, null=True)
+    reg_date = models.DateTimeField("дата регистрации", null=True)
     class Meta:
         verbose_name = 'Ссылка'
         verbose_name_plural = 'Ссылки'

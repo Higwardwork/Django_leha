@@ -21,10 +21,12 @@
 
 {% if user.is_authenticated %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.4.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
 <div class="container sections-wrapper">
     <div class="row">
-        <div class="primary col-md-8 col-sm-12 col-xs-12">
+        <!--<div class="primary col-md-8 col-sm-12 col-xs-12">-->
+        <div class="primary col-md-8">
             <section class="about section">
                 <div class="section-inner">
                     <h2 class="heading">Информация об опросе по группе респондентов: "{{respondent_name}}"</h2>
@@ -47,13 +49,16 @@
                                     <th>Количество выпускников, чел.</th>
                                     <th>Доля работающих</th>
                                     <th>Доля работающих по спец./проф. (от числа трудоустроенных)</th>
+                                    <th>Средняя заработная плата, руб.</th>
                                 </tr>
                                 {% for key, value in regions.items %}
                                     <tr>
-                                        <td><a href="/results/exittables/{{respondent_strtype}}/{{key}}">{{value|get_item:'name'}}</a></td>
+                                        <!--<td><a href="/results/exittables/{{respondent_strtype}}/{{key}}">{{value|get_item:'name'}}</a></td>-->
+                                        <td>{{value|get_item:'name'}}</td>
                                         <td>{{value|get_item:'count'}}</td>
                                         <td>{{value|get_item:'d_trud'}}%</td>
                                         <td>{{value|get_item:'d_trud_prof'}}%</td>
+                                        <td>{{value|get_item:'zp'}}</td>
                                     </tr>
                                 {% endfor %}
                             </table>
@@ -95,7 +100,7 @@
                 </div>
             </section>
     </div>
-    <div class="secondary col-md-4 col-sm-12 col-xs-12">
+    <div class="secondary col-md-4">
          <aside class="info aside section">
             <div class="section-inner">
                 <h2 class="heading">Информация по группам респондентов</h2>
@@ -154,6 +159,7 @@
                         <select class="form-control" id="razrez" name="razrez">
                           <option value="region_name">Субъекты РФ</option>
                           <option value="name_ugs">УГПС</option>
+                          <option value="oo_name">Организации СПО</option>
                         </select>
                       </div>
                 </div>
@@ -264,6 +270,8 @@
 <!--</style>-->
 <script type="text/javascript" src="{% static 'results/js/script.js' %}"></script>
 <script>
+
+
 var ctx = document.getElementById('myChart_employment').getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'pie',
@@ -276,6 +284,26 @@ var myChart = new Chart(ctx, {
                     backgroundColor: ["rgba(100, 700, 100, 0.4)", "rgba(700, 100, 100, 0.4)", "rgba(100, 100, 700, 0.4)", "rgba(500, 100, 300, 0.4)", "rgba(300, 700, 200, 0.4)"],
                 },
         ]
+    },
+    options: {
+           tooltips: {
+             enabled: true
+           },
+           plugins: {
+             datalabels: {
+               formatter: (value, ctx) => {
+                 let datasets = ctx.chart.data.datasets;
+                 if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+                   let sum = datasets[0].data.reduce((a, b) => a + b, 0);
+                   let percentage = Math.round((value / sum) * 100) + '%';
+                   return percentage;
+                 } else {
+                   return percentage;
+                 }
+               },
+               color: '#61757d',
+             }
+           }
     }
 });
 
@@ -291,6 +319,26 @@ var myChart = new Chart(ctx, {
                     backgroundColor: ["rgba(100, 700, 100, 0.4)", "rgba(700, 100, 100, 0.4)"],
                 },
         ]
+    },
+    options: {
+           tooltips: {
+             enabled: true
+           },
+           plugins: {
+             datalabels: {
+               formatter: (value, ctx) => {
+                 let datasets = ctx.chart.data.datasets;
+                 if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+                   let sum = datasets[0].data.reduce((a, b) => a + b, 0);
+                   let percentage = Math.round((value / sum) * 100) + '%';
+                   return percentage;
+                 } else {
+                   return percentage;
+                 }
+               },
+               color: '#61757d',
+             }
+           }
     }
 });
 
@@ -306,6 +354,26 @@ var myChart = new Chart(ctx, {
                     backgroundColor: ["rgba(100, 700, 100, 0.4)", "rgba(700, 100, 100, 0.4)", "rgba(100, 100, 700, 0.4)"],
                 },
         ]
+    },
+    options: {
+           tooltips: {
+             enabled: true
+           },
+           plugins: {
+             datalabels: {
+               formatter: (value, ctx) => {
+                 let datasets = ctx.chart.data.datasets;
+                 if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+                   let sum = datasets[0].data.reduce((a, b) => a + b, 0);
+                   let percentage = Math.round((value / sum) * 100) + '%';
+                   return percentage;
+                 } else {
+                   return percentage;
+                 }
+               },
+               color: '#61757d',
+             }
+           }
     }
 });
 
@@ -321,6 +389,26 @@ var myChart = new Chart(ctx, {
                     backgroundColor: ["rgba(100, 700, 100, 0.4)", "rgba(700, 100, 100, 0.4)"],
                 },
         ]
+    },
+    options: {
+           tooltips: {
+             enabled: true
+           },
+           plugins: {
+             datalabels: {
+               formatter: (value, ctx) => {
+                 let datasets = ctx.chart.data.datasets;
+                 if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+                   let sum = datasets[0].data.reduce((a, b) => a + b, 0);
+                   let percentage = Math.round((value / sum) * 100) + '%';
+                   return percentage;
+                 } else {
+                   return percentage;
+                 }
+               },
+               color: '#61757d',
+             }
+           }
     }
 });
 </script>
