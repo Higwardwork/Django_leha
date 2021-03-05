@@ -20,39 +20,12 @@ $(document).on("click", "#getreport", function(){
     });
     ugs_checked = 'Выбранные УГПС: ' + ugs_checked.substr(0, ugs_checked.length - 2);
 
-//    var ugs = '';
-//    $( ".ugs" ).each(function( index ) {
-//        if(this.checked){
-//            ugs += "'"+$(this).val()+"',";
-//        }
-//    });
-//    ugs = ugs.substr(0, ugs.length - 1);
-
-    var de = 0;
-    if($(".de").prop('checked') == true){
-        de = 1;
-    }
-    var cel = 0;
-    if($(".cel").prop('checked') == true){
-        cel = 1;
-    }
-    var inv = 0;
-    if($(".inv").prop('checked') == true){
-        inv = 1;
-    }
-
-    var de_checked = '';
-    if( $('#de:checked').val() == 1 ){
-        de_checked = $('[for="de"]').text();
-    }
-    var cel_checked = '';
-    if( $('#cel:checked').val() == 1 ){
-        cel_checked = $('[for="cel"]').text();
-    }
-    var inv_checked = '';
-    if( $('#inv:checked').val() == 1 ){
-        inv_checked = $('[for="inv"]').text();
-    }
+    let de = ($(".de").prop('checked') == true) ? 1 : 0;
+    let cel = ($(".cel").prop('checked') == true) ? 1 : 0;
+    let inv = ($(".inv").prop('checked') == true) ? 1 : 0;
+    let de_checked = ( $('#de:checked').val() == 1 ) ? $('[for="de"]').text() : '';
+    let cel_checked = ( $('#cel:checked').val() == 1 ) ? $('[for="cel"]').text() : '';
+    let inv_checked = ( $('#inv:checked').val() == 1 ) ? $('[for="inv"]').text() : '';
     var dop_parameters = de_checked + ' | ' + cel_checked + ' | ' + inv_checked;
 
     $.ajax({
