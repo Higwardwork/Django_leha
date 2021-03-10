@@ -57,26 +57,36 @@
                             Всего внесены сведения о <strong>{{raw_spec.all_grad}}</strong> выпускниках,
                             завершивших обучение по образовательным программах среднего профессионального образования.
                         </p>
-                        <div style="padding-bottom:100px;padding-top:30px;">
+                        <div style="padding-bottom:10px;padding-top:30px;">
                             <p>Распределение респондентов по типам</p>
                             <p>Большинство респондентов, заполнивших анкеты, относятся к типу "{{raw_type|get_max_label:'max_label'}}" ({{raw_type|get_max_label:'max_val'}} респондентов)</p>
                             <div class="chart-container">
                               <canvas id="myChart_types"></canvas>
                             </div>
                          </div>
-                        <div style="padding-bottom:100px;">
+                        <hr/>
+                        <div style="padding-bottom:10px;">
                             <p>Распределение по датам</p>
                             <div class="chart-container">
                               <canvas id="myChart_dates"></canvas>
                             </div>
                          </div>
-                        <div style="padding-bottom:100px;">
+                        <hr/>
+                        <div style="padding-bottom:10px;">
                             <p>Распределение респондентов по субъектам Российской Федерации</p>
                             <div class="chart-container">
-                              <canvas id="myChart_sub"></canvas>
+                                {% include "results/includes/map.html" %}
+                                <div id='hint_reg' style='display:none;position:fixed;border:1px solid #888;border-radius:5px;background:#efd;box-shadow:2px 2px 3px rgba(0,0,0,0.4);padding:5px 8px;font: normal 400 13px/12px Calibri;z-index:1000;'>
                             </div>
                          </div>
-                        <div style="padding-bottom:100px;">
+                        <hr/>
+                        <!--<div style="padding-bottom:100px;">-->
+                            <!--<p>Распределение респондентов по субъектам Российской Федерации</p>-->
+                            <!--<div class="chart-container">-->
+                              <!--<canvas id="myChart_sub"></canvas>-->
+                            <!--</div>-->
+                         <!--</div>-->
+                        <div style="padding-bottom:10px;">
                             <p>Распределение выпускников по укрупнённым группам профессий/специальностей</p>
                             <p>Больше всего выпускников ({{raw_spec|get_max_label:'max_val'}} человека) относится к группе {{raw_spec|get_max_label:'max_label'}}</p>
                             <div class="chart-container">
@@ -121,10 +131,66 @@
   </div>
 </div>
 
+
 {% load static %}
 <script type="text/javascript" src="{% static 'results/js/counter.js' %}"></script>
+<!--<script type="text/javascript" src="{% static 'results/js/map.js' %}"></script>-->
 
 <script>
+
+$(document).on("mouseover", "path", function(e){
+    let data = {
+        data: {{raw_sub.data}},
+        data_1: {{raw_sub.data_1}},
+        data_2: {{raw_sub.data_2}},
+        data_3: {{raw_sub.data_3}},
+        ter: {{raw_sub.ter}},
+        labels: {{raw_sub.labels|safe}}
+    };
+    el_num = data.ter.indexOf( parseInt($(this).attr("id").substring(7),0) )
+    if( el_num != -1  ){
+        let text = '<p id="preg"><strong>'+data.labels[el_num]+'</strong>:<br/><br/> выпускников - '+data.data_1[el_num]+',<br/> работодателей - '+data.data_2[el_num]+',<br/> организаций СПО - '+data.data_3[el_num]+'</p>'
+        $('#hint_reg').html(text)
+                      .css({"top":(e.clientY+10)+"px", "left":(e.clientX)+"px"})
+                      .show();
+        //$('#map_of_russia').after('<p id="preg"><strong>'+data.labels[el_num]+'</strong>: выпускников - '+data.data_1[el_num]+', работодателей - '+data.data_2[el_num]+', организаций СПО - '+data.data_3[el_num]+'</p>');
+    }
+});
+
+$(document).on("mouseout", "path", function(e){
+    //$('#preg').detach();
+    $('#hint_reg').hide();
+    //$('#hint_reg').css({"top":(e.clientY+10)+"px", "left":(e.clientX)+"px"}).show();
+});
+
+$(document).ready(function(){
+    let data = {
+        data: {{raw_sub.data}},
+        ter: {{raw_sub.ter}},
+        labels: {{raw_sub.labels|safe}}
+    };
+    //let avg_data = average(data.data);
+    let max_data = Math.max.apply(null, data.data);
+    let el_num = 0;
+    let color = 0;
+    $("path").each(function(){
+        el_num = data.ter.indexOf( parseInt($(this).attr("id").substring(7),0) )
+        if( el_num != -1  ){
+            //color = (data.data[el_num] < avg_data) ? 100/(avg_data-(1-(100/data.data[el_num]))) : 1-(100/data.data[el_num]);
+            //color = 100/Math.abs((100+1-(max_data/data.data[el_num])));
+            color = Math.abs((100+1-(max_data/data.data[el_num])));
+            //console.log('ter: '+data.ter[el_num]+', zn: '+data.data[el_num]+', color: '+color);
+            $(this).attr("fill","rgb(33, "+color+", 38)");
+            $(this).attr("reg_name", data.labels[el_num]);
+        }
+    });
+});
+
+<!--function average(nums) {-->
+    <!--return nums.reduce((a, b) => (a + b)) / nums.length;-->
+<!--}-->
+
+
 var coloR = [];
  var dynamicColors = function() {
     var r = Math.floor(Math.random() * 255);
@@ -136,7 +202,7 @@ var coloR = [];
 
 var ctx = document.getElementById('myChart_dates').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'bar',
+    type: 'line',
     data: {
         labels: {{raw_date.labels|safe}},
         datasets: [
@@ -184,52 +250,52 @@ var myChart = new Chart(ctx, {
     }
 });
 
-var ctx = document.getElementById('myChart_sub').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'horizontalBar',
-    data: {
-        labels: {{raw_sub.labels|safe}},
-        datasets: [
-                {
-                    label: 'Выпускники',
-                    data: {{raw_sub.data_1}},
-                    backgroundColor: 'rgba(100, 700, 100, 0.4)',
-                    borderColor: 'rgba(200, 200, 200, 0.75)',
-                    hoverBorderColor: 'rgba(200, 200, 200, 1)',
-                },
-                {
-                    label: 'Работодатели',
-                    data: {{raw_sub.data_2}},
-                    backgroundColor: 'rgba(700, 100, 100, 0.4)',
-                    borderColor: 'rgba(200, 200, 200, 0.75)',
-                    hoverBorderColor: 'rgba(200, 200, 200, 1)',
-                },
-                {
-                    label: 'ОО СПО',
-                    data: {{raw_sub.data_3}},
-                    backgroundColor: 'rgba(100, 100, 700, 0.4)',
-                    borderColor: 'rgba(200, 200, 200, 0.75)',
-                    hoverBorderColor: 'rgba(200, 200, 200, 1)',
-                }
-        ]
-    },
-    options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    stepSize: 1
-                }
-            }],
-            xAxes: [{
-                ticks: {
-                    beginAtZero: true,
-                    stepSize: 1
-                }
-            }]
-        }
-    }
-});
+<!--var ctx = document.getElementById('myChart_sub').getContext('2d');-->
+<!--var myChart = new Chart(ctx, {-->
+    <!--type: 'horizontalBar',-->
+    <!--data: {-->
+        <!--labels: {{raw_sub.labels|safe}},-->
+        <!--datasets: [-->
+                <!--{-->
+                    <!--label: 'Выпускники',-->
+                    <!--data: {{raw_sub.data_1}},-->
+                    <!--backgroundColor: 'rgba(100, 700, 100, 0.4)',-->
+                    <!--borderColor: 'rgba(200, 200, 200, 0.75)',-->
+                    <!--hoverBorderColor: 'rgba(200, 200, 200, 1)',-->
+                <!--},-->
+                <!--{-->
+                    <!--label: 'Работодатели',-->
+                    <!--data: {{raw_sub.data_2}},-->
+                    <!--backgroundColor: 'rgba(700, 100, 100, 0.4)',-->
+                    <!--borderColor: 'rgba(200, 200, 200, 0.75)',-->
+                    <!--hoverBorderColor: 'rgba(200, 200, 200, 1)',-->
+                <!--},-->
+                <!--{-->
+                    <!--label: 'ОО СПО',-->
+                    <!--data: {{raw_sub.data_3}},-->
+                    <!--backgroundColor: 'rgba(100, 100, 700, 0.4)',-->
+                    <!--borderColor: 'rgba(200, 200, 200, 0.75)',-->
+                    <!--hoverBorderColor: 'rgba(200, 200, 200, 1)',-->
+                <!--}-->
+        <!--]-->
+    <!--},-->
+    <!--options: {-->
+        <!--scales: {-->
+            <!--yAxes: [{-->
+                <!--ticks: {-->
+                    <!--beginAtZero: true,-->
+                    <!--stepSize: 1-->
+                <!--}-->
+            <!--}],-->
+            <!--xAxes: [{-->
+                <!--ticks: {-->
+                    <!--beginAtZero: true,-->
+                    <!--stepSize: 1-->
+                <!--}-->
+            <!--}]-->
+        <!--}-->
+    <!--}-->
+<!--});-->
 
 
 

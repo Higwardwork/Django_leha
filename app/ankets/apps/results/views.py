@@ -66,16 +66,20 @@ def index(request):
     cursor.execute("SELECT * FROM v_graph_sub")
     rawresults = cursor.fetchall()
     cursor.close()
+    res = []
     res_1 = []
     res_2 = []
     res_3 = []
     labels = []
+    ter = []
     for value in rawresults:
         labels.append(value[0])
         res_1.append(int(value[1]))
         res_2.append(int(value[2]))
         res_3.append(int(value[3]))
-    raw_sub = {'data_1': res_1, 'data_2': res_2, 'data_3': res_3, 'labels': labels}
+        res.append(int(value[4]))
+        ter.append(int(value[5]))
+    raw_sub = {'data': res, 'data_1': res_1, 'data_2': res_2, 'data_3': res_3, 'labels': labels, 'ter': ter}
 
     cursor = connection.cursor()
     cursor.execute("  SELECT name_ugs, SUM(qount_answer) FROM ("
@@ -114,6 +118,7 @@ def respondentsresult(request, respondent_strtype):
 
     if respondent_strtype == 'graduates':
         table = 'v_exit_1_graduates_rf'
+        table_trudprof = 'v_graph_trudprof_graduates'
         #sql = 'SELECT ter, q71, COUNT(respondent_id) AS count_resp FROM v_results_graduates_columns GROUP BY ter, q71'
         sql = "SELECT ter, q71, SUM(count_resp) AS count_resp, ROUND((SUM(count_trud)/SUM(count_resp))*100,2) AS d_trud, CASE WHEN SUM(count_trud)!=0 THEN ROUND((CAST(SUM(count_trud_prof) AS DEC(12,4))/SUM(count_trud))*100,2) ELSE 0.00 END AS d_trud_prof, CASE WHEN SUM(count_trud)!=0 THEN SUM(zp)/SUM(count_trud) ELSE 0 END AS zp FROM" \
               " (SELECT respondent_id, ter, q71, COUNT(respondent_id) AS count_resp, CASE WHEN(q91_zn = 1 OR q91_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN(q92_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof, CASE WHEN(q97 <> '') THEN q97::int ELSE 0 END AS zp  FROM v_results_graduates_columns GROUP BY respondent_id, ter, q71, q91_zn, q92_zn, q97) sq" \
@@ -121,6 +126,7 @@ def respondentsresult(request, respondent_strtype):
         sql_ugs = "SELECT kod_ugs, name_ugs FROM t_ugs INNER JOIN v_results_graduates_columns ON t_ugs.kod_ugs = v_results_graduates_columns.ugs ORDER BY kod_ugs"
     elif respondent_strtype == 'organizations':
         table = 'v_exit_1_oospo_rf'
+        table_trudprof = 'v_graph_trudprof_oospo'
         #sql = 'SELECT ter, q3, COUNT(respondent_id) AS count_resp FROM v_results_oospo_columns GROUP BY ter, q3'
         sql = "SELECT ter, q3, SUM(count_resp) AS count_resp, ROUND((SUM(count_trud)/SUM(count_resp))*100,2) AS d_trud, CASE WHEN SUM(count_trud)!=0 THEN ROUND((CAST(SUM(count_trud_prof) AS DEC(12,4))/SUM(count_trud))*100,2) ELSE 0.00 END AS d_trud_prof, CASE WHEN SUM(count_trud)!=0 THEN SUM(zp)/SUM(count_trud_with_zp) ELSE 0 END AS zp FROM" \
               "              (SELECT respondent_id, ter, q3, COUNT(respondent_id) AS count_resp, CASE WHEN(q18_zn = 1 OR q18_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN((q18_zn = 1 OR q18_zn = 2) AND q119 <> '') THEN 1 ELSE 0 END AS count_trud_with_zp, CASE WHEN(q111_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof, CASE WHEN(q119 <> '') THEN q119::int ELSE 0 END AS zp FROM v_results_oospo_columns GROUP BY respondent_id, essence_id, ter, q3, q18_zn, q111_zn, q119 ORDER BY respondent_id) sq" \
@@ -128,6 +134,7 @@ def respondentsresult(request, respondent_strtype):
         sql_ugs = "SELECT t_ugs.kod_ugs, t_ugs.name_ugs FROM t_ugs INNER JOIN v_results_oospo_columns ON t_ugs.kod_ugs = v_results_oospo_columns.kod_ugs ORDER BY kod_ugs"
     elif respondent_strtype == 'employers':
         table = 'v_exit_1_employers'
+        table_trudprof = ''
         sql = ''
         sql_ugs = "SELECT kod_ugs, name_ugs FROM t_ugs ORDER BY kod_ugs"
         #return HttpResponse("<a href='/results/ankets/employers/'>Анкеты</a>")
@@ -163,18 +170,23 @@ def respondentsresult(request, respondent_strtype):
     raw_employment_prof = {'data': res, 'labels': labels}
 
     cursor = connection.cursor()
-    cursor.execute("SELECT"
-                   " unnest(ARRAY['По найму', 'ИП', 'Самозанятые']) ,"
-                   " unnest(ARRAY[gr4, gr6, gr8])"
-                   " FROM "+table)
+    # cursor.execute("SELECT"
+    #                " unnest(ARRAY['По найму', 'ИП', 'Самозанятые']) ,"
+    #                " unnest(ARRAY[gr4, gr6, gr8])"
+    #                " FROM "+table)
+    cursor.execute("SELECT * FROM "+table_trudprof+ " ORDER BY zn_all desc")
     rawresults = cursor.fetchall()
     cursor.close()
     res = []
+    res_prof = []
+    res_noprof = []
     labels = []
     for value in rawresults:
         labels.append(value[0])
         res.append(int(value[1]))
-    raw_employment_types = {'data': res, 'labels': labels}
+        res_prof.append(int(value[2]))
+        res_noprof.append(int(value[3]))
+    raw_employment_types = {'data': res, 'data_prof': res_prof, 'data_noprof': res_noprof, 'labels': labels}
 
     cursor = connection.cursor()
     cursor.execute("SELECT"
