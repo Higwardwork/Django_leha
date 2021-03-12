@@ -317,7 +317,10 @@ var myChart = new Chart(ctx, {
         scales: {
             xAxes: [{
                 ticks: {
-                    display: false
+                      display: false,
+                      <!--callback: function(value, index, values) {-->
+                         <!--return value.substring(0, 2);-->
+                      <!--}-->
                 }
             }]
         },
@@ -332,7 +335,7 @@ for (var i in {{raw_type.data}}) {
 }
 var ctx = document.getElementById('myChart_types').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'doughnut',
+    type: 'pie', //doughnut
     data: {
         labels: {{raw_type.labels|safe}},
         datasets: [

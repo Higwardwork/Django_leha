@@ -307,7 +307,7 @@ $(document).ready( function () {
 
 var ctx = document.getElementById('myChart_employment').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'doughnut',
+    type: 'pie', //doughnut
     data: {
         labels: {{raw_employment.labels|safe}},
         datasets: [
@@ -432,7 +432,7 @@ var myBarChart = new Chart(ctx, {
 
 var ctx = document.getElementById('myChart_employment_regions').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'doughnut',
+    type: 'pie', //doughnut
     data: {
         labels: {{raw_employment_regions.labels|safe}},
         datasets: [
