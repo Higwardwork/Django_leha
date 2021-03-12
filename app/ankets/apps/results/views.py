@@ -6,6 +6,8 @@ from graduates.models import Respondent
 #from excel_response import ExcelResponse
 import xlwt
 import datetime
+import random
+import numpy as np
 #from django.db.models import Max
 
 #Пользовательские фильтры:
@@ -124,6 +126,9 @@ def respondentsresult(request, respondent_strtype):
               " (SELECT respondent_id, ter, q71, COUNT(respondent_id) AS count_resp, CASE WHEN(q91_zn = 1 OR q91_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN(q92_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof, CASE WHEN(q97 <> '') THEN q97::int ELSE 0 END AS zp  FROM v_results_graduates_columns GROUP BY respondent_id, ter, q71, q91_zn, q92_zn, q97) sq" \
               " GROUP BY ter, q71"
         sql_ugs = "SELECT kod_ugs, name_ugs FROM t_ugs INNER JOIN v_results_graduates_columns ON t_ugs.kod_ugs = v_results_graduates_columns.ugs ORDER BY kod_ugs"
+        sql_ugs_data = "SELECT name_ugs, SUM(count_resp):: bigint AS count_resp, ROUND((SUM(count_trud)/SUM(count_resp))*100,2):: bigint AS d_trud, CASE WHEN SUM(count_trud)!=0 THEN ROUND((CAST(SUM(count_trud_prof) AS DEC(12,4))/SUM(count_trud))*100,2) ELSE 0.00 END :: bigint AS d_trud_prof, CASE WHEN SUM(count_trud)!=0 THEN SUM(zp)/SUM(count_trud) ELSE 0 END AS zp FROM" \
+                       "               (SELECT respondent_id, t_ugs.kod_ugs || ' - ' || t_ugs.name_ugs AS name_ugs, COUNT(respondent_id) AS count_resp, CASE WHEN(q91_zn = 1 OR q91_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN(q92_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof, CASE WHEN(q97 <> '') THEN q97::int ELSE 0 END AS zp  FROM v_results_graduates_columns LEFT JOIN t_ugs ON v_results_graduates_columns.ugs = t_ugs.kod_ugs GROUP BY respondent_id, t_ugs.kod_ugs, t_ugs.name_ugs, q91_zn, q92_zn, q97) sq" \
+                       "              GROUP BY name_ugs"
     elif respondent_strtype == 'organizations':
         table = 'v_exit_1_oospo_rf'
         table_trudprof = 'v_graph_trudprof_oospo'
@@ -132,11 +137,15 @@ def respondentsresult(request, respondent_strtype):
               "              (SELECT respondent_id, ter, q3, COUNT(respondent_id) AS count_resp, CASE WHEN(q18_zn = 1 OR q18_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN((q18_zn = 1 OR q18_zn = 2) AND q119 <> '') THEN 1 ELSE 0 END AS count_trud_with_zp, CASE WHEN(q111_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof, CASE WHEN(q119 <> '') THEN q119::int ELSE 0 END AS zp FROM v_results_oospo_columns GROUP BY respondent_id, essence_id, ter, q3, q18_zn, q111_zn, q119 ORDER BY respondent_id) sq" \
               "              GROUP BY ter, q3"
         sql_ugs = "SELECT t_ugs.kod_ugs, t_ugs.name_ugs FROM t_ugs INNER JOIN v_results_oospo_columns ON t_ugs.kod_ugs = v_results_oospo_columns.kod_ugs ORDER BY kod_ugs"
+        sql_ugs_data = "SELECT name_ugs, SUM(count_resp) :: bigint AS count_resp, ROUND((SUM(count_trud)/SUM(count_resp))*100,2) :: bigint AS d_trud, CASE WHEN SUM(count_trud)!=0 THEN ROUND((CAST(SUM(count_trud_prof) AS DEC(12,4))/SUM(count_trud))*100,2) ELSE 0.00 END :: bigint AS d_trud_prof, CASE WHEN SUM(count_trud_with_zp)!=0 THEN SUM(zp)/SUM(count_trud_with_zp) ELSE 0 END AS zp FROM" \
+                       "     (SELECT respondent_id, t_ugs.kod_ugs || ' - ' || t_ugs.name_ugs AS name_ugs, COUNT(respondent_id) AS count_resp, CASE WHEN(q18_zn = 1 OR q18_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN((q18_zn = 1 OR q18_zn = 2) AND q119 <> '') THEN 1 ELSE 0 END AS count_trud_with_zp, CASE WHEN(q111_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof, CASE WHEN(q119 <> '') THEN q119::int ELSE 0 END AS zp FROM v_results_oospo_columns LEFT JOIN t_ugs ON v_results_oospo_columns.kod_ugs = t_ugs.kod_ugs GROUP BY respondent_id, t_ugs.kod_ugs, t_ugs.name_ugs, essence_id, q18_zn, q111_zn, q119 ORDER BY respondent_id) sq" \
+                       "     GROUP BY name_ugs"
     elif respondent_strtype == 'employers':
         table = 'v_exit_1_employers'
         table_trudprof = ''
         sql = ''
         sql_ugs = "SELECT kod_ugs, name_ugs FROM t_ugs ORDER BY kod_ugs"
+        sql_ugs_data = ""
         #return HttpResponse("<a href='/results/ankets/employers/'>Анкеты</a>")
         return render(request, 'results/respondents.html',
                       {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
@@ -220,8 +229,29 @@ def respondentsresult(request, respondent_strtype):
         count_all = count_all + value[2]
         regions[value[0]] = {'ter': value[0], 'name': value[1], 'count': value[2], 'd_trud': value[3], 'd_trud_prof': value[4], 'zp': value[5]}
 
+    cursor = connection.cursor()
+    cursor.execute(sql_ugs_data)
+    rawresults = cursor.fetchall()
+    cursor.close()
+    ugs_data = []
+    labels = []
+    count_resp = []
+    for value in rawresults:
+        count_resp.append(value[1])
+    #Экспоненциальное распределение для вычисления радиуса на графике типа bubble:
+    count_resp = np.array(count_resp)
+    count_resp = count_resp / count_resp.max(axis=0)
+    i = 0
+    for value in rawresults:
+        color = 'rgba('+str(random.randint(0, 255))+','+str(random.randint(0, 255))+','+str(random.randint(0, 255))+','+'0.5)'
+        labels.append(value[0])
+        rr = count_resp[i]*10
+        i += 1
+        ugs_data.append({'label': value[0], 'data': [{'x': value[2], 'y': value[4], 'r': rr}], 'backgroundColor': color})
+    raw_ugs_data = ugs_data
+
     return render(request, 'results/respondents.html',
-                  {'count_all': count_all, 'regions': regions, 'ugs_dic': ugs_dic, 'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': raw_employment, 'raw_employment_types': raw_employment_types, 'raw_employment_prof': raw_employment_prof, 'raw_employment_regions': raw_employment_regions})
+                  {'count_all': count_all, 'regions': regions, 'ugs_dic': ugs_dic, 'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': raw_employment, 'raw_employment_types': raw_employment_types, 'raw_employment_prof': raw_employment_prof, 'raw_employment_regions': raw_employment_regions, 'raw_ugs_data': raw_ugs_data})
 
 
 def exittables(request, respondent_strtype, ter):

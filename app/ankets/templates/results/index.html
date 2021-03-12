@@ -52,9 +52,9 @@
                 <div class="section-inner">
                     <h2 class="heading">Сводные результаты</h2>
                     <div class="content">
-                        <p>Всего заполнили анкеты <strong>{{raw_type.all_resp}}</strong> респондентов.</p>
+                        <p>Всего заполнили анкеты <strong>{{raw_type.all_resp}}</strong> респондентов из <strong>{{raw_sub.ter|length}}</strong> субъектов Российской Федерации.</p>
                         <p>
-                            Всего внесены сведения о <strong>{{raw_spec.all_grad}}</strong> выпускниках,
+                            Внесены сведения о <strong>{{raw_spec.all_grad}}</strong> выпускниках,
                             завершивших обучение по образовательным программах среднего профессионального образования.
                         </p>
                         <div style="padding-bottom:10px;padding-top:30px;">
@@ -137,7 +137,7 @@
 <!--<script type="text/javascript" src="{% static 'results/js/map.js' %}"></script>-->
 
 <script>
-
+//Карта:
 $(document).on("mouseover", "path", function(e){
     let data = {
         data: {{raw_sub.data}},
@@ -153,12 +153,10 @@ $(document).on("mouseover", "path", function(e){
         $('#hint_reg').html(text)
                       .css({"top":(e.clientY+10)+"px", "left":(e.clientX)+"px"})
                       .show();
-        //$('#map_of_russia').after('<p id="preg"><strong>'+data.labels[el_num]+'</strong>: выпускников - '+data.data_1[el_num]+', работодателей - '+data.data_2[el_num]+', организаций СПО - '+data.data_3[el_num]+'</p>');
     }
 });
 
 $(document).on("mouseout", "path", function(e){
-    //$('#preg').detach();
     $('#hint_reg').hide();
     //$('#hint_reg').css({"top":(e.clientY+10)+"px", "left":(e.clientX)+"px"}).show();
 });
@@ -210,7 +208,7 @@ var myChart = new Chart(ctx, {
                     label: 'Выпускники',
                     data: {{raw_date.data_1}},
                     borderColor: 'rgba(100, 700, 100, 0.7)',
-                    backgroundColor: 'rgba(100, 700, 100, 0.4)',
+                    backgroundColor: 'rgba(100, 700, 100, 0.2)',
                     //backgroundColor: 'transparent',
                     //fill: false,
                 },
@@ -218,7 +216,7 @@ var myChart = new Chart(ctx, {
                     label: 'Работодатели',
                     data: {{raw_date.data_2}},
                     borderColor: 'rgba(700, 100, 100, 0.7)',
-                    backgroundColor: 'rgba(700, 100, 100, 0.4)',
+                    backgroundColor: 'rgba(700, 100, 100, 0.2)',
                     //backgroundColor: 'transparent',
                     //fill: false,
                 },
@@ -226,7 +224,7 @@ var myChart = new Chart(ctx, {
                     label: 'ОО СПО',
                     data: {{raw_date.data_3}},
                     borderColor: 'rgba(100, 100, 700, 0.7)',
-                    backgroundColor: 'rgba(100, 100, 700, 0.4)',
+                    backgroundColor: 'rgba(100, 100, 700, 0.2)',
                     //backgroundColor: 'transparent',
                     //fill: false,
                 }
@@ -304,7 +302,7 @@ for (var i in {{raw_spec.data}}) {
 }
 var ctx = document.getElementById('myChart_spec').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'bar',
+    type: 'bar', //polarArea
     data: {
         labels: {{raw_spec.labels|safe}},
         datasets: [
@@ -334,14 +332,14 @@ for (var i in {{raw_type.data}}) {
 }
 var ctx = document.getElementById('myChart_types').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'pie',
+    type: 'doughnut',
     data: {
         labels: {{raw_type.labels|safe}},
         datasets: [
                 {
                     label: 'Количество респондентов',
                     data: {{raw_type.data|safe}},
-                    backgroundColor: ["rgba(100, 700, 100, 0.4)", "rgba(700, 100, 100, 0.4)", "rgba(100, 100, 700, 0.4)"],
+                    backgroundColor: ["rgba(100, 700, 100, 0.7)", "rgba(700, 100, 100, 0.7)", "rgba(100, 100, 700, 0.7)"],
                 },
         ]
     }
