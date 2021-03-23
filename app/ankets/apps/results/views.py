@@ -119,6 +119,8 @@ def respondentsresult(request, respondent_strtype):
     respondent_name = respondent_obj.respondent_name
 
     if respondent_strtype == 'graduates':
+        q_for_count = '71'
+        icon = 'fa-user-graduate'
         table = 'v_exit_1_graduates_rf'
         table_trudprof = 'v_graph_trudprof_graduates'
         #sql = 'SELECT ter, q71, COUNT(respondent_id) AS count_resp FROM v_results_graduates_columns GROUP BY ter, q71'
@@ -130,8 +132,10 @@ def respondentsresult(request, respondent_strtype):
                        "               (SELECT respondent_id, t_ugs.kod_ugs || ' - ' || t_ugs.name_ugs AS name_ugs, COUNT(respondent_id) AS count_resp, CASE WHEN(q91_zn = 1 OR q91_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN(q92_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof, CASE WHEN(q97 <> '') THEN q97::int ELSE 0 END AS zp  FROM v_results_graduates_columns LEFT JOIN t_ugs ON v_results_graduates_columns.ugs = t_ugs.kod_ugs GROUP BY respondent_id, t_ugs.kod_ugs, t_ugs.name_ugs, q91_zn, q92_zn, q97) sq" \
                        "              GROUP BY name_ugs"
     elif respondent_strtype == 'organizations':
+        q_for_count = '3'
+        icon = 'fa-university' #4.6 сек.
         table = 'v_exit_1_oospo_rf'
-        table_trudprof = 'v_graph_trudprof_oospo'
+        table_trudprof = 'v_graph_trudprof_oospo' #1.9 сек.
         #sql = 'SELECT ter, q3, COUNT(respondent_id) AS count_resp FROM v_results_oospo_columns GROUP BY ter, q3'
         sql = "SELECT ter, q3, SUM(count_resp) AS count_resp, ROUND((SUM(count_trud)/SUM(count_resp))*100,2) AS d_trud, CASE WHEN SUM(count_trud)!=0 THEN ROUND((CAST(SUM(count_trud_prof) AS DEC(12,4))/SUM(count_trud))*100,2) ELSE 0.00 END AS d_trud_prof, CASE WHEN SUM(count_trud)!=0 THEN SUM(zp)/SUM(count_trud_with_zp) ELSE 0 END AS zp FROM" \
               "              (SELECT respondent_id, ter, q3, COUNT(respondent_id) AS count_resp, CASE WHEN(q18_zn = 1 OR q18_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN((q18_zn = 1 OR q18_zn = 2) AND q119 <> '') THEN 1 ELSE 0 END AS count_trud_with_zp, CASE WHEN(q111_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof, CASE WHEN(q119 <> '') THEN q119::int ELSE 0 END AS zp FROM v_results_oospo_columns GROUP BY respondent_id, essence_id, ter, q3, q18_zn, q111_zn, q119 ORDER BY respondent_id) sq" \
@@ -141,6 +145,8 @@ def respondentsresult(request, respondent_strtype):
                        "     (SELECT respondent_id, t_ugs.kod_ugs || ' - ' || t_ugs.name_ugs AS name_ugs, COUNT(respondent_id) AS count_resp, CASE WHEN(q18_zn = 1 OR q18_zn = 2) THEN 1 ELSE 0 END AS count_trud, CASE WHEN((q18_zn = 1 OR q18_zn = 2) AND q119 <> '') THEN 1 ELSE 0 END AS count_trud_with_zp, CASE WHEN(q111_zn = 1) THEN 1 ELSE 0 END AS count_trud_prof, CASE WHEN(q119 <> '') THEN q119::int ELSE 0 END AS zp FROM v_results_oospo_columns LEFT JOIN t_ugs ON v_results_oospo_columns.kod_ugs = t_ugs.kod_ugs GROUP BY respondent_id, t_ugs.kod_ugs, t_ugs.name_ugs, essence_id, q18_zn, q111_zn, q119 ORDER BY respondent_id) sq" \
                        "     GROUP BY name_ugs"
     elif respondent_strtype == 'employers':
+        q_for_count = '30'
+        icon ='fa-briefcase'
         table = 'v_exit_1_employers'
         table_trudprof = ''
         sql = ''
@@ -149,6 +155,41 @@ def respondentsresult(request, respondent_strtype):
         #return HttpResponse("<a href='/results/ankets/employers/'>Анкеты</a>")
         return render(request, 'results/respondents.html',
                       {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name})
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT COUNT(respondent_id) AS qount_answer FROM graduates_result "
+                   "    WHERE graduates_result.question_number_id = "+q_for_count+" ")
+    res = cursor.fetchone()
+    cursor.close()
+    raw_count_resp = {'data': res[0], 'icon': icon}
+
+    #Объединённый запрос:
+    # cursor = connection.cursor()
+    # cursor.execute("SELECT 1 AS type, unnest(ARRAY['Трудоустроены', 'Продолжили обучение', 'Призваны в ряды Вооруженных Сил', 'Находятся в отпуске по уходу за ребенком', 'Не трудоустроены']) ,"
+    #                "                    unnest(ARRAY[gr2, gr12, gr13, gr14, gr15])"
+    #                "       FROM	"+table+""
+    #                " UNION"
+    #                " SELECT 2 AS type, unnest(ARRAY['По профессии/специальности', 'Не по профессии/специальности']) ,"
+    #                "                    unnest(ARRAY[gr3, gr2-gr3])"
+    #                "       FROM	"+table+""
+    #                " UNION"
+    #                " SELECT 3 AS type, unnest(ARRAY['В регионах с постоянной регистрацией', 'В регионах, не связанных с местом постоянной регистрации']) ,"
+    #                "                    unnest(ARRAY[gr10, gr11])"
+    #                "       FROM	"+table+""
+    #                "                   ORDER BY type	")
+    # rawresults = cursor.fetchall()
+    # cursor.close()
+    # res = []
+    # labels = []
+    # dic1 = []
+    # for value in rawresults:
+    #     #labels.append(value[1])
+    #     dic1.append({value[0]: {'data': int(value[2]), 'labels': value[1]}})
+    #     #dic[value[0]] = res
+    # dic = dic1
+
+
+
 
     cursor = connection.cursor()
     cursor.execute("SELECT"
@@ -251,7 +292,7 @@ def respondentsresult(request, respondent_strtype):
     raw_ugs_data = ugs_data
 
     return render(request, 'results/respondents.html',
-                  {'count_all': count_all, 'regions': regions, 'ugs_dic': ugs_dic, 'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': raw_employment, 'raw_employment_types': raw_employment_types, 'raw_employment_prof': raw_employment_prof, 'raw_employment_regions': raw_employment_regions, 'raw_ugs_data': raw_ugs_data})
+                  {'count_all': count_all, 'raw_count_resp': raw_count_resp, 'regions': regions, 'ugs_dic': ugs_dic, 'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': raw_employment, 'raw_employment_types': raw_employment_types, 'raw_employment_prof': raw_employment_prof, 'raw_employment_regions': raw_employment_regions, 'raw_ugs_data': raw_ugs_data})
 
 
 def exittables(request, respondent_strtype, ter):

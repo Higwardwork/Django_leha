@@ -3,24 +3,11 @@
 
 {% block respondent %}{{respondent_name}}{% endblock %}
 
-<!--{% block header %}-->
-    <!--{% if user.is_authenticated %}-->
-        <!--<div class="float-right">-->
-            <!--<a href="{% url 'logout' %}">-->
-                <!--<span style="font-size: 1.8em; color: black;">-->
-                    <!--<i class="fas fa-sign-out-alt" title="Выход"></i>-->
-                <!--</span>-->
-            <!--</a>-->
-        <!--</div>-->
-    <!--{% endif %}-->
-<!--{% endblock %}-->
-
 {% block content %}
-
-<!--{% include "header.html" %}-->
 
 {% if user.is_authenticated %}
 
+{% load mathfilters %}
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
 
@@ -37,8 +24,8 @@
                     <h2 class="heading">Информация об опросе по группе респондентов: "{{respondent_name}}"</h2>
                     <div class="content">
                         {% if respondent_strtype != 'employers' %}
-                            В результате проведения опроса по группе респондентов "{{respondent_name}}" были получены сведения о
-                            <strong>{{count_all}}</strong> выпускниках
+                            В результате проведения опроса по группе "{{respondent_name}}" были получены сведения о
+                            <strong>{{count_all}}</strong> выпускниках от <strong>{{raw_count_resp.data}}</strong> респондентов.
                         {% endif %}
                     </div>
                 </div>
@@ -86,11 +73,23 @@
                                 </div>
                              </div>
                             <hr/>
-                            <div style="padding-bottom:100px;padding-top:30px;">
-                                <p>Распределение выпускников по каналам занятости</p>
-                                <p>На момент заполнения анкеты большинство выпускников ({{raw_employment|get_max_label:'max_val'}} человек) {{raw_employment|get_max_label:'max_label'|lower}}.</p>
-                                <div class="chart-container">
-                                  <canvas id="myChart_employment"></canvas>
+                            <div style="padding-bottom:30px;padding-top:30px;">
+                                <p>Распределение выпускников по каналам занятости и регионам регистрации</p>
+                                <p>
+                                    На момент заполнения анкеты большинство выпускников (<strong>{{raw_employment|get_max_label:'max_val'|div:count_all|mul:100|floatformat}}%</strong>) {{raw_employment|get_max_label:'max_label'|lower}}.
+                                    Большинство трудоустроенных работает в {{raw_employment_regions|get_max_label:'max_label'|lower}}.
+                                </p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="chart-container" style="width: 300px;">
+                                          <canvas id="myChart_employment" width="150" height="150"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="chart-container" style="width: 300px;">
+                                          <canvas id="myChart_employment_regions" width="150" height="150"></canvas>
+                                        </div>
+                                    </div>
                                 </div>
                              </div>
                             <hr/>
@@ -106,13 +105,13 @@
                                   <canvas id="myChart_employment_types"></canvas>
                                 </div>
                              </div>
-                            <hr/>
-                            <div style="padding-bottom:100px;padding-top:30px;">
-                                <p>Распределение трудоустроенных выпускников по регионам регистрации</p>
-                                <div class="chart-container">
-                                  <canvas id="myChart_employment_regions"></canvas>
-                                </div>
-                            </div>
+                            <!--<hr/>-->
+                            <!--<div style="padding-bottom:100px;padding-top:30px;">-->
+                                <!--<p>Распределение трудоустроенных выпускников по регионам регистрации</p>-->
+                                <!--<div class="chart-container">-->
+                                  <!--<canvas id="myChart_employment_regions"></canvas>-->
+                                <!--</div>-->
+                            <!--</div>-->
                         {% endif %}
                     </div>
                 </div>
@@ -121,12 +120,29 @@
     <div class="secondary col-md-4">
          <aside class="info aside section">
             <div class="section-inner">
+                <h2 class="heading sr-only">Количество респондентов</h2>
+                <div class="content">
+                    <div class="row text-center">
+                        <div class="col">
+                            <div class="counter">
+                                <i class="fas {{raw_count_resp.icon}} fa-2x"></i>
+                                <h2 class="timer count-title count-number" data-to="{{raw_count_resp.data}}" data-speed="1500"></h2>
+                                <p class="count-text ">Количество респондентов</p>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--//content-->
+            </div><!--//section-inner-->
+        </aside><!--//aside-->
+         <aside class="info aside section">
+            <div class="section-inner">
                 <h2 class="heading">Информация по группам респондентов</h2>
                 <div class="content">
                     <ul class="list-unstyled">
-                        <li><a href="/results/respondents/graduates"><i class="fas fa-user-graduate"></i> Выпускники</a></li>
-                        <li><a href="/results/respondents/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>
-                        <li><a href="/results/respondents/organizations"><i class="fas fa-university"></i> Образовательные организации</a></li>
+                        <li><a href="/results/respondents/graduates" style="text-decoration:none;"><i class="fas fa-user-graduate"></i> Выпускники</a></li>
+                        <!--<li><a href="/results/respondents/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>-->
+                        <li><a href="/results/unloading/employers" style="text-decoration:none;"><i class="fas fa-briefcase"></i> Работодатели</a></li>
+                        <li><a href="/results/respondents/organizations" style="text-decoration:none;"><i class="fas fa-university"></i> Образовательные организации</a></li>
                     </ul>
                 </div><!--//content-->
             </div><!--//section-inner-->
@@ -307,7 +323,7 @@ $(document).ready( function () {
 
 var ctx = document.getElementById('myChart_employment').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'pie', //doughnut
+    type: 'doughnut', //doughnut
     data: {
         labels: {{raw_employment.labels|safe}},
         datasets: [
@@ -317,7 +333,20 @@ var myChart = new Chart(ctx, {
                     backgroundColor: ["rgba(100, 700, 100, 0.7)", "rgba(700, 100, 100, 0.7)", "rgba(100, 100, 700, 0.7)", "rgba(500, 100, 300, 0.7)", "rgba(300, 700, 200, 0.7)"],
                 },
         ]
-    }
+    },
+        options: {
+            tooltips: {
+                titleFontSize: 9,
+                bodyFontSize: 9
+            },
+            legend: {
+                position: 'bottom',
+                display: false,
+                labels: {
+                    "fontSize": 8,
+                }
+            }
+        }
     <!--,-->
     <!--options: {-->
            <!--tooltips: {-->
@@ -340,6 +369,8 @@ var myChart = new Chart(ctx, {
            <!--}-->
     <!--}-->
 });
+
+
 
 <!--var ctx = document.getElementById('myChart_employment_prof').getContext('2d');-->
 <!--var myChart = new Chart(ctx, {-->
@@ -412,9 +443,6 @@ var myBarChart = new Chart(ctx, {
 });
 
 
-
-
-
 <!--var ctx = document.getElementById('myChart_employment_types').getContext('2d');-->
 <!--var myChart = new Chart(ctx, {-->
     <!--type: 'pie',-->
@@ -432,7 +460,7 @@ var myBarChart = new Chart(ctx, {
 
 var ctx = document.getElementById('myChart_employment_regions').getContext('2d');
 var myChart = new Chart(ctx, {
-    type: 'pie', //doughnut
+    type: 'doughnut', //doughnut
     data: {
         labels: {{raw_employment_regions.labels|safe}},
         datasets: [
@@ -442,7 +470,36 @@ var myChart = new Chart(ctx, {
                     backgroundColor: ["rgba(100, 700, 100, 0.7)", "rgba(700, 100, 100, 0.7)"],
                 },
         ]
-    }
+    },
+        options: {
+            tooltips: {
+                titleFontSize: 9,
+                bodyFontSize: 9
+            },
+            //responsive: true,
+            legend: {
+                position: 'bottom',
+                display: false,
+                labels: {
+                    "fontSize": 8,
+                }
+            },
+           <!--plugins: {-->
+             <!--datalabels: {-->
+               <!--formatter: (value, ctx) => {-->
+                 <!--let datasets = ctx.chart.data.datasets;-->
+                 <!--if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {-->
+                   <!--let sum = datasets[0].data.reduce((a, b) => a + b, 0);-->
+                   <!--let percentage = Math.round((value / sum) * 100) + '%';-->
+                   <!--return percentage;-->
+                 <!--} else {-->
+                   <!--return percentage;-->
+                 <!--}-->
+               <!--},-->
+               <!--color: '#61757d',-->
+             <!--}-->
+           <!--}-->
+        }
     <!--,-->
     <!--options: {-->
            <!--tooltips: {-->
@@ -487,9 +544,11 @@ var myChart = new Chart(ctx, {
       options: {
         legend: { display: false },
         tooltips: {
+         titleFontSize: 9,
+         bodyFontSize: 9,
          callbacks: {
             label: function(t, d) {
-               return d.datasets[t.datasetIndex].label + ': (Доля труд-ва: ' + t.xLabel + '%, Зарплата: ' + t.yLabel + ' руб.)';
+               return d.datasets[t.datasetIndex].label + ': (Доля работающих: ' + t.xLabel + '%, Зарплата: ' + t.yLabel + ' руб.)';
             }
          }
         },
@@ -503,7 +562,7 @@ var myChart = new Chart(ctx, {
           xAxes: [{
             scaleLabel: {
               display: true,
-              labelString: "Доля трудоустройства, %"
+              labelString: "Доля работающих, %"
             }
           }]
         }

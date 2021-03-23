@@ -22,6 +22,7 @@
 <!--{% include "header.html" %}-->
 
 {% if user.is_authenticated %}
+{% load mathfilters %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
 
 <div class="container sections-wrapper">
@@ -59,7 +60,7 @@
                         </p>
                         <div style="padding-bottom:10px;padding-top:30px;">
                             <p>Распределение респондентов по типам</p>
-                            <p>Большинство респондентов, заполнивших анкеты, относятся к типу "{{raw_type|get_max_label:'max_label'}}" ({{raw_type|get_max_label:'max_val'}} респондентов)</p>
+                            <p>Большинство респондентов <strong>({{raw_type|get_max_label:'max_val'|div:raw_type.all_resp|mul:100|floatformat}}%)</strong>, заполнивших анкеты, относятся к типу "{{raw_type|get_max_label:'max_label'}}"</p>
                             <div class="chart-container">
                               <canvas id="myChart_types"></canvas>
                             </div>
@@ -88,7 +89,7 @@
                          <!--</div>-->
                         <div style="padding-bottom:10px;">
                             <p>Распределение выпускников по укрупнённым группам профессий/специальностей</p>
-                            <p>Больше всего выпускников ({{raw_spec|get_max_label:'max_val'}} человека) относится к группе {{raw_spec|get_max_label:'max_label'}}</p>
+                            <p>Большинство выпускников <strong>({{raw_spec|get_max_label:'max_val'|div:raw_spec.all_grad|mul:100|floatformat}}%)</strong>, информация о которых получена в результате проведения опроса, обучалось по профессиям и специальностям, входящим в укрупнённую группу "{{raw_spec|get_max_label:'max_label'}}"</p>
                             <div class="chart-container">
                               <canvas id="myChart_spec"></canvas>
                             </div>
@@ -119,10 +120,10 @@
                 <h2 class="heading">Информация по группам респондентов</h2>
                 <div class="content">
                     <ul class="list-unstyled">
-                        <li><a href="/results/respondents/graduates"><i class="fas fa-user-graduate"></i> Выпускники</a></li>
+                        <li><a href="/results/respondents/graduates" style="text-decoration:none;"><i class="fas fa-user-graduate"></i> Выпускники</a></li>
                         <!--<li><a href="/results/respondents/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>-->
-                        <li><a href="/results/unloading/employers"><i class="fas fa-briefcase"></i> Работодатели</a></li>
-                        <li><a href="/results/respondents/organizations"><i class="fas fa-university"></i> Образовательные организации</a></li>
+                        <li><a href="/results/unloading/employers" style="text-decoration:none;"><i class="fas fa-briefcase"></i> Работодатели</a></li>
+                        <li><a href="/results/respondents/organizations" style="text-decoration:none;"><i class="fas fa-university"></i> Образовательные организации</a></li>
                     </ul>
                 </div><!--//content-->
             </div><!--//section-inner-->
@@ -133,7 +134,7 @@
 
 
 {% load static %}
-<script type="text/javascript" src="{% static 'results/js/counter.js' %}"></script>
+
 <!--<script type="text/javascript" src="{% static 'results/js/map.js' %}"></script>-->
 
 <script>
@@ -333,9 +334,9 @@ var myChart = new Chart(ctx, {
 for (var i in {{raw_type.data}}) {
     coloR.push(dynamicColors());
 }
-var ctx = document.getElementById('myChart_types').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'pie', //doughnut
+var ctx_cr = document.getElementById('myChart_types').getContext('2d');
+var myChart = new Chart(ctx_cr, {
+    type: 'doughnut', //doughnut
     data: {
         labels: {{raw_type.labels|safe}},
         datasets: [
@@ -345,8 +346,34 @@ var myChart = new Chart(ctx, {
                     backgroundColor: ["rgba(100, 700, 100, 0.7)", "rgba(700, 100, 100, 0.7)", "rgba(100, 100, 700, 0.7)"],
                 },
         ]
-    }
+    },
+      options: {
+        responsive: true,
+        legend: {
+          display: false
+        }
+      }
 });
+
+<!--Chart.pluginService.register({-->
+  <!--beforeDraw: function(chart) {-->
+    <!--var width = chart.chart.width,-->
+        <!--height = chart.chart.height,-->
+        <!--ctx = chart.chart.ctx_cr;-->
+
+    <!--ctx_cr.restore();-->
+    <!--var fontSize = (height / 314).toFixed(2);-->
+    <!--ctx_cr.font = fontSize + "em sans-serif";-->
+    <!--ctx_cr.textBaseline = "middle";-->
+
+    <!--var text = "{{raw_type.all_resp}} респондентов",-->
+        <!--textX = Math.round((width - ctx_cr.measureText(text).width) / 2),-->
+        <!--textY = height / 2;-->
+
+    <!--ctx_cr.fillText(text, textX, textY);-->
+    <!--ctx_cr.save();-->
+  <!--}-->
+<!--});-->
 </script>
 
 {% else %}

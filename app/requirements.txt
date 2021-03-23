@@ -7,3 +7,4 @@ pillow
 xlwt
 requests
 numpy
+django-mathfilters
