@@ -1,0 +1,11 @@
+  <div class="form-group" id="divchkugs">
+    <div class="row">
+        <div class="col-md-9"><label for="ugs"><strong>Выберите УГПС: </strong><font class="font-italic">(для выбора нескольких элементов нажмите клавишу CTRL)</font></label></div>
+        <div class="col-md-3 text-right"><button type="button" class="small" id="select_all_ugs">Выбрать все</button></div>
+    </div>
+    <select multiple class="form-control ugs" size="10" id="ugs" name="ugs">
+        {% for key, value in profspec_dic.items %}
+            <option value="'{{value|get_item:'kod'}}'">{{value|get_item:'name'}}</option>
+        {% endfor %}
+    </select>
+  </div>

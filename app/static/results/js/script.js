@@ -1,9 +1,17 @@
 $(document).on("click", "#getreport", function(){
     var tok = $('input[name=csrfmiddlewaretoken]').val();
-    var resp = $(this).attr("respondent")
+    var resp = $(this).attr("respondent");
 
-    var ugs = $('#ugs').val();
-    ugs = ugs.join();
+    let year = ( $('#year').length > 0 ) ? $("#year").val() : 'None';
+    let formaob = ( $('#formaob').length > 0 ) ? $("#formaob").val() : 'None';
+    let sex = ( $('#sex').length > 0 ) ? $("#sex").val() : 'None';
+    let finance = ( $('#finance').length > 0 ) ? $("#finance").val() : 'None';
+
+    var ugs = ($('#ugs').length > 0) ? $('#ugs').val().join() : '';
+    //ugs = ugs.join();
+
+    var profspec = ($('#profspec').length > 0) ? $('#profspec').val().join() : '';
+    //profspec = profspec.join();
 
     var regions = $('#regions').val();
     regions = regions.join();
@@ -20,6 +28,12 @@ $(document).on("click", "#getreport", function(){
     });
     ugs_checked = 'Выбранные УГПС: ' + ugs_checked.substr(0, ugs_checked.length - 2);
 
+    var profspec_checked = '';
+    $('#profspec :selected').each(function(i, sel){
+        profspec_checked += $(sel).text() + ', ';
+    });
+    profspec_checked = 'Выбранные проф./спец.: ' + profspec_checked.substr(0, profspec_checked.length - 2);
+
     let de = ($(".de").prop('checked') == true) ? 1 : 0;
     let cel = ($(".cel").prop('checked') == true) ? 1 : 0;
     let inv = ($(".inv").prop('checked') == true) ? 1 : 0;
@@ -27,6 +41,13 @@ $(document).on("click", "#getreport", function(){
     let cel_checked = ( $('#cel:checked').val() == 1 ) ? $('[for="cel"]').text() : '';
     let inv_checked = ( $('#inv:checked').val() == 1 ) ? $('[for="inv"]').text() : '';
     var dop_parameters = de_checked + ' | ' + cel_checked + ' | ' + inv_checked;
+
+    let year_checked = ( $('#year').length > 0 ) ? 'Год выпуска: '+$( "#year option:selected" ).text()+', ' : '';
+    let finance_checked = ( $('#finance').length > 0 ) ? 'Источник финансирования обучения: '+$( "#finance option:selected" ).text()+', ' : '';
+    let formaob_checked = 'Форма обучения: '+$( "#formaob option:selected" ).text()+', ';
+    let sex_checked = 'Пол: '+$( "#sex option:selected" ).text();
+    var chk_text = year_checked + formaob_checked + finance_checked + sex_checked
+    //console.log(chk_text);
 
     $.ajax({
       type: "POST",
@@ -38,18 +59,26 @@ $(document).on("click", "#getreport", function(){
       data: {
         'regions': regions,
         'ugs': ugs,
+        'profspec': profspec,
         'de': de,
         'cel': cel,
         'inv': inv,
         'regions_checked': regions_checked,
         'ugs_checked': ugs_checked,
+        'profspec_checked': profspec_checked,
         'dop_parameters': dop_parameters,
+        'chk_text': chk_text,
         'razrez': $("#razrez").val(),
+        'year': year,
+        'finance': finance,
+        'formaob': formaob,
+        'sex': sex,
+        'type': $("#type").val(),
         csrfmiddlewaretoken: tok
       },
       success: function (res, status, xhr) {
                 var link = document.createElement('a'),
-                filename = 'report_'+resp+'.xls';
+                filename = 'report_'+resp+'_'+$("#type").val()+'.xls';
                 link.href = URL.createObjectURL(res);
                 link.download = filename;
                 link.click();
@@ -58,11 +87,54 @@ $(document).on("click", "#getreport", function(){
     });
 });
 
+$(document).on("click", "#select_profspec", function(){
+    var resp = $(this).attr("respondent");
+    var tok = $('input[name=csrfmiddlewaretoken]').val();
+    //$('#ugs option').prop('selected', true);
+    $(this).after('<button type="button" class="small" id="select_ugps" respondent="'+resp+'">Выбрать УГПС</button>');
+    $(this).hide();
+    //$('#divchkugs').hide();
+    $.ajax({
+      type: "POST",
+      url: "/results/ajaxgetprofspec/"+resp+"/",
+      data: {
+        typech: 'profspec',
+        csrfmiddlewaretoken: tok
+      },
+      success: function (res) {
+        $('#contentchek').html(res);
+      }
+    });
+});
+
+$(document).on("click", "#select_ugps", function(){
+    //console.log('dfsdfd');
+    //$('#divchkprofspec').detach();
+    var resp = $(this).attr("respondent");
+    var tok = $('input[name=csrfmiddlewaretoken]').val();
+    $(this).after('<button type="button" class="small" id="select_profspec" respondent="'+resp+'">Выбрать профессии/специальности</button>');
+    $(this).hide();
+    $.ajax({
+      type: "POST",
+      url: "/results/ajaxgetprofspec/"+resp+"/",
+      data: {
+        typech: 'ugs',
+        csrfmiddlewaretoken: tok
+      },
+      success: function (res) {
+        $('#contentchek').html(res);
+      }
+    });
+});
 
 $('#select_all_regions').click(function() {
     $('#regions option').prop('selected', true);
 });
 
-$('#select_all_ugs').click(function() {
+$(document).on("click", "#select_all_ugs", function(){
     $('#ugs option').prop('selected', true);
+});
+
+$(document).on("click", "#select_all_profspec", function(){
+    $('#profspec option').prop('selected', true);
 });

@@ -1,0 +1,11 @@
+  <div class="form-group" id="divchkprofspec">
+    <div class="row">
+        <div class="col-md-9"><label for="profspec"><strong>Выберите проф./спец.: </strong><font class="font-italic">(для выбора нескольких элементов нажмите клавишу CTRL)</font></label></div>
+        <div class="col-md-3 text-right"><button type="button" class="small" id="select_all_profspec">Выбрать все</button></div>
+    </div>
+    <select multiple class="form-control profspec" size="10" id="profspec" name="profspec">
+        {% for key, value in profspec_dic.items %}
+            <option value="'{{value|get_item:'kod'}}'">{{value|get_item:'name'}}</option>
+        {% endfor %}
+    </select>
+  </div>

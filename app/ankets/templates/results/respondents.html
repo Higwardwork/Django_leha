@@ -41,7 +41,7 @@
                                         <th>Регион</th>
                                         <th>Количество выпускников, чел.</th>
                                         <th>Доля работающих, %</th>
-                                        <th>Доля работающих по спец./проф. (от числа труд.), %</th>
+                                        <th>Доля работающих по спец./проф., %</th>
                                         <th>Средняя заработная плата, руб.</th>
                                     </tr>
                                 </thead>
@@ -187,12 +187,37 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="content">
-                      <!--<p><strong>Разрез выгрузки:</strong></p>-->
+                      <div class="form-group">
+                        <label for="type"><strong>Тип выгрузки:</strong></label>
+                        <select class="form-control" id="type" name="type">
+                          <option value="v1">Вариант 1 – Для всех выпускников системы [С]ПО</option>
+                          <option value="v3">Вариант 3 – Для выпускников системы [С]ПО, обучавшихся на основании договора о целевом обучении</option>
+                          <option value="v4">Вариант 4 – Для выпускников системы [С]ПО, завершивших ГИА без использования ДЭ и не обучавшихся на основании договора о целевом обучении</option>
+                          <option value="v5">Вариант 5 – Средняя сумма выплат в месяц выпускникам системы [С]ПО</option>
+                          <option value="v6">Вариант 6 – Средняя сумма выплат в месяц выпускникам системы [С]ПО, завершивших ГИА в формате ДЭ, в зависимости от результатов ДЭ</option>
+                          {% if respondent_strtype == 'graduates' %}
+                                <option value="v7">Вариант 7 – Средняя продолжительность поиска работы выпускниками системы [С]ПО</option>
+                          {% endif %}
+                        </select>
+                      </div>
+                      {% if respondent_strtype == 'graduates' %}
+                          <div class="form-group">
+                            <label for="year"><strong>Год выпуска:</strong></label>
+                            <select class="form-control" id="year" name="year">
+                              <option value="all">все</option>
+                              <option value="2021">2021</option>
+                              <option value="2020">2020</option>
+                              <option value="2019">2019</option>
+                              <option value="2018">2018</option>
+                            </select>
+                          </div>
+                      {% endif %}
                       <div class="form-group">
                         <label for="razrez"><strong>Разрез выгрузки:</strong></label>
                         <select class="form-control" id="razrez" name="razrez">
                           <option value="region_name">Субъекты РФ</option>
                           <option value="name_ugs">УГПС</option>
+                          <option value="name_profspec">Профессии/специальности</option>
                           <option value="oo_name">Организации СПО</option>
                         </select>
                       </div>
@@ -218,8 +243,8 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="content">
-                      <div class="form-group">
+                <div class="content" id="contentchek">
+                      <div class="form-group" id="divchkugs">
                         <div class="row">
                             <div class="col-md-9"><label for="ugs"><strong>Выберите УГПС: </strong><font class="font-italic">(для выбора нескольких элементов нажмите клавишу CTRL)</font></label></div>
                             <div class="col-md-3 text-right"><button type="button" class="small" id="select_all_ugs">Выбрать все</button></div>
@@ -232,6 +257,34 @@
                       </div>
                 </div>
             </div>
+        </div>
+        <button type="button" class="small" id="select_profspec" respondent="{{respondent_strtype}}">Выбрать профессии/специальности</button>
+        <div class="form-group">
+            <label for="formaob"><strong>Форма обучения:</strong></label>
+            <select class="form-control" id="formaob" name="formaob">
+              <option value="all">все</option>
+              <option value="1">очная</option>
+              <option value="2">очно-заочная (вечерняя)</option>
+              <option value="3">заочная</option>
+            </select>
+        </div>
+        {% if respondent_strtype == 'graduates' %}
+              <div class="form-group">
+                <label for="finance"><strong>Источник финансирования обучения:</strong></label>
+                <select class="form-control" id="finance" name="finance">
+                  <option value="all">все</option>
+                  <option value="1">бюджет</option>
+                  <option value="2">ПВЗ</option>
+                </select>
+              </div>
+        {% endif %}
+        <div class="form-group">
+            <label for="sex"><strong>Пол:</strong></label>
+            <select class="form-control" id="sex" name="sex">
+              <option value="all">все</option>
+              <option value="1">мужской</option>
+              <option value="2">женский</option>
+            </select>
         </div>
 
         <!--<div class="row">-->
@@ -286,6 +339,21 @@
   </div>
 </div>
 
+<!--<div class="modal fade" id="ModalSelectProfSpec" tabindex="-1" role="dialog" aria-labelledby="ModalSelectProfSpecLabel" aria-hidden="true">-->
+  <!--<div class="modal-dialog" role="document">-->
+    <!--<div class="modal-content">-->
+      <!--<div class="modal-header">-->
+        <!--<h5 class="modal-title" id="ModalSelectProfSpecLabel">Выбор профессий/специальностей</h5>-->
+        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+          <!--<span aria-hidden="true">&times;</span>-->
+        <!--</button>-->
+      <!--</div>-->
+      <!--<div class="modal-body">-->
+       <!--привет-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
 
 {% load static %}
 <!--<style>-->

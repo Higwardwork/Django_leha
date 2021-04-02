@@ -12,5 +12,6 @@ urlpatterns = [
     path('ankets/<str:respondent_strtype>/', views.anketsresult, name='anketsresult'),
     path('ankets/<str:respondent_strtype>/<str:respondent_id>/', views.answers, name='answers'),
     path('ajaxgetreport/<str:respondent_strtype>/', views.ajaxgetreport, name='ajaxgetreport'),
+    path('ajaxgetprofspec/<str:respondent_strtype>/', views.ajaxgetprofspec, name='ajaxgetprofspec'),
 ]
 
