@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.template.defaulttags import register
 from django.db import connection
 from graduates.models import Respondent
+from graduates.models import Spravochnik
 #from excel_response import ExcelResponse
 import xlwt
 import datetime
@@ -302,55 +303,78 @@ def exittables(request, respondent_strtype, ter):
     #     return HttpResponse(ter)
     respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
     respondent_name = respondent_obj.respondent_name
+    spravochnik_obj = Spravochnik.objects.get(spravochnik_kod=ter)
+    region_name = spravochnik_obj.spravochnik_name
     cursor = connection.cursor()
     if respondent_strtype == 'graduates':
+        table = 'v_exit_1_graduates'
+        tbl_char = 'v_characteristic_graduates'
         #cursor.execute("SELECT * FROM v_exit_1_graduates")
-        cursor.execute("SELECT name_ugs,"
-                       " SUM(gr1) AS gr1,"
-                       " SUM(gr2) AS gr2,"
-                       " SUM(gr3) AS gr3,"
-                       " SUM(gr4) AS gr4,"
-                       " SUM(gr5) AS gr5,"
-                       " SUM(gr6) AS gr6,"
-                       " SUM(gr7) AS gr7,"
-                       " SUM(gr8) AS gr8,"
-                       " SUM(gr9) AS gr9,"
-                       " SUM(gr10) AS gr10,"
-                       " SUM(gr11) AS gr11,"
-                       " SUM(gr12) AS gr12,"
-                       " SUM(gr13) AS gr13,"
-                       " SUM(gr14) AS gr14,"
-                       " SUM(gr15) AS gr15"
-                       " FROM v_exit_1_graduates INNER JOIN v_characteristic_graduates ON v_exit_1_graduates.respondent_id = v_characteristic_graduates.respondent_id"
-                       " WHERE ter = "+str(ter)+" GROUP BY name_ugs"
-                       " ORDER BY name_ugs")
+        # cursor.execute("SELECT name_ugs,"
+        #                " SUM(gr1) AS gr1,"
+        #                " SUM(gr2) AS gr2,"
+        #                " SUM(gr3) AS gr3,"
+        #                " SUM(gr4) AS gr4,"
+        #                " SUM(gr5) AS gr5,"
+        #                " SUM(gr6) AS gr6,"
+        #                " SUM(gr7) AS gr7,"
+        #                " SUM(gr8) AS gr8,"
+        #                " SUM(gr9) AS gr9,"
+        #                " SUM(gr10) AS gr10,"
+        #                " SUM(gr11) AS gr11,"
+        #                " SUM(gr12) AS gr12,"
+        #                " SUM(gr13) AS gr13,"
+        #                " SUM(gr14) AS gr14,"
+        #                " SUM(gr15) AS gr15"
+        #                " FROM v_exit_1_graduates INNER JOIN v_characteristic_graduates ON v_exit_1_graduates.respondent_id = v_characteristic_graduates.respondent_id"
+        #                " WHERE ter = "+str(ter)+" GROUP BY name_ugs"
+        #                " ORDER BY name_ugs")
     elif respondent_strtype == 'organizations':
-        cursor.execute("SELECT v_characteristic_oospo.name_ugs AS name_ugs,"
-                       " SUM(v_exit_1_oospo.gr1) AS gr1,"
-                       " SUM(v_exit_1_oospo.gr2) AS gr2,"
-                       " SUM(v_exit_1_oospo.gr3) AS gr3,"
-                       " SUM(v_exit_1_oospo.gr4) AS gr4,"
-                       " SUM(v_exit_1_oospo.gr5) AS gr5,"
-                       " SUM(v_exit_1_oospo.gr6) AS gr6,"
-                       " SUM(v_exit_1_oospo.gr7) AS gr7,"
-                       " SUM(v_exit_1_oospo.gr8) AS gr8,"
-                       " SUM(v_exit_1_oospo.gr9) AS gr9,"
-                       " SUM(v_exit_1_oospo.gr10) AS gr10,"
-                       " SUM(v_exit_1_oospo.gr11) AS gr11,"
-                       " SUM(v_exit_1_oospo.gr12) AS gr12,"
-                       " SUM(v_exit_1_oospo.gr13) AS gr13,"
-                       " SUM(v_exit_1_oospo.gr14) AS gr14,"
-                       " SUM(v_exit_1_oospo.gr15) AS gr15"
-                       " FROM v_exit_1_oospo INNER JOIN v_characteristic_oospo ON v_exit_1_oospo.name_agregate = v_characteristic_oospo.respondent_id AND v_exit_1_oospo.essence_id = v_characteristic_oospo.essence_id"
-                       " WHERE ter = "+str(ter)+""
-                       " GROUP BY name_ugs")
+        table = 'v_exit_1_oospo'
+        tbl_char = 'v_characteristic_oospo'
+        # cursor.execute("SELECT v_characteristic_oospo.name_ugs AS name_ugs,"
+        #                " SUM(v_exit_1_oospo.gr1) AS gr1,"
+        #                " SUM(v_exit_1_oospo.gr2) AS gr2,"
+        #                " SUM(v_exit_1_oospo.gr3) AS gr3,"
+        #                " SUM(v_exit_1_oospo.gr4) AS gr4,"
+        #                " SUM(v_exit_1_oospo.gr5) AS gr5,"
+        #                " SUM(v_exit_1_oospo.gr6) AS gr6,"
+        #                " SUM(v_exit_1_oospo.gr7) AS gr7,"
+        #                " SUM(v_exit_1_oospo.gr8) AS gr8,"
+        #                " SUM(v_exit_1_oospo.gr9) AS gr9,"
+        #                " SUM(v_exit_1_oospo.gr10) AS gr10,"
+        #                " SUM(v_exit_1_oospo.gr11) AS gr11,"
+        #                " SUM(v_exit_1_oospo.gr12) AS gr12,"
+        #                " SUM(v_exit_1_oospo.gr13) AS gr13,"
+        #                " SUM(v_exit_1_oospo.gr14) AS gr14,"
+        #                " SUM(v_exit_1_oospo.gr15) AS gr15"
+        #                " FROM v_exit_1_oospo INNER JOIN v_characteristic_oospo ON v_exit_1_oospo.name_agregate = v_characteristic_oospo.respondent_id AND v_exit_1_oospo.essence_id = v_characteristic_oospo.essence_id"
+        #                " WHERE ter = "+str(ter)+""
+        #                " GROUP BY name_ugs")
     elif respondent_strtype == 'employers':
         return HttpResponse('Нет выходных таблиц по данной группе респондентов')
+    # rawresults = cursor.fetchall()
+    # cursor.close()
+    # results = rawresults
+    cursor = connection.cursor()
+    sql = "  SELECT ter," \
+          "  unnest(ARRAY['Трудоустроены', 'Продолжили обучение', 'Призваны в ряды Вооруженных Сил', 'Находятся в отпуске по уходу за ребенком', 'Не трудоустроены']) ," \
+          "  unnest(ARRAY[sum(gr2), sum(gr12), sum(gr13), sum(gr14), sum(gr15)])" \
+          "  FROM "+table+" " \
+          "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id" \
+          "  WHERE ter = "+str(ter)+" GROUP BY 1"
+    #return HttpResponse(sql)
+    cursor.execute(sql)
     rawresults = cursor.fetchall()
     cursor.close()
-    results = rawresults
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[1])
+        res.append(int(value[2]))
+    raw_employment = {'data': res, 'labels': labels}
     return render(request, 'results/exittables.html',
-                  {'respondent_strtype': respondent_strtype, 'results': results, 'respondent_name': respondent_name})
+                  {'respondent_strtype': respondent_strtype, 'raw_employment': raw_employment, 'respondent_name': respondent_name, 'region_name': region_name})
 
 
 
@@ -573,6 +597,7 @@ def ajaxgetreport(request, respondent_strtype):
     profspec = request.POST.get('profspec')
     razrez = request.POST.get('razrez')
     typeq = request.POST.get('type')
+    type_report = request.POST.get('type_report')
     regions_checked = request.POST.get('regions_checked')
     ugs_checked = request.POST.get('ugs_checked')
     profspec_checked = request.POST.get('profspec_checked')
@@ -587,14 +612,26 @@ def ajaxgetreport(request, respondent_strtype):
     sex = " AND sex = "+request.POST.get('sex')+" " if (request.POST.get('sex') != 'None' and request.POST.get('sex') != 'all') else ''
     ugs_str = " AND kod_ugs IN("+ugs+")" if ugs != '' else ''
     profspec_str = " AND dic_val IN("+profspec+")" if profspec != '' else ''
+    respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
+    respondent_name = respondent_obj.respondent_name
     #return HttpResponse(ugs_checked)
     if regions == '' or (ugs == '' and profspec == ''):
         return HttpResponse("don't set parameters")
-    results = getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de, cel, inv, formaob, sex)
-    #return results
+        #return results
     checked = profspec_checked if ugs == '' else ugs_checked
-    return getexcelhead(typeq, respondent_strtype, regions_checked, checked, dop_parameters, chk_text, results)
-
+    if type_report == 'excel':
+        results = getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de,
+                                  cel, inv, formaob, sex)
+        return getexcelhead(typeq, respondent_strtype, regions_checked, checked, dop_parameters, chk_text, results)
+        #return HttpResponse(results)
+    elif type_report == 'graph':
+        results = getdataforgraph(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de,
+                                  cel, inv, formaob, sex)
+        #return HttpResponse(results)
+        # if( len(results.get('raw_employment')) < 1 and results.get('raw_employment_regions') < 1 ):
+        #     return HttpResponse("Нет данных согласно выбранным фильтрам")
+        return render(request, 'results/graphs.html',
+                      {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': results.get('raw_employment'), 'raw_employment_regions': results.get('raw_employment_regions'), 'raw_employment_types': results.get('raw_employment_types'), 'regions_checked': regions_checked, 'checked': checked, 'dop_parameters': dop_parameters, 'chk_text': chk_text})
 
 def ajaxgetprofspec(request, respondent_strtype):
     typech = request.POST.get('typech')
@@ -636,7 +673,74 @@ def ajaxgetprofspec(request, respondent_strtype):
     return render(request, 'results/'+html+'.html',
                   {'profspec_dic': profspec_dic})
 
+
+def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str,profspec_str,de,cel,inv,formaob,sex):
+    if respondent_strtype == 'graduates':
+        table = 'v_exit_1_graduates'
+        tbl_char = 'v_characteristic_graduates'
+    elif respondent_strtype == 'organizations':
+        table = 'v_exit_1_oospo'
+        tbl_char = 'v_characteristic_oospo'
+    elif respondent_strtype == 'employers':
+        return HttpResponse('Нет выходных таблиц по данной группе респондентов')
+    cursor = connection.cursor()
+    sql = "  SELECT " \
+          "  unnest(ARRAY['Трудоустроены', 'Продолжили обучение', 'Призваны в ряды Вооруженных Сил', 'Находятся в отпуске по уходу за ребенком', 'Не трудоустроены']) ," \
+          "  unnest(ARRAY[sum(gr2), sum(gr12), sum(gr13), sum(gr14), sum(gr15)])" \
+          "  FROM "+table+" " \
+          "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id" \
+          "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "
+    #return HttpResponse(sql)
+    cursor.execute(sql)
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(int(value[1]))
+    raw_employment = {'data': res, 'labels': labels}
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT"
+                   " unnest(ARRAY['В регионах с постоянной регистрацией', 'В регионах, не связанных с местом постоянной регистрации']) ,"
+                   " unnest(ARRAY[sum(gr10), sum(gr11)])"
+                   " FROM "+table+" "
+                   "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id"
+                   "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" ")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(int(value[1]))
+    raw_employment_regions = {'data': res, 'labels': labels}
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT"
+                   " unnest(ARRAY['По найму', 'ИП', 'Самозанятые']) ,"
+                   " unnest(ARRAY[sum(gr4), sum(gr6), sum(gr8)])"
+                   " FROM "+table+" "
+                   "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id"
+                   "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" ")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(int(value[1]))
+    raw_employment_types = {'data': res, 'labels': labels}
+
+    raw = {'raw_employment': raw_employment, 'raw_employment_regions': raw_employment_regions, 'raw_employment_types': raw_employment_types}
+    return raw
+
+
+
 def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str,profspec_str,de,cel,inv,formaob,sex):
+    if razrez == 'rf':
+        razrez = "'Итого'"
     if respondent_strtype == 'graduates':
         tbl = 'v_exit_'+typeq[1]+'_graduates'
         tbl_char = 'v_characteristic_graduates'
@@ -664,8 +768,8 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr15) AS gr15, " \
                        " SUM(gr16) AS gr16" \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY "+razrez+"" \
-                       " ORDER BY "+razrez+""
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
+                       " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v3':
         sql = "SELECT "+razrez+"," \
@@ -681,8 +785,8 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr10) AS gr10," \
                        " SUM(gr11) AS gr11 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY "+razrez+"" \
-                       " ORDER BY "+razrez+""
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
+                       " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v4':
         sql = "SELECT "+razrez+"," \
@@ -695,8 +799,8 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr7) AS gr7," \
                        " SUM(gr8) AS gr8 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY "+razrez+"" \
-                       " ORDER BY "+razrez+""
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
+                       " ORDER BY 1"
         #return HttpResponse(sql)
     elif typeq == 'v5':
         sql = "SELECT " + razrez + "," \
@@ -711,8 +815,8 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr9)/SUM(qount) AS gr9," \
                        " SUM(gr10)/SUM(qount) AS gr10 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY " + razrez + "" \
-                       " ORDER BY " + razrez + ""
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY 1" \
+                       " ORDER BY 1"
         #return HttpResponse(sql)
     elif typeq == 'v6':
         sql = "SELECT " + razrez + "," \
@@ -720,8 +824,8 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr1)/SUM(qount) AS gr1," \
                        " SUM(gr2)/SUM(qount) AS gr2 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY " + razrez + ", "+tbl+".respondent_id" \
-                       " ORDER BY " + razrez + ", gr1 desc "
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY 1, "+tbl+".respondent_id" \
+                       " ORDER BY 1, gr1 desc "
         #return HttpResponse(sql)
     elif typeq == 'v7':
         sql = "SELECT " + razrez + "," \
@@ -734,8 +838,8 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr7)/SUM(qount) AS gr7," \
                        " SUM(gr8)/SUM(qount) AS gr8 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY " + razrez + "" \
-                       " ORDER BY " + razrez + ""
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY 1" \
+                       " ORDER BY 1"
     #return HttpResponse(sql)
     cursor = connection.cursor()
     cursor.execute(sql)
