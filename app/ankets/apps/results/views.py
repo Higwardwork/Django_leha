@@ -622,8 +622,9 @@ def ajaxgetreport(request, respondent_strtype):
     if type_report == 'excel':
         results = getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de,
                                   cel, inv, formaob, sex)
-        return getexcelhead(typeq, respondent_strtype, regions_checked, checked, dop_parameters, chk_text, results)
         #return HttpResponse(results)
+        return getexcelhead(typeq, respondent_strtype, regions_checked, checked, dop_parameters, chk_text, results)
+
     elif type_report == 'graph':
         results = getdataforgraph(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de,
                                   cel, inv, formaob, sex)
@@ -686,7 +687,7 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
     cursor = connection.cursor()
     sql = "  SELECT " \
           "  unnest(ARRAY['Трудоустроены', 'Продолжили обучение', 'Призваны в ряды Вооруженных Сил', 'Находятся в отпуске по уходу за ребенком', 'Не трудоустроены']) ," \
-          "  unnest(ARRAY[sum(gr2), sum(gr12), sum(gr13), sum(gr14), sum(gr15)])" \
+          "  unnest(ARRAY[sum(gr2), sum(gr14), sum(gr15), sum(gr16), sum(gr17)])" \
           "  FROM "+table+" " \
           "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id" \
           "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "
@@ -704,7 +705,7 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
     cursor = connection.cursor()
     cursor.execute("SELECT"
                    " unnest(ARRAY['В регионах с постоянной регистрацией', 'В регионах, не связанных с местом постоянной регистрации']) ,"
-                   " unnest(ARRAY[sum(gr10), sum(gr11)])"
+                   " unnest(ARRAY[sum(gr10), sum(gr12)])"
                    " FROM "+table+" "
                    "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id"
                    "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" ")
@@ -751,53 +752,54 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
         dopon = ' AND '+tbl+'.essence_id = '+tbl_char+'.essence_id '
     if typeq == 'v1':
         sql = "SELECT "+razrez+"," \
-                       " SUM(gr1) AS gr1," \
-                       " SUM(gr2) AS gr2," \
-                       " SUM(gr3) AS gr3," \
-                       " SUM(gr4) AS gr4," \
-                       " SUM(gr5) AS gr5," \
-                       " SUM(gr6) AS gr6," \
-                       " SUM(gr7) AS gr7," \
-                       " SUM(gr8) AS gr8," \
-                       " SUM(gr9) AS gr9," \
-                       " SUM(gr10) AS gr10," \
-                       " SUM(gr11) AS gr11," \
-                       " SUM(gr12) AS gr12," \
-                       " SUM(gr13) AS gr13," \
-                       " SUM(gr14) AS gr14," \
-                       " SUM(gr15) AS gr15, " \
-                       " SUM(gr16) AS gr16" \
+                       " ROUND(CAST(SUM(gr2) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr2," \
+                       " ROUND(CAST(SUM(gr3) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr3," \
+                       " ROUND(CAST(SUM(gr4) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr4," \
+                       " ROUND(CAST(SUM(gr5) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr5," \
+                       " ROUND(CAST(SUM(gr6) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr6," \
+                       " ROUND(CAST(SUM(gr7) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr7," \
+                       " ROUND(CAST(SUM(gr8) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr8," \
+                       " ROUND(CAST(SUM(gr9) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr9," \
+                       " ROUND(CAST(SUM(gr10) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr10," \
+                       " ROUND(CAST(SUM(gr11) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr11," \
+                       " ROUND(CAST(SUM(gr12) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr12," \
+                       " ROUND(CAST(SUM(gr13) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr13," \
+                       " ROUND(CAST(SUM(gr14) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr14," \
+                       " ROUND(CAST(SUM(gr15) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr15," \
+                       " ROUND(CAST(SUM(gr16) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr16," \
+                       " ROUND(CAST(SUM(gr17) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr17," \
+                       " ROUND(CAST(SUM(gr18) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr18" \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
                        " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v3':
         sql = "SELECT "+razrez+"," \
-                       " SUM(gr1) AS gr1," \
-                       " SUM(gr2) AS gr2," \
-                       " SUM(gr3) AS gr3," \
-                       " SUM(gr4) AS gr4," \
-                       " SUM(gr5) AS gr5," \
-                       " SUM(gr6) AS gr6," \
-                       " SUM(gr7) AS gr7," \
-                       " SUM(gr8) AS gr8," \
-                       " SUM(gr9) AS gr9," \
-                       " SUM(gr10) AS gr10," \
-                       " SUM(gr11) AS gr11 " \
+                       " ROUND(CAST(SUM(gr2) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr2," \
+                       " ROUND(CAST(SUM(gr3) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr3," \
+                       " ROUND(CAST(SUM(gr4) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr4," \
+                       " ROUND(CAST(SUM(gr5) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr5," \
+                       " ROUND(CAST(SUM(gr6) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr6," \
+                       " ROUND(CAST(SUM(gr7) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr7," \
+                       " ROUND(CAST(SUM(gr8) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr8," \
+                       " ROUND(CAST(SUM(gr9) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr9," \
+                       " ROUND(CAST(SUM(gr10) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr10," \
+                       " ROUND(CAST(SUM(gr11) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr11," \
+                       " ROUND(CAST(SUM(gr12) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr12" \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
                        " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v4':
         sql = "SELECT "+razrez+"," \
-                       " SUM(gr1) AS gr1," \
-                       " SUM(gr2) AS gr2," \
-                       " SUM(gr3) AS gr3," \
-                       " SUM(gr4) AS gr4," \
-                       " SUM(gr5) AS gr5," \
-                       " SUM(gr6) AS gr6," \
-                       " SUM(gr7) AS gr7," \
-                       " SUM(gr8) AS gr8 " \
+                       " ROUND(CAST(SUM(gr2) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr2," \
+                       " ROUND(CAST(SUM(gr3) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr3," \
+                       " ROUND(CAST(SUM(gr4) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr4," \
+                       " ROUND(CAST(SUM(gr5) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr5," \
+                       " ROUND(CAST(SUM(gr6) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr6," \
+                       " ROUND(CAST(SUM(gr7) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr7," \
+                       " ROUND(CAST(SUM(gr8) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr8," \
+                       " ROUND(CAST(SUM(gr9) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr9 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
                        " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
                        " ORDER BY 1"
@@ -867,37 +869,38 @@ def getexcelhead(typeq,respondent_strtype,regions_checked,checked,dop_parameters
     ws.write(3, 0, dop_parameters)
     if typeq == 'v1':
         ws.write_merge(4, 5, 0, 0, '', style)
-        ws.write_merge(4, 5, 1, 1, 'Всего, чел.', style)
-        ws.write_merge(4, 4, 2, 9, 'Трудоустроены, чел.', style)
-        ws.write_merge(4, 4, 10, 11, 'Трудоустроены из гр.2, чел.', style)
-        ws.write_merge(4, 5, 12, 12, 'Продолжили обучение в проф. обр. организациях', style)
-        ws.write_merge(4, 5, 13, 13, 'Призваны в ряды Вооруженных Сил Российской Федерации', style)
-        ws.write_merge(4, 5, 14, 14, 'Находятся в отпуске по уходу за ребенком', style)
-        ws.write_merge(4, 5, 15, 15,
-                       'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных)', style)
-        ws.write_merge(4, 5, 16, 16, 'из них зарегистрированы на бирже труда', style)
-        ws.write(5, 2, 'Всего', style)
-        ws.write(5, 3, 'из них по профессии/специальности', style)
-        ws.write(5, 4, 'По найму', style)
-        ws.write(5, 5, 'из них по профессии/специальности', style)
-        ws.write(5, 6, 'ИП', style)
-        ws.write(5, 7, 'из них по профессии/специальности', style)
-        ws.write(5, 8, 'Самозанятые', style)
-        ws.write(5, 9, 'из них по профессии/специальности', style)
-        ws.write(5, 10, 'в регионах с постоянной регистрацией', style)
+        ws.write_merge(4, 4, 1, 8, 'Трудоустроены, %', style)
+        ws.write_merge(4, 4, 9, 12, 'Трудоустроены из гр.2, %', style)
+        ws.write_merge(4, 5, 13, 13, 'Продолжили обучение в проф. обр. организациях, %', style)
+        ws.write_merge(4, 5, 14, 14, 'Призваны в ряды Вооруженных Сил Российской Федерации, %', style)
+        ws.write_merge(4, 5, 15, 15, 'Находятся в отпуске по уходу за ребенком, %', style)
+        ws.write_merge(4, 5, 16, 16,
+                       'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
+        ws.write_merge(4, 5, 17, 17, 'из них зарегистрированы на бирже труда, %', style)
+        ws.write(5, 1, 'Всего', style)
+        ws.write(5, 2, 'из них по профессии/специальности', style)
+        ws.write(5, 3, 'По найму', style)
+        ws.write(5, 4, 'из них по профессии/специальности', style)
+        ws.write(5, 5, 'ИП', style)
+        ws.write(5, 6, 'из них по профессии/специальности', style)
+        ws.write(5, 7, 'Самозанятые', style)
+        ws.write(5, 8, 'из них по профессии/специальности', style)
+        ws.write(5, 9, 'в регионах с постоянной регистрацией', style)
+        ws.write(5, 10, 'из них по профессии/специальности', style)
         ws.write(5, 11, 'в регионах, не связанных с местом постоянной регистрации', style)
-        for nc in range(17):
+        ws.write(5, 12, 'из них по профессии/специальности', style)
+        for nc in range(18):
             ws.write(6, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 6
     if typeq == 'v3':
         ws.write_merge(4, 5, 0, 0, '', style)
-        ws.write_merge(4, 5, 1, 1, 'Обучались на основании договора о целевом обучении', style)
-        ws.write_merge(4, 4, 2, 5, 'Трудоустроены', style)
-        ws.write_merge(4, 4, 6, 7, 'Трудоустроены (из графы 2)', style)
-        ws.write_merge(4, 4, 8, 9, 'Трудоустроены по профессии (специальности)', style)
-        ws.write_merge(4, 5, 10, 10, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных)', style)
-        ws.write_merge(4, 5, 11, 11, 'из них зарегистрированы на бирже труда', style)
+        ws.write_merge(4, 5, 1, 1, 'Обучались на основании договора о целевом обучении (относительно всех опрошенных), %', style)
+        ws.write_merge(4, 4, 2, 5, 'Трудоустроены, %', style)
+        ws.write_merge(4, 4, 6, 7, 'Трудоустроены (из графы 2), %', style)
+        ws.write_merge(4, 4, 8, 9, 'Трудоустроены по профессии (специальности), %', style)
+        ws.write_merge(4, 5, 10, 10, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
+        ws.write_merge(4, 5, 11, 11, 'из них зарегистрированы на бирже труда, %', style)
         ws.write(5, 2, 'всего', style)
         ws.write(5, 3, 'по профессии (специальности) в организации указанные в договоре о целевом обучении', style)
         ws.write(5, 4, 'по профессии (специальности) в организации отличные от указанных в договоре о целевом обучении', style)
@@ -912,10 +915,10 @@ def getexcelhead(typeq,respondent_strtype,regions_checked,checked,dop_parameters
         row_num = 6
     if typeq == 'v4':
         ws.write_merge(4, 5, 0, 0, '', style)
-        ws.write_merge(4, 5, 1, 1, 'Количество выпускников, не участвовавших в ДЭ и не обучавшихся на основании договора о целевом обучении', style)
-        ws.write_merge(4, 4, 2, 4, 'Трудоустроены', style)
-        ws.write_merge(4, 4, 5, 7, 'Трудоустроены по профессии (специальности)', style)
-        ws.write_merge(4, 5, 8, 8, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных)', style)
+        ws.write_merge(4, 5, 1, 1, 'Доля выпускников, не участвовавших в ДЭ и не обучавшихся на основании договора о целевом обучении (относительно всех опрошенных), %', style)
+        ws.write_merge(4, 4, 2, 4, 'Трудоустроены, %', style)
+        ws.write_merge(4, 4, 5, 7, 'Трудоустроены по профессии (специальности), %', style)
+        ws.write_merge(4, 5, 8, 8, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
         ws.write(5, 2, 'всего', style)
         ws.write(5, 3, 'из них в субъектах с постоянной регистрацией', style)
         ws.write(5, 4, 'из них в субъектах, не связанных с местом постоянной регистрации', style)
