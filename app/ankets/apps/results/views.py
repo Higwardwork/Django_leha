@@ -16,6 +16,10 @@ import numpy as np
 def get_item(dictionary, key):
     return dictionary.get(key)
 
+@register.filter
+def get_item_list(list, key):
+    return list[key]
+
 # @register.filter
 # def hash(h, key):
 #     return h[key]
@@ -632,7 +636,7 @@ def ajaxgetreport(request, respondent_strtype):
         # if( len(results.get('raw_employment')) < 1 and results.get('raw_employment_regions') < 1 ):
         #     return HttpResponse("Нет данных согласно выбранным фильтрам")
         return render(request, 'results/graphs.html',
-                      {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': results.get('raw_employment'), 'raw_employment_regions': results.get('raw_employment_regions'), 'raw_employment_types': results.get('raw_employment_types'), 'regions_checked': regions_checked, 'checked': checked, 'dop_parameters': dop_parameters, 'chk_text': chk_text})
+                      {'respondent_strtype': respondent_strtype, 'respondent_name': respondent_name, 'raw_employment': results.get('raw_employment'), 'raw_employment_spec': results.get('raw_employment_spec'), 'raw_employment_regions': results.get('raw_employment_regions'), 'raw_employment_types': results.get('raw_employment_types'), 'regions_checked': regions_checked, 'checked': checked, 'dop_parameters': dop_parameters, 'chk_text': chk_text})
 
 def ajaxgetprofspec(request, respondent_strtype):
     typech = request.POST.get('typech')
@@ -687,7 +691,7 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
     cursor = connection.cursor()
     sql = "  SELECT " \
           "  unnest(ARRAY['Трудоустроены', 'Продолжили обучение', 'Призваны в ряды Вооруженных Сил', 'Находятся в отпуске по уходу за ребенком', 'Не трудоустроены']) ," \
-          "  unnest(ARRAY[sum(gr2), sum(gr14), sum(gr15), sum(gr16), sum(gr17)])" \
+          "  unnest(ARRAY[ROUND(CAST(SUM(gr2) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr14) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr15) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr16) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr17) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2)])" \
           "  FROM "+table+" " \
           "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id" \
           "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "
@@ -699,13 +703,13 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
     labels = []
     for value in rawresults:
         labels.append(value[0])
-        res.append(int(value[1]))
+        res.append(float(value[1]))
     raw_employment = {'data': res, 'labels': labels}
 
     cursor = connection.cursor()
     cursor.execute("SELECT"
-                   " unnest(ARRAY['В регионах с постоянной регистрацией', 'В регионах, не связанных с местом постоянной регистрации']) ,"
-                   " unnest(ARRAY[sum(gr10), sum(gr12)])"
+                   " unnest(ARRAY['По специальности', 'Не по специальности']) ,"
+                   " unnest(ARRAY[ROUND(CAST(SUM(gr3) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST((SUM(gr2)-SUM(gr3)) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2)])"
                    " FROM "+table+" "
                    "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id"
                    "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" ")
@@ -715,13 +719,29 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
     labels = []
     for value in rawresults:
         labels.append(value[0])
-        res.append(int(value[1]))
+        res.append(float(value[1]))
+    raw_employment_spec = {'data': res, 'labels': labels}
+
+    cursor = connection.cursor()
+    cursor.execute("SELECT"
+                   " unnest(ARRAY['В регионах с постоянной регистрацией', 'В регионах, не связанных с местом постоянной регистрации']) ,"
+                   " unnest(ARRAY[ROUND(CAST(SUM(gr10) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr12) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2)])"
+                   " FROM "+table+" "
+                   "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id"
+                   "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" ")
+    rawresults = cursor.fetchall()
+    cursor.close()
+    res = []
+    labels = []
+    for value in rawresults:
+        labels.append(value[0])
+        res.append(float(value[1]))
     raw_employment_regions = {'data': res, 'labels': labels}
 
     cursor = connection.cursor()
     cursor.execute("SELECT"
                    " unnest(ARRAY['По найму', 'ИП', 'Самозанятые']) ,"
-                   " unnest(ARRAY[sum(gr4), sum(gr6), sum(gr8)])"
+                   " unnest(ARRAY[ROUND(CAST(SUM(gr4) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr6) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr8) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2)])"
                    " FROM "+table+" "
                    "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id"
                    "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" ")
@@ -731,10 +751,10 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
     labels = []
     for value in rawresults:
         labels.append(value[0])
-        res.append(int(value[1]))
+        res.append(float(value[1]))
     raw_employment_types = {'data': res, 'labels': labels}
 
-    raw = {'raw_employment': raw_employment, 'raw_employment_regions': raw_employment_regions, 'raw_employment_types': raw_employment_types}
+    raw = {'raw_employment': raw_employment, 'raw_employment_regions': raw_employment_regions, 'raw_employment_types': raw_employment_types, 'raw_employment_spec': raw_employment_spec}
     return raw
 
 

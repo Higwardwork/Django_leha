@@ -14,29 +14,82 @@
                                     <p><small>{{regions_checked}}<br/>
                                     {{checked}}<br/>
                                     <!--<p><small>{{dop_parameters}}</small></p>-->
-                                    {{chk_text}}</small></p>
+                                    {{chk_text}}
+                                    {% if dop_parameters != ' |  | ' %}
+                                        <br/>{{dop_parameters}}
+                                    {% endif %}
+                                    </small></p>
                                     <!--<p>Распределение выпускников по каналам занятости и регионам регистрации</p>-->
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <h6>Распределение выпускников по каналам занятости</h6>
-                                        <div class="chart-container" style="width: 300px;">
+                                        <div class="chart-container" style="width: 250px;">
                                           <canvas id="myChart_employment_filters" width="150" height="150"></canvas>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
+                                        <h6>Распределение выпускников по специальности</h6>
+                                        <div class="chart-container" style="width: 200px;">
+                                          <canvas id="myChart_employment_spec_filters" width="150" height="150"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
                                         <h6>Распределение выпускников по регионам трудоустройства</h6>
-                                        <div class="chart-container" style="width: 300px;">
+                                        <div class="chart-container" style="width: 200px;">
                                           <canvas id="myChart_employment_regions_filters" width="150" height="150"></canvas>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <h6>Распределение выпускников по типу занятости</h6>
-                                        <div class="chart-container" style="width: 300px;">
+                                        <div class="chart-container" style="width: 200px;">
                                           <canvas id="myChart_employment_types_filters" width="150" height="150"></canvas>
                                         </div>
                                     </div>
                                 </div>
+                             </div>
+
+                             <div class="row" style="font-size:70%;">
+                                 <div class="col-md-3">
+                                     <table class="table table-sm">
+                                        {% for lbl in raw_employment.labels %}
+                                            <tr>
+                                                <td>{{lbl}}</td>
+                                                <td>{{raw_employment.data|get_item_list:forloop.counter0}}%</td>
+                                            </tr>
+                                        {% endfor %}
+                                     </table>
+                                 </div>
+                                 <div class="col-md-3">
+                                     <table class="table table-sm">
+                                        {% for lbl in raw_employment_spec.labels %}
+                                            <tr>
+                                                <td>{{lbl}}</td>
+                                                <td>{{raw_employment_spec.data|get_item_list:forloop.counter0}}%</td>
+                                            </tr>
+                                        {% endfor %}
+                                     </table>
+                                 </div>
+                                 <div class="col-md-3">
+                                     <table class="table table-sm">
+                                        {% for lbl in raw_employment_regions.labels %}
+                                            <tr>
+                                                <td>{{lbl}}</td>
+                                                <td>{{raw_employment_regions.data|get_item_list:forloop.counter0}}%</td>
+                                            </tr>
+                                        {% endfor %}
+                                     </table>
+                                 </div>
+                                 <div class="col-md-3">
+                                     <table class="table table-sm">
+                                        {% for lbl in raw_employment_types.labels %}
+                                            <tr>
+                                                <td>{{lbl}}</td>
+                                                <td>{{raw_employment_types.data|get_item_list:forloop.counter0}}%</td>
+                                            </tr>
+                                        {% endfor %}
+                                     </table>
+                                 </div>
                              </div>
 
                         {% endif %}
@@ -109,6 +162,34 @@ var myChart = new Chart(ctx, {
         }
 });
 
+
+var ctx = document.getElementById('myChart_employment_spec_filters').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'doughnut', //doughnut
+    data: {
+        labels: {{raw_employment_spec.labels|safe}},
+        datasets: [
+                {
+                    label: 'Распределение выпускников по каналам занятости',
+                    data: {{raw_employment_spec.data|safe}},
+                    backgroundColor: ["rgba(100, 700, 100, 0.7)", "rgba(700, 100, 100, 0.7)"],
+                },
+        ]
+    },
+        options: {
+            tooltips: {
+                titleFontSize: 9,
+                bodyFontSize: 9
+            },
+            legend: {
+                position: 'bottom',
+                display: true,
+                labels: {
+                    "fontSize": 8,
+                }
+            }
+        }
+});
 
 
 var ctx = document.getElementById('myChart_employment_regions_filters').getContext('2d');
