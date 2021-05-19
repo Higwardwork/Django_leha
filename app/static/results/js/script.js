@@ -116,6 +116,8 @@ function setchkparameters(resp,type_report) {
     let formaob = ( $('#formaob').length > 0 ) ? $("#formaob").val() : 'None';
     let sex = ( $('#sex').length > 0 ) ? $("#sex").val() : 'None';
     let finance = ( $('#finance').length > 0 ) ? $("#finance").val() : 'None';
+    let typeoo = ( $('#typeoo').length > 0 ) ? $("#typeoo").val() : 'None';
+    let golfil = ( $('#golfil').length > 0 ) ? $("#golfil").val() : 'None';
     var ugs = ($('#ugs').length > 0) ? $('#ugs').val().join() : '';
     //ugs = ugs.join();
     var profspec = ($('#profspec').length > 0) ? $('#profspec').val().join() : '';
@@ -151,8 +153,10 @@ function setchkparameters(resp,type_report) {
     let year_checked = ( $('#year').length > 0 ) ? 'Год выпуска: '+$( "#year option:selected" ).text()+', ' : '';
     let finance_checked = ( $('#finance').length > 0 ) ? 'Источник финансирования обучения: '+$( "#finance option:selected" ).text()+', ' : '';
     let formaob_checked = 'Форма обучения: '+$( "#formaob option:selected" ).text()+', ';
-    let sex_checked = 'Пол: '+$( "#sex option:selected" ).text();
-    var chk_text = year_checked + formaob_checked + finance_checked + sex_checked
+    let sex_checked = 'Пол: '+$( "#sex option:selected" ).text()+', ';
+    let typeoo_checked = 'Тип организации: '+$( "#typeoo option:selected" ).text()+', ';
+    let golfil_checked = 'Головная/филиал: '+$( "#golfil option:selected" ).text();
+    var chk_text = year_checked + formaob_checked + finance_checked + sex_checked + typeoo_checked + golfil_checked;
 
     data_chk = {
         'regions': regions,
@@ -171,6 +175,8 @@ function setchkparameters(resp,type_report) {
         'finance': finance,
         'formaob': formaob,
         'sex': sex,
+        'typeoo': typeoo,
+        'golfil': golfil,
         'type': $("#type").val(),
         'type_report': type_report,
         csrfmiddlewaretoken: tok

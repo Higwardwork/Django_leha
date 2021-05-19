@@ -614,6 +614,8 @@ def ajaxgetreport(request, respondent_strtype):
     finance = " AND finance = '"+request.POST.get('finance')+"' " if (request.POST.get('finance') != 'None' and request.POST.get('finance') != 'all') else ''
     formaob = " AND formaob = "+request.POST.get('formaob')+" " if (request.POST.get('formaob') != 'None' and request.POST.get('formaob') != 'all') else ''
     sex = " AND sex = "+request.POST.get('sex')+" " if (request.POST.get('sex') != 'None' and request.POST.get('sex') != 'all') else ''
+    typeoo = " AND typeoo = "+request.POST.get('typeoo')+" " if (request.POST.get('typeoo') != 'None' and request.POST.get('typeoo') != 'all') else ''
+    golfil = " AND golfil = "+request.POST.get('golfil')+" " if (request.POST.get('golfil') != 'None' and request.POST.get('golfil') != 'all') else ''
     ugs_str = " AND kod_ugs IN("+ugs+")" if ugs != '' else ''
     profspec_str = " AND dic_val IN("+profspec+")" if profspec != '' else ''
     respondent_obj = Respondent.objects.get(link_name=respondent_strtype)
@@ -625,13 +627,13 @@ def ajaxgetreport(request, respondent_strtype):
     checked = profspec_checked if ugs == '' else ugs_checked
     if type_report == 'excel':
         results = getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de,
-                                  cel, inv, formaob, sex)
+                                  cel, inv, formaob, sex, typeoo, golfil)
         #return HttpResponse(results)
         return getexcelhead(typeq, respondent_strtype, regions_checked, checked, dop_parameters, chk_text, results)
 
     elif type_report == 'graph':
         results = getdataforgraph(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de,
-                                  cel, inv, formaob, sex)
+                                  cel, inv, formaob, sex, typeoo, golfil)
         #return HttpResponse(results)
         # if( len(results.get('raw_employment')) < 1 and results.get('raw_employment_regions') < 1 ):
         #     return HttpResponse("Нет данных согласно выбранным фильтрам")
@@ -679,7 +681,7 @@ def ajaxgetprofspec(request, respondent_strtype):
                   {'profspec_dic': profspec_dic})
 
 
-def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str,profspec_str,de,cel,inv,formaob,sex):
+def getdataforgraph(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de, cel, inv, formaob, sex, typeoo, golfil):
     if respondent_strtype == 'graduates':
         table = 'v_exit_1_graduates'
         tbl_char = 'v_characteristic_graduates'
@@ -694,7 +696,7 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
           "  unnest(ARRAY[ROUND(CAST(SUM(gr2) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr14) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr15) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr16) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr17) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2)])" \
           "  FROM "+table+" " \
           "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id" \
-          "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "
+          "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" "
     #return HttpResponse(sql)
     cursor.execute(sql)
     rawresults = cursor.fetchall()
@@ -712,7 +714,7 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                    " unnest(ARRAY[ROUND(CAST(SUM(gr3) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST((SUM(gr2)-SUM(gr3)) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2)])"
                    " FROM "+table+" "
                    "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id"
-                   "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" ")
+                   "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" ")
     rawresults = cursor.fetchall()
     cursor.close()
     res = []
@@ -728,7 +730,7 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                    " unnest(ARRAY[ROUND(CAST(SUM(gr10) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr12) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2)])"
                    " FROM "+table+" "
                    "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id"
-                   "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" ")
+                   "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" ")
     rawresults = cursor.fetchall()
     cursor.close()
     res = []
@@ -744,7 +746,7 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                    " unnest(ARRAY[ROUND(CAST(SUM(gr4) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr6) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2), ROUND(CAST(SUM(gr8) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2)])"
                    " FROM "+table+" "
                    "  INNER JOIN "+tbl_char+" ON "+table+".respondent_id = "+tbl_char+".respondent_id"
-                   "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" ")
+                   "  WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" ")
     rawresults = cursor.fetchall()
     cursor.close()
     res = []
@@ -759,7 +761,7 @@ def getdataforgraph(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
 
 
 
-def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str,profspec_str,de,cel,inv,formaob,sex):
+def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de, cel, inv, formaob, sex, typeoo, golfil):
     if razrez == 'rf':
         razrez = "'Итого'"
     if respondent_strtype == 'graduates':
@@ -790,7 +792,7 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " ROUND(CAST(SUM(gr17) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr17," \
                        " ROUND(CAST(SUM(gr18) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr18" \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v2':
@@ -814,7 +816,7 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " ROUND(CAST(SUM(gr18) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr18, " \
                        " ROUND(CAST(SUM(gr19) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr19" \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v3':
@@ -831,7 +833,7 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " ROUND(CAST(SUM(gr11) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr11," \
                        " ROUND(CAST(SUM(gr12) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr12" \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v4':
@@ -845,7 +847,7 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " ROUND(CAST(SUM(gr8) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr8," \
                        " ROUND(CAST(SUM(gr9) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr9 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     elif typeq == 'v5':
@@ -861,7 +863,7 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr9)/SUM(qount) AS gr9," \
                        " SUM(gr10)/SUM(qount) AS gr10 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY 1" \
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     elif typeq == 'v6':
@@ -870,7 +872,7 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr1)/SUM(qount) AS gr1," \
                        " SUM(gr2)/SUM(qount) AS gr2 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY 1, "+tbl+".respondent_id" \
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1, "+tbl+".respondent_id" \
                        " ORDER BY 1, gr1 desc "
         #return HttpResponse(sql)
     elif typeq == 'v7':
@@ -884,7 +886,7 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr7)/SUM(qount) AS gr7," \
                        " SUM(gr8)/SUM(qount) AS gr8 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY 1" \
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v8':
@@ -899,7 +901,7 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " ROUND(CAST(SUM(gr9) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr9, " \
                        " ROUND(CAST(SUM(gr10) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr10 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     elif typeq == 'v9':
@@ -907,7 +909,7 @@ def getdataforexcel(respondent_strtype,typeq,year,finance,razrez,regions,ugs_str
                        " SUM(gr1)/SUM(qount) AS gr1," \
                        " SUM(gr2)/SUM(qount) AS gr2 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+"   GROUP BY 1" \
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     cursor = connection.cursor()
