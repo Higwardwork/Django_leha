@@ -629,7 +629,7 @@ def ajaxgetreport(request, respondent_strtype):
         results = getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de,
                                   cel, inv, formaob, sex, typeoo, golfil)
         #return HttpResponse(results)
-        return getexcelhead(typeq, respondent_strtype, regions_checked, checked, dop_parameters, chk_text, results)
+        return getexcelhead(typeq, respondent_strtype, regions_checked, checked, dop_parameters, chk_text, results, razrez)
 
     elif type_report == 'graph':
         results = getdataforgraph(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de,
@@ -762,8 +762,12 @@ def getdataforgraph(respondent_strtype, typeq, year, finance, razrez, regions, u
 
 
 def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, ugs_str, profspec_str, de, cel, inv, formaob, sex, typeoo, golfil):
+    group = ''
     if razrez == 'rf':
         razrez = "'Итого'"
+    if razrez == 'region_name':
+        razrez = "name_federal, region_name"
+        group = ", 2"
     if respondent_strtype == 'graduates':
         tbl = 'v_exit_'+typeq[1]+'_graduates'
         tbl_char = 'v_characteristic_graduates'
@@ -792,7 +796,7 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
                        " ROUND(CAST(SUM(gr17) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr17," \
                        " ROUND(CAST(SUM(gr18) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr18" \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1"+group+"" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v2':
@@ -816,7 +820,7 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
                        " ROUND(CAST(SUM(gr18) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr18, " \
                        " ROUND(CAST(SUM(gr19) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr19" \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1"+group+"" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v3':
@@ -833,7 +837,7 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
                        " ROUND(CAST(SUM(gr11) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr11," \
                        " ROUND(CAST(SUM(gr12) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr12" \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1"+group+"" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v4':
@@ -847,7 +851,7 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
                        " ROUND(CAST(SUM(gr8) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr8," \
                        " ROUND(CAST(SUM(gr9) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr9 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1"+group+"" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     elif typeq == 'v5':
@@ -863,7 +867,7 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
                        " SUM(gr9)/SUM(qount) AS gr9," \
                        " SUM(gr10)/SUM(qount) AS gr10 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1"+group+"" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     elif typeq == 'v6':
@@ -872,7 +876,7 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
                        " SUM(gr1)/SUM(qount) AS gr1," \
                        " SUM(gr2)/SUM(qount) AS gr2 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1, "+tbl+".respondent_id" \
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1"+group+", "+tbl+".respondent_id" \
                        " ORDER BY 1, gr1 desc "
         #return HttpResponse(sql)
     elif typeq == 'v7':
@@ -886,7 +890,7 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
                        " SUM(gr7)/SUM(qount) AS gr7," \
                        " SUM(gr8)/SUM(qount) AS gr8 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1"+group+"" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     if typeq == 'v8':
@@ -901,7 +905,7 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
                        " ROUND(CAST(SUM(gr9) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr9, " \
                        " ROUND(CAST(SUM(gr10) AS DEC(12,4))/CAST(SUM(gr1) AS DEC(12,4))*100,2) AS gr10 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
+                       " WHERE ter IN("+regions+") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" "+de+" "+cel+" "+inv+" "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1"+group+"" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     elif typeq == 'v9':
@@ -909,7 +913,7 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
                        " SUM(gr1)/SUM(qount) AS gr1," \
                        " SUM(gr2)/SUM(qount) AS gr2 " \
                        " FROM "+tbl+" INNER JOIN "+tbl_char+" ON "+tbl+".respondent_id = "+tbl_char+".respondent_id "+dopon+" " \
-                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1" \
+                       " WHERE ter IN(" + regions + ") "+ugs_str+" "+profspec_str+" "+year+" "+finance+" " + de + " " + cel + "  " + inv + " "+formaob+" "+sex+" "+typeoo+" "+golfil+" GROUP BY 1"+group+"" \
                        " ORDER BY 1"
         #return HttpResponse(sql)
     cursor = connection.cursor()
@@ -920,7 +924,11 @@ def getdataforexcel(respondent_strtype, typeq, year, finance, razrez, regions, u
 
 
 
-def getexcelhead(typeq,respondent_strtype,regions_checked,checked,dop_parameters,chk_text,results):
+def getexcelhead(typeq,respondent_strtype,regions_checked,checked,dop_parameters,chk_text,results,razrez):
+    if razrez == 'region_name':
+        i = 1 #Смещение шапки на 1 ячейку вправо для добавления федерального округа, если разрез "регионы"
+    else:
+        i = 0
     now = datetime.datetime.now().strftime("%Y-%m-%d")
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename="' + respondent_strtype + now + '.xls"'
@@ -938,157 +946,175 @@ def getexcelhead(typeq,respondent_strtype,regions_checked,checked,dop_parameters
     ws.write(3, 0, dop_parameters)
     if typeq == 'v1':
         ws.write_merge(4, 5, 0, 0, '', style)
-        ws.write_merge(4, 4, 1, 8, 'Трудоустроены, %', style)
-        ws.write_merge(4, 4, 9, 12, 'Трудоустроены из гр.2, %', style)
-        ws.write_merge(4, 5, 13, 13, 'Продолжили обучение в проф. обр. организациях, %', style)
-        ws.write_merge(4, 5, 14, 14, 'Призваны в ряды Вооруженных Сил Российской Федерации, %', style)
-        ws.write_merge(4, 5, 15, 15, 'Находятся в отпуске по уходу за ребенком, %', style)
-        ws.write_merge(4, 5, 16, 16,
+        if razrez == 'region_name':
+            ws.write_merge(4, 5, 1, 1, '', style)
+        ws.write_merge(4, 4, 1+i, 8+i, 'Трудоустроены, %', style)
+        ws.write_merge(4, 4, 9+i, 12+i, 'Трудоустроены из гр.2, %', style)
+        ws.write_merge(4, 5, 13+i, 13+i, 'Продолжили обучение в проф. обр. организациях, %', style)
+        ws.write_merge(4, 5, 14+i, 14+i, 'Призваны в ряды Вооруженных Сил Российской Федерации, %', style)
+        ws.write_merge(4, 5, 15+i, 15+i, 'Находятся в отпуске по уходу за ребенком, %', style)
+        ws.write_merge(4, 5, 16+i, 16+i,
                        'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
-        ws.write_merge(4, 5, 17, 17, 'из них зарегистрированы на бирже труда, %', style)
-        ws.write(5, 1, 'Всего', style)
-        ws.write(5, 2, 'из них по профессии/специальности', style)
-        ws.write(5, 3, 'По найму', style)
-        ws.write(5, 4, 'из них по профессии/специальности', style)
-        ws.write(5, 5, 'ИП', style)
-        ws.write(5, 6, 'из них по профессии/специальности', style)
-        ws.write(5, 7, 'Самозанятые', style)
-        ws.write(5, 8, 'из них по профессии/специальности', style)
-        ws.write(5, 9, 'в регионах с постоянной регистрацией', style)
-        ws.write(5, 10, 'из них по профессии/специальности', style)
-        ws.write(5, 11, 'в регионах, не связанных с местом постоянной регистрации', style)
-        ws.write(5, 12, 'из них по профессии/специальности', style)
-        for nc in range(18):
+        ws.write_merge(4, 5, 17+i, 17+i, 'из них зарегистрированы на бирже труда, %', style)
+        ws.write(5, 1+i, 'Всего', style)
+        ws.write(5, 2+i, 'из них по профессии/специальности', style)
+        ws.write(5, 3+i, 'По найму', style)
+        ws.write(5, 4+i, 'из них по профессии/специальности', style)
+        ws.write(5, 5+i, 'ИП', style)
+        ws.write(5, 6+i, 'из них по профессии/специальности', style)
+        ws.write(5, 7+i, 'Самозанятые', style)
+        ws.write(5, 8+i, 'из них по профессии/специальности', style)
+        ws.write(5, 9+i, 'в регионах с постоянной регистрацией', style)
+        ws.write(5, 10+i, 'из них по профессии/специальности', style)
+        ws.write(5, 11+i, 'в регионах, не связанных с местом постоянной регистрации', style)
+        ws.write(5, 12+i, 'из них по профессии/специальности', style)
+        for nc in range(18+i):
             ws.write(6, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 6
     if typeq == 'v2':
         ws.write_merge(4, 5, 0, 0, '', style)
-        ws.write_merge(4, 5, 1, 1, 'Завершили ГИА с исп. ДЭ (относительно всех опрошенных), %', style)
-        ws.write_merge(4, 4, 2, 9, 'Трудоустроены, %', style)
-        ws.write_merge(4, 4, 10, 11, 'Трудоустроены из гр.2, %', style)
-        ws.write_merge(4, 4, 12, 13, 'Трудоустроены по профессии (специальности), из графы 3, %', style)
-        ws.write_merge(4, 5, 14, 14, 'Продолжили обучение в проф. обр. организациях, %', style)
-        ws.write_merge(4, 5, 15, 15, 'Призваны в ряды Вооруженных Сил Российской Федерации, %', style)
-        ws.write_merge(4, 5, 16, 16, 'Находятся в отпуске по уходу за ребенком, %', style)
-        ws.write_merge(4, 5, 17, 17,
+        if razrez == 'region_name':
+            ws.write_merge(4, 5, 1, 1, '', style)
+        ws.write_merge(4, 5, 1+i, 1+i, 'Завершили ГИА с исп. ДЭ (относительно всех опрошенных), %', style)
+        ws.write_merge(4, 4, 2+i, 9+i, 'Трудоустроены, %', style)
+        ws.write_merge(4, 4, 10+i, 11+i, 'Трудоустроены из гр.2, %', style)
+        ws.write_merge(4, 4, 12+i, 13+i, 'Трудоустроены по профессии (специальности), из графы 3, %', style)
+        ws.write_merge(4, 5, 14+i, 14+i, 'Продолжили обучение в проф. обр. организациях, %', style)
+        ws.write_merge(4, 5, 15+i, 15+i, 'Призваны в ряды Вооруженных Сил Российской Федерации, %', style)
+        ws.write_merge(4, 5, 16+i, 16+i, 'Находятся в отпуске по уходу за ребенком, %', style)
+        ws.write_merge(4, 5, 17+i, 17+i,
                        'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
-        ws.write_merge(4, 5, 18, 18, 'из них зарегистрированы на бирже труда, %', style)
-        ws.write(5, 2, 'Всего', style)
-        ws.write(5, 3, 'из них по профессии/специальности', style)
-        ws.write(5, 4, 'По найму', style)
-        ws.write(5, 5, 'из них по профессии/специальности', style)
-        ws.write(5, 6, 'ИП', style)
-        ws.write(5, 7, 'из них по профессии/специальности', style)
-        ws.write(5, 8, 'Самозанятые', style)
-        ws.write(5, 9, 'из них по профессии/специальности', style)
-        ws.write(5, 10, 'в регионах с постоянной регистрацией', style)
-        ws.write(5, 11, 'в регионах, не связанных с местом постоянной регистрации', style)
-        ws.write(5, 12, 'в регионах с постоянной регистрацией', style)
-        ws.write(5, 13, 'в регионах, не связанных с местом постоянной регистрации', style)
-        for nc in range(19):
+        ws.write_merge(4, 5, 18+i, 18+i, 'из них зарегистрированы на бирже труда, %', style)
+        ws.write(5, 2+i, 'Всего', style)
+        ws.write(5, 3+i, 'из них по профессии/специальности', style)
+        ws.write(5, 4+i, 'По найму', style)
+        ws.write(5, 5+i, 'из них по профессии/специальности', style)
+        ws.write(5, 6+i, 'ИП', style)
+        ws.write(5, 7+i, 'из них по профессии/специальности', style)
+        ws.write(5, 8+i, 'Самозанятые', style)
+        ws.write(5, 9+i, 'из них по профессии/специальности', style)
+        ws.write(5, 10+i, 'в регионах с постоянной регистрацией', style)
+        ws.write(5, 11+i, 'в регионах, не связанных с местом постоянной регистрации', style)
+        ws.write(5, 12+i, 'в регионах с постоянной регистрацией', style)
+        ws.write(5, 13+i, 'в регионах, не связанных с местом постоянной регистрации', style)
+        for nc in range(19+i):
             ws.write(6, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 6
     if typeq == 'v3':
         ws.write_merge(4, 5, 0, 0, '', style)
-        ws.write_merge(4, 5, 1, 1, 'Обучались на основании договора о целевом обучении (относительно всех опрошенных), %', style)
-        ws.write_merge(4, 4, 2, 5, 'Трудоустроены, %', style)
-        ws.write_merge(4, 4, 6, 7, 'Трудоустроены (из графы 2), %', style)
-        ws.write_merge(4, 4, 8, 9, 'Трудоустроены по профессии (специальности), %', style)
-        ws.write_merge(4, 5, 10, 10, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
-        ws.write_merge(4, 5, 11, 11, 'из них зарегистрированы на бирже труда, %', style)
-        ws.write(5, 2, 'всего', style)
-        ws.write(5, 3, 'по профессии (специальности) в организации указанные в договоре о целевом обучении', style)
-        ws.write(5, 4, 'по профессии (специальности) в организации отличные от указанных в договоре о целевом обучении', style)
-        ws.write(5, 5, 'не по профессии (специальности)', style)
-        ws.write(5, 6, 'в субъектах с постоянной регистрацией', style)
-        ws.write(5, 7, 'в субъектах, не связанных с местом постоянной регистрации', style)
-        ws.write(5, 8, 'в субъектах с постоянной регистрацией', style)
-        ws.write(5, 9, 'в субъектах, не связанных с местом постоянной регистрации', style)
-        for nc in range(12):
+        if razrez == 'region_name':
+            ws.write_merge(4, 5, 1, 1, '', style)
+        ws.write_merge(4, 5, 1+i, 1+i, 'Обучались на основании договора о целевом обучении (относительно всех опрошенных), %', style)
+        ws.write_merge(4, 4, 2+i, 5+i, 'Трудоустроены, %', style)
+        ws.write_merge(4, 4, 6+i, 7+i, 'Трудоустроены (из графы 2), %', style)
+        ws.write_merge(4, 4, 8+i, 9+i, 'Трудоустроены по профессии (специальности), %', style)
+        ws.write_merge(4, 5, 10+i, 10+i, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
+        ws.write_merge(4, 5, 11+i, 11+i, 'из них зарегистрированы на бирже труда, %', style)
+        ws.write(5, 2+i, 'всего', style)
+        ws.write(5, 3+i, 'по профессии (специальности) в организации указанные в договоре о целевом обучении', style)
+        ws.write(5, 4+i, 'по профессии (специальности) в организации отличные от указанных в договоре о целевом обучении', style)
+        ws.write(5, 5+i, 'не по профессии (специальности)', style)
+        ws.write(5, 6+i, 'в субъектах с постоянной регистрацией', style)
+        ws.write(5, 7+i, 'в субъектах, не связанных с местом постоянной регистрации', style)
+        ws.write(5, 8+i, 'в субъектах с постоянной регистрацией', style)
+        ws.write(5, 9+i, 'в субъектах, не связанных с местом постоянной регистрации', style)
+        for nc in range(12+i):
             ws.write(6, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 6
     if typeq == 'v4':
         ws.write_merge(4, 5, 0, 0, '', style)
-        ws.write_merge(4, 5, 1, 1, 'Доля выпускников, не участвовавших в ДЭ и не обучавшихся на основании договора о целевом обучении (относительно всех опрошенных), %', style)
-        ws.write_merge(4, 4, 2, 4, 'Трудоустроены, %', style)
-        ws.write_merge(4, 4, 5, 7, 'Трудоустроены по профессии (специальности), %', style)
-        ws.write_merge(4, 5, 8, 8, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
-        ws.write(5, 2, 'всего', style)
-        ws.write(5, 3, 'из них в субъектах с постоянной регистрацией', style)
-        ws.write(5, 4, 'из них в субъектах, не связанных с местом постоянной регистрации', style)
-        ws.write(5, 5, 'всего', style)
-        ws.write(5, 6, 'из них в субъектах с постоянной регистрацией', style)
-        ws.write(5, 7, 'из них в субъектах, не связанных с местом постоянной регистрации', style)
-        for nc in range(9):
+        if razrez == 'region_name':
+            ws.write_merge(4, 5, 1, 1, '', style)
+        ws.write_merge(4, 5, 1+i, 1+i, 'Доля выпускников, не участвовавших в ДЭ и не обучавшихся на основании договора о целевом обучении (относительно всех опрошенных), %', style)
+        ws.write_merge(4, 4, 2+i, 4+i, 'Трудоустроены, %', style)
+        ws.write_merge(4, 4, 5+i, 7+i, 'Трудоустроены по профессии (специальности), %', style)
+        ws.write_merge(4, 5, 8+i, 8+i, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
+        ws.write(5, 2+i, 'всего', style)
+        ws.write(5, 3+i, 'из них в субъектах с постоянной регистрацией', style)
+        ws.write(5, 4+i, 'из них в субъектах, не связанных с местом постоянной регистрации', style)
+        ws.write(5, 5+i, 'всего', style)
+        ws.write(5, 6+i, 'из них в субъектах с постоянной регистрацией', style)
+        ws.write(5, 7+i, 'из них в субъектах, не связанных с местом постоянной регистрации', style)
+        for nc in range(9+i):
             ws.write(6, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 6
     if typeq == 'v5':
         ws.write_merge(4, 5, 0, 0, '', style)
-        ws.write_merge(4, 5, 1, 1, 'Трудоустроившимся (в общем)', style)
-        ws.write_merge(4, 4, 2, 4, 'Трудоустроившимся по профессиям (специальностям)', style)
-        ws.write_merge(4, 4, 5, 7, 'Завершившим государственную итоговую аттестацию с использованием демонстрационного экзамена и трудоустроившимся по профессии (специальности)', style)
-        ws.write_merge(4, 4, 8, 10, 'Обучавшимся на основании договора о целевом обучении и трудоустроившихся по профессии (специальности)', style)
-        ws.write(5, 2, 'По найму', style)
-        ws.write(5, 3, 'ИП', style)
-        ws.write(5, 4, 'Самозанятые', style)
-        ws.write(5, 5, 'По найму', style)
-        ws.write(5, 6, 'ИП', style)
-        ws.write(5, 7, 'Самозанятые', style)
-        ws.write(5, 8, 'По найму', style)
-        ws.write(5, 9, 'ИП', style)
-        ws.write(5, 10, 'Самозанятые', style)
-        for nc in range(11):
+        if razrez == 'region_name':
+            ws.write_merge(4, 5, 1, 1, '', style)
+        ws.write_merge(4, 5, 1+i, 1+i, 'Трудоустроившимся (в общем)', style)
+        ws.write_merge(4, 4, 2+i, 4+i, 'Трудоустроившимся по профессиям (специальностям)', style)
+        ws.write_merge(4, 4, 5+i, 7+i, 'Завершившим государственную итоговую аттестацию с использованием демонстрационного экзамена и трудоустроившимся по профессии (специальности)', style)
+        ws.write_merge(4, 4, 8+i, 10+i, 'Обучавшимся на основании договора о целевом обучении и трудоустроившихся по профессии (специальности)', style)
+        ws.write(5, 2+i, 'По найму', style)
+        ws.write(5, 3+i, 'ИП', style)
+        ws.write(5, 4+i, 'Самозанятые', style)
+        ws.write(5, 5+i, 'По найму', style)
+        ws.write(5, 6+i, 'ИП', style)
+        ws.write(5, 7+i, 'Самозанятые', style)
+        ws.write(5, 8+i, 'По найму', style)
+        ws.write(5, 9+i, 'ИП', style)
+        ws.write(5, 10+i, 'Самозанятые', style)
+        for nc in range(11+i):
             ws.write(6, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 6
     if typeq == 'v6':
         ws.write(4, 0, '', style)
-        ws.write(4, 1, 'id выпускника', style)
-        ws.write(4, 2, 'Бал ГИА с использованием ДЭ, балл', style)
-        ws.write(4, 3, 'Средняя сумма выплат в месяц', style)
-        for nc in range(4):
+        if razrez == 'region_name':
+            ws.write(4, 1, '', style)
+        ws.write(4, 1+i, 'id выпускника', style)
+        ws.write(4, 2+i, 'Бал ГИА с использованием ДЭ, балл', style)
+        ws.write(4, 3+i, 'Средняя сумма выплат в месяц', style)
+        for nc in range(4+i):
             ws.write(5, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 5
     if typeq == 'v7':
         ws.write(4, 0, '', style)
-        ws.write(4, 1, 'В общем', style)
-        ws.write(4, 2, 'из них по проф.(/спец.)', style)
-        ws.write(4, 3, 'Для завершивших ГИА без использования ДЭ и не обучавшихся по договорам о целевом обучении', style)
-        ws.write(4, 4, 'из них по проф.(/спец.)', style)
-        ws.write(4, 5, 'Для завершивших ГИА с использованием ДЭ', style)
-        ws.write(4, 6, 'из них по проф.(/спец.)', style)
-        ws.write(4, 7, 'Для обучавшихся на основании договора о целевом обучении', style)
-        ws.write(4, 8, 'из них по проф.(/спец.)', style)
-        for nc in range(9):
+        if razrez == 'region_name':
+            ws.write(4, 1, '', style)
+        ws.write(4, 1+i, 'В общем', style)
+        ws.write(4, 2+i, 'из них по проф.(/спец.)', style)
+        ws.write(4, 3+i, 'Для завершивших ГИА без использования ДЭ и не обучавшихся по договорам о целевом обучении', style)
+        ws.write(4, 4+i, 'из них по проф.(/спец.)', style)
+        ws.write(4, 5+i, 'Для завершивших ГИА с использованием ДЭ', style)
+        ws.write(4, 6+i, 'из них по проф.(/спец.)', style)
+        ws.write(4, 7+i, 'Для обучавшихся на основании договора о целевом обучении', style)
+        ws.write(4, 8+i, 'из них по проф.(/спец.)', style)
+        for nc in range(9+i):
             ws.write(5, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 5
     if typeq == 'v8':
         ws.write_merge(4, 5, 0, 0, '', style)
-        ws.write_merge(4, 4, 1, 7, 'Трудоустроены, %', style)
-        ws.write_merge(4, 5, 8, 8, 'Продолжили обучение в проф. обр. организациях, %', style)
-        ws.write_merge(4, 5, 9, 9, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
-        ws.write(5, 1, 'Всего', style)
-        ws.write(5, 2, 'из них (из графы 2) по профессии/специальности', style)
-        ws.write(5, 3, 'из них (из графы 2) не по профессии/специальности', style)
-        ws.write(5, 4, 'По найму', style)
-        ws.write(5, 5, 'ИП', style)
-        ws.write(5, 6, 'Самозанятые', style)
-        ws.write(5, 7, 'Завершившие ГИА с использованием ДЭ', style)
-        for nc in range(10):
+        if razrez == 'region_name':
+            ws.write_merge(4, 5, 1, 1, '', style)
+        ws.write_merge(4, 4, 1+i, 7+i, 'Трудоустроены, %', style)
+        ws.write_merge(4, 5, 8+i, 8+i, 'Продолжили обучение в проф. обр. организациях, %', style)
+        ws.write_merge(4, 5, 9+i, 9+i, 'Не трудоустроены (в т. ч. находятся на учете в службе занятости в качестве безработных), %', style)
+        ws.write(5, 1+i, 'Всего', style)
+        ws.write(5, 2+i, 'из них (из графы 2) по профессии/специальности', style)
+        ws.write(5, 3+i, 'из них (из графы 2) не по профессии/специальности', style)
+        ws.write(5, 4+i, 'По найму', style)
+        ws.write(5, 5+i, 'ИП', style)
+        ws.write(5, 6+i, 'Самозанятые', style)
+        ws.write(5, 7+i, 'Завершившие ГИА с использованием ДЭ', style)
+        for nc in range(10+i):
             ws.write(6, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 6
     if typeq == 'v9':
         ws.write(4, 0, '', style)
-        ws.write(4, 1, 'Трудоустроившемуся (в общем)', style)
-        ws.write(4, 2, 'Трудоустроившемуся по профессии (специальности)', style)
-        for nc in range(3):
+        if razrez == 'region_name':
+            ws.write(4, 1, '', style)
+        ws.write(4, 1+i, 'Трудоустроившемуся (в общем)', style)
+        ws.write(4, 2+i, 'Трудоустроившемуся по профессии (специальности)', style)
+        for nc in range(3+i):
             ws.write(5, nc, nc, style)
             ws.col(nc).width = int(23 * 260)
         row_num = 5
